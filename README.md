@@ -1,10 +1,9 @@
 <h1 align="center">Fontaine</h1>
-<div align="center">
-![a_25ea8a59a3591092b0ab885feec63302](https://github.com/user-attachments/assets/e3c0210c-fad8-4be4-922f-199c01a3b167)
-</div>
+
 <div align="center">
 High functional & API keyless Stats (overlay-like) Forge mod, that utilizes Scraping, for Hypixel Bedwars &amp; Duels
 </div>
+
 ## Features
 
 - Check Bedwars stats of the people that's in your game
@@ -25,10 +24,11 @@ High functional & API keyless Stats (overlay-like) Forge mod, that utilizes Scra
 
 - Pretty
 
+## Showcase
 
 <details>
 <summary>Showcase</summary>
-<div align="center">
+
 ![image](https://github.com/user-attachments/assets/de154698-8eac-49c7-884f-eedd31f4385f)
 ![image](https://github.com/user-attachments/assets/d0ba280e-930f-439d-b6ed-3a258f778100)
 ![image](https://github.com/user-attachments/assets/58d5a619-fb04-48c3-b0da-19df92880c6b)
