@@ -198,8 +198,6 @@ public class Statsify {
         ScorePlayerTeam playerTeam = Minecraft.getMinecraft().theWorld.getScoreboard().getPlayersTeam(playerName);
 
         if (playerTeam == null) {
-            mc.thePlayer.addChatMessage(
-                    new ChatComponentText("\u00a7r[\u00a7bF\u00a7r] " + playerName + " |  IS NULL "));
 
             return new String[]{"", playerName, ""};
 
