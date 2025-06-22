@@ -1,4 +1,4 @@
-# BWS BROKEN till further notice.
+# BWS half broken. Keeps ratelimiting. Will change scraping sources later, and abandon this.
 
 <h1 align="center">Fontaine</h1>
 <p align="center">
