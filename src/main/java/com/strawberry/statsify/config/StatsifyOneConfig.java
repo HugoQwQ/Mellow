@@ -44,6 +44,12 @@ public class StatsifyOneConfig extends Config {
     @Switch(name = "Auto /who")
     public boolean autoWho = true;
 
+    @Switch(name = "Auto Pregame Stats")
+    public boolean pregameStats = true;
+
+    @Switch(name = "Auto Pregame Tags")
+    public boolean pregameTags = true;
+
     @Switch(name = "Print Stats to Chat")
     public boolean printStats = false;
 

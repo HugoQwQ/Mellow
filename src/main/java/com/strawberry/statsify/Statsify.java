@@ -10,6 +10,7 @@ import com.strawberry.statsify.commands.StatsifyCommand;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import com.strawberry.statsify.util.NickUtils;
 import com.strawberry.statsify.util.NumberDenicker;
+import com.strawberry.statsify.util.PregameStats;
 import com.strawberry.statsify.util.Utils;
 import java.io.IOException;
 import java.util.*;
@@ -42,6 +43,7 @@ public class Statsify {
     private final UrchinApi urchinApi;
     private final PlanckeApi planckeApi;
     private NumberDenicker numberDenicker;
+    private PregameStats pregameStats;
     private NickUtils nickUtils;
 
     private List<String> onlinePlayers = new ArrayList<>();
@@ -57,6 +59,7 @@ public class Statsify {
     public void init(FMLInitializationEvent event) {
         config = new StatsifyOneConfig();
         numberDenicker = new NumberDenicker(config);
+        pregameStats = new PregameStats(config);
         nickUtils = new NickUtils();
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -75,6 +78,7 @@ public class Statsify {
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
         numberDenicker.onChat(event);
+        pregameStats.onChat(event);
         String message = event.message.getUnformattedText();
         if (config.autoWho) {
             if (
@@ -122,6 +126,9 @@ public class Statsify {
     public void onWorldLoad(WorldEvent.Load event) {
         if (numberDenicker != null) {
             numberDenicker.onWorldChange();
+        }
+        if (pregameStats != null) {
+            pregameStats.onWorldChange();
         }
         if (nickUtils != null) {
             nickUtils.clearNicks();

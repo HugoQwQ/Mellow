@@ -64,7 +64,7 @@ public class NadeshikoApi {
         String uuid = Utils.getUUIDFromPlayerName(playerName);
         if (uuid == null) {
             uuid = new MojangApi().fetchUUID(playerName);
-            if (uuid == "ERROR") {
+            if (uuid.equals("ERROR")) {
                 return (
                     " §cCould not find " +
                     playerName +

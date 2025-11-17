@@ -45,6 +45,7 @@ public class NumberDenicker {
         if (!config.numberDenicker) return;
 
         String message = event.message.getUnformattedText().trim();
+        message = message.replaceAll("§.", "").trim();
 
         if (isBedwarsStartMessage(message)) {
             if (!this.gameStarted) {
@@ -268,7 +269,9 @@ public class NumberDenicker {
     private boolean isBedwarsStartMessage(String message) {
         return (
             message.equals("Protect your bed and destroy the enemy beds.") ||
-            message.equals("You will respawn because you still have a bed!")
+            (message.equals("You will respawn because you still have a bed!") &&
+                !(message.contains(":")) &&
+                !(message.contains("SHOUT")))
         );
     }
 
