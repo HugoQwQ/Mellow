@@ -63,11 +63,14 @@ public class NadeshikoApi {
     public String fetchPlayerStats(String playerName) throws IOException {
         String uuid = Utils.getUUIDFromPlayerName(playerName);
         if (uuid == null) {
-            return (
-                " \u00a7cCould not find " +
-                playerName +
-                " in the current lobby."
-            );
+            uuid = new MojangApi().fetchUUID(playerName);
+            if (uuid == "ERROR") {
+                return (
+                    " \u00a7cCould not find " +
+                    playerName +
+                    " in the current lobby or on Mojang API."
+                );
+            }
         }
         String stjson = nadeshikoAPI(uuid);
         if (stjson == null || stjson.isEmpty()) {
