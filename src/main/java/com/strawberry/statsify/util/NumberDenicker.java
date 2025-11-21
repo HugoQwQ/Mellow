@@ -20,6 +20,7 @@ public class NumberDenicker {
     private final Minecraft mc = Minecraft.getMinecraft();
     private final StatsifyOneConfig config;
     private final AuroraApi auroraApi;
+    private final NickUtils nickUtils;
 
     private boolean gameStarted = false;
     private final Map<String, PotentialNick> nickToPotentials = new HashMap<>();
@@ -31,9 +32,10 @@ public class NumberDenicker {
         "^(?:BED DESTRUCTION > )?(\\w+) (?:Bed|bed) was bed #([\\d,]+) destroyed by ([\\w-]+)!$"
     );
 
-    public NumberDenicker(StatsifyOneConfig config) {
+    public NumberDenicker(StatsifyOneConfig config, NickUtils nickUtils) {
         this.config = config;
         this.auroraApi = new AuroraApi();
+        this.nickUtils = nickUtils;
     }
 
     public void onWorldChange() {
@@ -70,7 +72,9 @@ public class NumberDenicker {
                     );
                     if (
                         isPlayerInGame(nickName) &&
-                        (!player.finalsChecked || !player.fuzzy_finalsChecked)
+                        nickUtils.isNicked(nickName) &&
+                        (!player.finalsChecked ||
+                            player.fuzzy_finals_potentials == null)
                     ) {
                         mc.addScheduledTask(() ->
                             mc.thePlayer.addChatMessage(
@@ -102,7 +106,8 @@ public class NumberDenicker {
             );
             if (
                 isPlayerInGame(nickName) &&
-                (!player.bedsChecked || !player.fuzzy_bedsChecked)
+                nickUtils.isNicked(nickName) &&
+                (!player.bedsChecked || player.fuzzy_beds_potentials == null)
             ) {
                 mc.addScheduledTask(() ->
                     mc.thePlayer.addChatMessage(
@@ -150,112 +155,77 @@ public class NumberDenicker {
                     config.auroraApiKey
                 );
 
-                if (!player.fuzzy_finalsChecked && type.equals("finals")) {
-                    player.fuzzy_finalsChecked = true;
-                    String fuzzy_players = response.data
-                        .stream()
-                        .filter(p -> p.distance <= range)
-                        .map(
-                            p ->
-                                "§a" +
-                                p.name +
-                                " §7(distance: " +
-                                p.distance +
-                                ")"
-                        )
-                        .collect(Collectors.joining(", "));
-                    mc.addScheduledTask(() ->
-                        mc.thePlayer.addChatMessage(
-                            new ChatComponentText(
-                                "§4[ND] §aFound potential players: " +
-                                    fuzzy_players
-                            )
-                        )
-                    );
-                }
-
-                if (!player.fuzzy_bedsChecked && type.equals("beds")) {
-                    player.fuzzy_bedsChecked = true;
-                    String fuzzy_players = response.data
-                        .stream()
-                        .filter(p -> p.distance <= range)
-                        .map(
-                            p ->
-                                "§a" +
-                                p.name +
-                                " §7(distance: " +
-                                p.distance +
-                                ")"
-                        )
-                        .collect(Collectors.joining(", "));
-                    mc.addScheduledTask(() ->
-                        mc.thePlayer.addChatMessage(
-                            new ChatComponentText(
-                                "§4[ND] §aFound potential players: " +
-                                    fuzzy_players
-                            )
-                        )
-                    );
-                }
-
-                // fuzzy checking!~
                 if (response != null && response.success) {
+                    // Fuzzy Matching Logic
                     List<String> fuzzy_matches = response.data
                         .stream()
                         .filter(p -> p.distance <= range)
                         .map(p -> p.name)
                         .collect(Collectors.toList());
-                    // no matches :(
-                    if (fuzzy_matches.isEmpty()) {
-                        mc.addScheduledTask(() ->
-                            mc.thePlayer.addChatMessage(
-                                new ChatComponentText(
-                                    "§4[ND] §cNo players found in range found for " +
-                                        number +
-                                        type
-                                )
-                            )
-                        );
-                        if (type.equals("finals")) player.fuzzy_finalsChecked =
-                            true;
-                        if (type.equals("beds")) player.fuzzy_bedsChecked =
-                            true;
-                        return;
-                    }
-                    if (player.fuzzy_potentials.isEmpty()) {
-                        if (player.fuzzy_bedsChecked && type.equals("finals")) {
-                            player.setFuzzyPotentials(fuzzy_matches);
-                        } else if (
-                            player.finalsChecked && type.equals("beds")
-                        ) {
-                            player.setFuzzyPotentials(fuzzy_matches);
-                        }
-                    } else {
-                        player.fuzzy_potentials.retainAll(fuzzy_matches);
-                    }
 
-                    if (type.equals("finals")) player.fuzzy_finalsChecked =
-                        true;
-                    if (type.equals("beds")) player.fuzzy_bedsChecked = true;
+                    String fuzzy_players_log = response.data
+                        .stream()
+                        .filter(p -> p.distance <= range)
+                        .map(
+                            p ->
+                                "§a" +
+                                p.name +
+                                " §7(distance: " +
+                                p.distance +
+                                ")"
+                        )
+                        .collect(Collectors.joining(", "));
+
+                    mc.addScheduledTask(() ->
+                        mc.thePlayer.addChatMessage(
+                            new ChatComponentText(
+                                "§4[ND] §aFound potential " +
+                                    type +
+                                    " players: " +
+                                    fuzzy_players_log
+                            )
+                        )
+                    );
+
+                    if (type.equals("finals")) {
+                        player.fuzzy_finals_potentials = fuzzy_matches;
+                    } else if (type.equals("beds")) {
+                        player.fuzzy_beds_potentials = fuzzy_matches;
+                    }
 
                     if (
-                        player.fuzzy_finalsChecked && player.fuzzy_bedsChecked
+                        player.fuzzy_finals_potentials != null &&
+                        player.fuzzy_beds_potentials != null
                     ) {
-                        mc.addScheduledTask(() ->
-                            mc.thePlayer.addChatMessage(
-                                new ChatComponentText(
-                                    "§4[ND] §aFound matching finals and beds for: " +
-                                        String.join(
-                                            ", ",
-                                            player.fuzzy_potentials
-                                        )
-                                )
-                            )
+                        List<String> intersection = new ArrayList<>(
+                            player.fuzzy_finals_potentials
                         );
-                    }
-                }
+                        intersection.retainAll(player.fuzzy_beds_potentials);
 
-                if (response != null && response.success) {
+                        if (intersection.isEmpty()) {
+                            mc.addScheduledTask(() ->
+                                mc.thePlayer.addChatMessage(
+                                    new ChatComponentText(
+                                        "§4[ND] §cNo fuzzy match found for " +
+                                            nickName
+                                    )
+                                )
+                            );
+                        } else {
+                            mc.addScheduledTask(() ->
+                                mc.thePlayer.addChatMessage(
+                                    new ChatComponentText(
+                                        "§4[ND] §aFound fuzzy matches for " +
+                                            nickName +
+                                            ": " +
+                                            String.join(", ", intersection)
+                                    )
+                                )
+                            );
+                        }
+                    }
+
+                    // Exact Matching Logic
                     List<String> matches = response.data
                         .stream()
                         .filter(p -> p.distance <= 0)
@@ -357,16 +327,11 @@ public class NumberDenicker {
         boolean finalsChecked = false;
         boolean bedsChecked = false;
 
-        List<String> fuzzy_potentials = new ArrayList<>();
-        boolean fuzzy_finalsChecked = false;
-        boolean fuzzy_bedsChecked = false;
+        List<String> fuzzy_finals_potentials = null;
+        List<String> fuzzy_beds_potentials = null;
 
         void setPotentials(List<String> potentials) {
             this.potentials = potentials;
-        }
-
-        void setFuzzyPotentials(List<String> fuzzy_potentials) {
-            this.fuzzy_potentials = fuzzy_potentials;
         }
     }
 }

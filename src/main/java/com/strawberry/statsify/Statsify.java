@@ -10,6 +10,7 @@ import com.strawberry.statsify.commands.StatsifyCommand;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import com.strawberry.statsify.util.NickUtils;
 import com.strawberry.statsify.util.NumberDenicker;
+import com.strawberry.statsify.util.PartyManager;
 import com.strawberry.statsify.util.PregameStats;
 import com.strawberry.statsify.util.Utils;
 import java.io.IOException;
@@ -58,10 +59,11 @@ public class Statsify {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         config = new StatsifyOneConfig();
-        numberDenicker = new NumberDenicker(config);
-        pregameStats = new PregameStats(config);
         nickUtils = new NickUtils();
+        numberDenicker = new NumberDenicker(config, nickUtils);
+        pregameStats = new PregameStats(config);
         MinecraftForge.EVENT_BUS.register(this);
+        PartyManager.getInstance();
 
         ClientCommandHandler.instance.registerCommand(
             new BedwarsCommand(config)

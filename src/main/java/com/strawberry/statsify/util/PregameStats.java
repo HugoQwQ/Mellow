@@ -1,14 +1,24 @@
 package com.strawberry.statsify.util;
 
+import cc.polyfrost.oneconfig.utils.hypixel.HypixelUtils;
+import com.strawberry.statsify.api.MojangApi;
 import com.strawberry.statsify.api.NadeshikoApi;
 import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import java.io.IOException;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +28,10 @@ public class PregameStats {
     private final StatsifyOneConfig config;
     private final NadeshikoApi nadeshikoApi;
     private final UrchinApi urchinApi;
+    private final MojangApi mojangApi;
     public static final Logger LOGGER = LogManager.getLogger("Statsify");
+
+    public static boolean bedwars;
 
     private boolean inPregameLobby = false;
 
@@ -32,6 +45,7 @@ public class PregameStats {
         this.config = config;
         this.nadeshikoApi = new NadeshikoApi();
         this.urchinApi = new UrchinApi();
+        this.mojangApi = new MojangApi();
     }
 
     public void onWorldChange() {
@@ -49,6 +63,9 @@ public class PregameStats {
 
     public void onChat(ClientChatReceivedEvent event) {
         if (!config.pregameStats && !config.pregameTags) return;
+
+        // only denick if bedwars
+        if (!bedwars) return;
 
         String message = event.message.getUnformattedText().trim();
         message = message.replaceAll("§.", "").trim();
@@ -84,15 +101,26 @@ public class PregameStats {
             if (username.equals(Minecraft.getMinecraft().thePlayer.getName())) {
                 return;
             }
-            if (config.pregameStats) {
-                new Thread(() -> {
+            new Thread(() -> {
+                try {
+                    if (PartyManager.getInstance().inParty()) {
+                        UUID uuid = UUID.fromString(
+                            this.mojangApi.getUUIDFromName(username)
+                        );
+                        if (PartyManager.getInstance().isPartyMember(uuid)) {
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    // Player is probably nicked, continue.
+                }
+
+                if (config.pregameStats) {
                     try {
-                        String stats;
-                        stats = nadeshikoApi.fetchPlayerStats(username);
-                        String finalStats = stats;
+                        String stats = nadeshikoApi.fetchPlayerStats(username);
                         Minecraft.getMinecraft().addScheduledTask(() ->
                             Minecraft.getMinecraft().thePlayer.addChatMessage(
-                                new ChatComponentText("§r[§bF§r] " + finalStats)
+                                new ChatComponentText("§r[§bF§r] " + stats)
                             )
                         );
                     } catch (IOException e) {
@@ -106,15 +134,12 @@ public class PregameStats {
                             )
                         );
                     }
-                })
-                    .start();
-            }
-            if (config.pregameTags) {
-                new Thread(() -> {
+                }
+                if (config.pregameTags) {
                     checkUrchinTags(username);
-                })
-                    .start();
-            }
+                }
+            })
+                .start();
         }
     }
 
@@ -150,5 +175,33 @@ public class PregameStats {
                 )
             );
         }
+    }
+
+    /// thanks awruff - https://github.com/awruff/TNTTime
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        bedwars = false;
+
+        if (!HypixelUtils.INSTANCE.isHypixel()) {
+            return;
+        }
+
+        WorldClient world = Minecraft.getMinecraft().theWorld;
+        if (world == null || world.getScoreboard() == null) {
+            return;
+        }
+
+        bedwars = isBedwars(world.getScoreboard());
+    }
+
+    private boolean isBedwars(Scoreboard scoreboard) {
+        ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(
+            1
+        );
+        if (sidebarObjective == null) return false;
+        String name = EnumChatFormatting.getTextWithoutFormattingCodes(
+            sidebarObjective.getDisplayName()
+        );
+        return name.contains("BED WARS");
     }
 }
