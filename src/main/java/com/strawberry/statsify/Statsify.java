@@ -90,7 +90,7 @@ public class Statsify {
 
         // Commands
         ClientCommandHandler.instance.registerCommand(
-            new BedwarsCommand(config, nadeshikoApi)
+            new BedwarsCommand(config, nadeshikoApi, urchinApi)
         );
         ClientCommandHandler.instance.registerCommand(new StatsifyCommand());
         ClientCommandHandler.instance.registerCommand(

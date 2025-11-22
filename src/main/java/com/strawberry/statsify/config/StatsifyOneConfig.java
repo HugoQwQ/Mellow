@@ -29,6 +29,13 @@ public class StatsifyOneConfig extends Config {
     @Switch(name = "Enable Urchin", category = "Urchin")
     public boolean urchin = false;
 
+    @Info(
+        text = "Urchin does not require a key to view tags.",
+        type = InfoType.INFO,
+        category = "Urchin"
+    )
+    public static boolean ignored4;
+
     @Text(
         name = "Urchin API Key",
         category = "Urchin",

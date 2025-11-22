@@ -2,6 +2,7 @@ package com.strawberry.statsify.commands;
 
 import com.mojang.authlib.GameProfile;
 import com.strawberry.statsify.api.NadeshikoApi;
+import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import java.io.IOException;
 import java.util.List;
@@ -15,11 +16,17 @@ import net.minecraft.util.ChatComponentText;
 public class BedwarsCommand extends CommandBase {
 
     private final NadeshikoApi nadeshikoApi;
+    private final UrchinApi urchinApi;
     private final StatsifyOneConfig config;
 
-    public BedwarsCommand(StatsifyOneConfig config, NadeshikoApi nadeshikoApi) {
+    public BedwarsCommand(
+        StatsifyOneConfig config,
+        NadeshikoApi nadeshikoApi,
+        UrchinApi urchinApi
+    ) {
         this.config = config;
         this.nadeshikoApi = nadeshikoApi;
+        this.urchinApi = urchinApi;
     }
 
     @Override
@@ -53,6 +60,9 @@ public class BedwarsCommand extends CommandBase {
                         new ChatComponentText("§r[§bF§r] " + finalStats)
                     )
                 );
+                if (config.urchin) {
+                    fetchTags(username);
+                }
             } catch (IOException e) {
                 Minecraft.getMinecraft().addScheduledTask(() ->
                     Minecraft.getMinecraft().thePlayer.addChatMessage(
@@ -65,6 +75,38 @@ public class BedwarsCommand extends CommandBase {
             }
         })
             .start();
+    }
+
+    private void fetchTags(String username) {
+        try {
+            String tags = urchinApi
+                .fetchUrchinTags(username, config.urchinKey)
+                .replace("sniper", "§4§lSniper")
+                .replace("blatant_cheater", "§4§lBlatant Cheater")
+                .replace("closet_cheater", "§e§lCloset Cheater")
+                .replace("confirmed_cheater", "§4§lConfirmed Cheater");
+
+            if (!tags.isEmpty()) {
+                Minecraft.getMinecraft().addScheduledTask(() ->
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(
+                        new ChatComponentText(
+                            "§r[§bF§r] §c⚠ §r§cTagged§r for: " + tags
+                        )
+                    )
+                );
+            }
+        } catch (IOException e) {
+            Minecraft.getMinecraft().addScheduledTask(() ->
+                Minecraft.getMinecraft().thePlayer.addChatMessage(
+                    new ChatComponentText(
+                        "§r[§bF§r] Failed to fetch tags for " +
+                            username +
+                            " | " +
+                            e.getMessage()
+                    )
+                )
+            );
+        }
     }
 
     @Override
