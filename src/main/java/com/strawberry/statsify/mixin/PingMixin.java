@@ -28,6 +28,13 @@ public class PingMixin {
     private void onGetResponseTime(CallbackInfoReturnable<Integer> cir) {
         int original = this.responseTime;
 
+        String playerName =
+            ((NetworkPlayerInfo) (Object) this).getGameProfile().getName();
+        if (Statsify.nickUtils.isNicked(playerName)) {
+            cir.setReturnValue(original);
+            return;
+        }
+
         // pingProvider: 0 = None, 1 = Polsu, 2 = Urchin
         if (
             Statsify.config.pingProvider == 0 ||

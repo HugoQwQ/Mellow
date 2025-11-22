@@ -18,7 +18,7 @@ High functional & API keyless Stats (overlay-like) Forge mod, that utilizes Scra
 
 - Stars & FKDR on Tablist like Lilith
 
-- See other players' ping
+- See other players' ping, recommended to use with [VanillaHUD](https://modrinth.com/mod/vanillahud) to see ping as a number rather than bars
 
 - Urchin API support for Sniper & Cheater tags
 
