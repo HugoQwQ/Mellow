@@ -37,7 +37,7 @@ public class BedwarsCommand extends CommandBase {
         if (args.length != 1) {
             sender.addChatMessage(
                 new ChatComponentText(
-                    "§r[§bF§r]§cInvalid usage!§r Use /bw §5<username>§r"
+                    "§r[§bF§r]§c Invalid usage!§r Use /bw §5<username>§r"
                 )
             );
             return;

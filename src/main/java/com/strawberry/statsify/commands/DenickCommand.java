@@ -36,7 +36,7 @@ public class DenickCommand extends CommandBase {
         if (args.length != 2) {
             sender.addChatMessage(
                 new ChatComponentText(
-                    "§cInvalid usage. Use: " + getCommandUsage(sender)
+                    "§4[ND] §cInvalid usage. Use: " + getCommandUsage(sender)
                 )
             );
             return;

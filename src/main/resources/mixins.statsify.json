@@ -6,6 +6,6 @@
     "injectors": {
         "maxShiftBy": 5
     },
-    "client": ["PingMixin"],
+    "client": ["PingMixin", "GuiPlayerTabOverlayMixin"],
     "verbose": true
 }

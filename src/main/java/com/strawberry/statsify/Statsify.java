@@ -12,7 +12,6 @@ import com.strawberry.statsify.commands.DenickCommand;
 import com.strawberry.statsify.commands.StatsifyCommand;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import com.strawberry.statsify.events.ChatHandler;
-import com.strawberry.statsify.events.TabListHandler;
 import com.strawberry.statsify.events.WorldLoadHandler;
 import com.strawberry.statsify.task.StatsChecker;
 import com.strawberry.statsify.util.NickUtils;
@@ -32,10 +31,12 @@ public class Statsify {
 
     public static final String MODID = "statsify";
     public static final String NAME = "Statsify";
-    public static final String VERSION = "4.2.1";
+    public static final String VERSION = "4.2.2";
 
     public static StatsifyOneConfig config;
-    private final Map<String, List<String>> playerSuffixes = new HashMap<>();
+    public static final Map<String, List<String>> playerSuffixes =
+        new HashMap<>();
+    public static final NickUtils nickUtils = new NickUtils();
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
@@ -51,7 +52,6 @@ public class Statsify {
         AuroraApi auroraApi = new AuroraApi();
 
         // Utils
-        NickUtils nickUtils = new NickUtils();
         NumberDenicker numberDenicker = new NumberDenicker(
             config,
             nickUtils,
@@ -83,9 +83,6 @@ public class Statsify {
                 planckeApi,
                 statsChecker
             )
-        );
-        MinecraftForge.EVENT_BUS.register(
-            new TabListHandler(config, nickUtils, playerSuffixes)
         );
         MinecraftForge.EVENT_BUS.register(
             new WorldLoadHandler(numberDenicker, pregameStats, nickUtils)
