@@ -6,7 +6,7 @@
     "version": "${version}",
     "mcversion": "${mcVersionStr}",
     "url": "https://modrinth.com/mod/statsify",
-    "updateUrl": "",
+    "updateUrl": "https://api.modrinth.com/v2/project/statsify/version",
     "authorList": ["Strawberry", "melissalmao", "xanning", "Roxiun"],
     "credits": "melissalmao and xanning for og mod",
     "logoFile": "",

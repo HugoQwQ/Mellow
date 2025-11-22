@@ -17,12 +17,6 @@ import com.strawberry.statsify.Statsify;
 
 public class StatsifyOneConfig extends Config {
 
-    @Dropdown(name = "Stats Source", options = { "Scraping" })
-    public int statsSource = 0;
-
-    // @Text(name = "Winstreak.ws API Key", secure = true, multiline = false)
-    public String winstreakKey = "";
-
     @Number(name = "Minimum FKDR", min = -1, max = 500, step = 1)
     public int minFkdr = -1;
 
@@ -43,17 +37,28 @@ public class StatsifyOneConfig extends Config {
     )
     public String urchinKey = "";
 
-    @Switch(name = "Enable Polsu Ping", category = "Polsu")
-    public boolean polsuPing = false;
+    @Dropdown(
+        name = "Ping Provider",
+        category = "Ping",
+        options = { "None", "Polsu", "Urchin" }
+    )
+    public int pingProvider = 2;
 
-    @Button(name = "", text = "API Key", category = "Polsu")
+    @Info(
+        text = "Polsu requires an API key to be able to be used.",
+        type = InfoType.INFO,
+        category = "Ping"
+    )
+    public static boolean ignored3;
+
+    @Button(name = "Polsu API Key", text = "Get Key", category = "Ping")
     Runnable polsuLinkButton = () -> {
         NetworkUtils.browseLink("https://polsu.xyz/api/apikey");
     };
 
     @Text(
         name = "Polsu API Key",
-        category = "Polsu",
+        category = "Ping",
         secure = true,
         multiline = false
     )
