@@ -60,10 +60,7 @@ public class HypixelApiUtils {
         return "";
     }
 
-    public static BedwarsPlayer parsePlayerData(
-        String json,
-        String provider
-    ) {
+    public static BedwarsPlayer parsePlayerData(String json, String provider) {
         JsonObject rootObject = new JsonParser().parse(json).getAsJsonObject();
 
         if (provider.equals("Abyss")) {

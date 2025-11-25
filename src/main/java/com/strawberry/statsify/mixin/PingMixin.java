@@ -3,7 +3,6 @@ package com.strawberry.statsify.mixin;
 import cc.polyfrost.oneconfig.utils.hypixel.HypixelUtils;
 import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.PolsuApi;
-import com.strawberry.statsify.api.UrchinApi;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class PingMixin {
 
     private static final PolsuApi polsuApi = new PolsuApi();
-    private static final UrchinApi urchinApi = new UrchinApi();
     private static final ExecutorService EXECUTOR =
         Executors.newFixedThreadPool(3);
 
@@ -74,7 +72,7 @@ public class PingMixin {
             });
         } else if (Statsify.config.pingProvider == 2) {
             // Urchin
-            int cached = urchinApi.getCachedPing(uuid);
+            int cached = Statsify.urchinApi.getCachedPing(uuid);
             if (cached != -1) {
                 cir.setReturnValue(cached);
                 return;
@@ -82,13 +80,13 @@ public class PingMixin {
 
             cir.setReturnValue(original);
 
-            if (!urchinApi.tryStartFetch(uuid)) return;
+            if (!Statsify.urchinApi.tryStartFetch(uuid)) return;
 
             EXECUTOR.submit(() -> {
                 try {
-                    urchinApi.fetchPingBlocking(uuid);
+                    Statsify.urchinApi.fetchPingBlocking(uuid);
                 } finally {
-                    urchinApi.finishFetch(uuid);
+                    Statsify.urchinApi.finishFetch(uuid);
                 }
             });
         }

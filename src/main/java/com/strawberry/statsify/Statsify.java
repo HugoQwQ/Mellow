@@ -40,6 +40,9 @@ public class Statsify {
         new HashMap<>();
     public static final NickUtils nickUtils = new NickUtils();
 
+    public static MojangApi mojangApi;
+    public static UrchinApi urchinApi;
+
     private Map<String, StatsProvider> statsProviders;
 
     @Mod.EventHandler
@@ -47,14 +50,14 @@ public class Statsify {
         config = new StatsifyOneConfig();
 
         // APIs
-        MojangApi mojangApi = new MojangApi();
+        mojangApi = new MojangApi();
         statsProviders = new HashMap<>();
         statsProviders.put("Nadeshiko", new NadeshikoApi(mojangApi));
         statsProviders.put("Abyss", new AbyssApi(mojangApi));
 
         TagUtils tagUtils = new TagUtils(this);
         HypixelApi hypixelApi = new HypixelApi(this, tagUtils);
-        UrchinApi urchinApi = new UrchinApi();
+        urchinApi = new UrchinApi(mojangApi);
         PlanckeApi planckeApi = new PlanckeApi();
         AuroraApi auroraApi = new AuroraApi();
 

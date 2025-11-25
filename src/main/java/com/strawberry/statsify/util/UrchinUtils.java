@@ -1,28 +1,33 @@
 package com.strawberry.statsify.util;
 
 import com.strawberry.statsify.api.UrchinApi;
+import com.strawberry.statsify.api.UrchinTag;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 
 public class UrchinUtils {
 
-    private static String getFormattedTags(
-        String username,
-        UrchinApi urchinApi,
-        String urchinKey
-    ) throws IOException {
-        return urchinApi
-            .fetchUrchinTags(username, urchinKey)
-            .replace("sniper", "§4§lSniper")
-            .replace("blatant_cheater", "§4§lBlatant Cheater")
-            .replace("closet_cheater", "§e§lCloset Cheater")
-            .replace("confirmed_cheater", "§4§lConfirmed Cheater")
-            .replace("possible_sniper", "§e§l Possible Sniper")
-            .replace("legit_sniper", "§e§l Legit Sniper")
-            .replace("caution", "§e§l Caution")
-            .replace("caution", "§e§l Account")
-            .replace("caution", "§f§l Info");
+    private static String getFormattedTags(List<UrchinTag> tags) {
+        return tags
+            .stream()
+            .map(tag -> {
+                String formattedType = tag
+                    .getType()
+                    .replace("sniper", "§4§lSniper")
+                    .replace("blatant_cheater", "§4§lBlatant Cheater")
+                    .replace("closet_cheater", "§e§lCloset Cheater")
+                    .replace("confirmed_cheater", "§4§lConfirmed Cheater")
+                    .replace("possible_sniper", "§e§lPossible Sniper")
+                    .replace("legit_sniper", "§e§lLegit Sniper")
+                    .replace("caution", "§e§lCaution")
+                    .replace("account", "§e§lAccount")
+                    .replace("info", "§f§lInfo");
+                return formattedType + " §7(" + tag.getReason() + ")";
+            })
+            .collect(Collectors.joining(", "));
     }
 
     private static void printMessage(String message) {
@@ -45,21 +50,22 @@ public class UrchinUtils {
     public static void checkAndPrintUrchinTags(
         String username,
         UrchinApi urchinApi,
-        String urchinKey,
         boolean withPlayerName
     ) {
         try {
-            String tags = getFormattedTags(username, urchinApi, urchinKey);
+            List<UrchinTag> tags = urchinApi.fetchUrchinTags(username);
             if (!tags.isEmpty()) {
+                String formattedTags = getFormattedTags(tags);
                 String message;
                 if (withPlayerName) {
                     message =
                         "§r[§bF§r] §c⚠ §r" +
                         PlayerUtils.getTabDisplayName(username) +
                         " §ris §ctagged§r for: " +
-                        tags;
+                        formattedTags;
                 } else {
-                    message = "§r[§bF§r] §c⚠ §r§cTagged§r for: " + tags;
+                    message =
+                        "§r[§bF§r] §c⚠ §r§cTagged§r for: " + formattedTags;
                 }
                 printMessage(message);
             }

@@ -165,12 +165,7 @@ public class PregameStats {
         }
 
         if (config.pregameTags) {
-            UrchinUtils.checkAndPrintUrchinTags(
-                username,
-                urchinApi,
-                config.urchinKey,
-                true
-            );
+            UrchinUtils.checkAndPrintUrchinTags(username, urchinApi, true);
         }
     }
 

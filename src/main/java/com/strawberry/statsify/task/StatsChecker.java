@@ -43,12 +43,7 @@ public class StatsChecker {
         for (String playerName : onlinePlayers) {
             if (nickUtils.isNicked(playerName)) continue;
             executor.submit(() ->
-                UrchinUtils.checkAndPrintUrchinTags(
-                    playerName,
-                    urchinApi,
-                    config.urchinKey,
-                    true
-                )
+                UrchinUtils.checkAndPrintUrchinTags(playerName, urchinApi, true)
             );
         }
         executor.shutdown();

@@ -85,7 +85,6 @@ public class BedwarsCommand extends CommandBase {
                     UrchinUtils.checkAndPrintUrchinTags(
                         username,
                         urchinApi,
-                        config.urchinKey,
                         false
                     );
                 }
