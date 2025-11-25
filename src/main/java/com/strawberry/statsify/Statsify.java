@@ -11,6 +11,7 @@ import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.commands.BedwarsCommand;
 import com.strawberry.statsify.commands.ClearCacheCommand;
 import com.strawberry.statsify.commands.DenickCommand;
+import com.strawberry.statsify.commands.SkinDenickCommand;
 import com.strawberry.statsify.commands.StatsifyCommand;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import com.strawberry.statsify.events.ChatHandler;
@@ -33,7 +34,7 @@ public class Statsify {
 
     public static final String MODID = "statsify";
     public static final String NAME = "Statsify";
-    public static final String VERSION = "4.2.4";
+    public static final String VERSION = "4.2.5";
 
     public static StatsifyOneConfig config;
     public static final Map<String, List<String>> playerSuffixes =
@@ -109,6 +110,7 @@ public class Statsify {
         ClientCommandHandler.instance.registerCommand(
             new DenickCommand(config, auroraApi)
         );
+        ClientCommandHandler.instance.registerCommand(new SkinDenickCommand());
     }
 
     public StatsProvider getStatsProvider() {
