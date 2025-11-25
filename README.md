@@ -55,13 +55,7 @@ Go to the releases tab and download.
 
 Statsify is an internal Forge 1.8.9 mod for Hypixel Bedwars, allows its users to check the stats of the players in their game, without having to bother with an external overlay, proxy, or an API key.
 
-
-## Known issues
-
-- Doesn't work on few VPN's, cant reproduce. PIA & Windscribe should work.
-- Sometimes stats are failed to fetch due to ratelimits, you can either switch stats provider in settings or run `/who` again after a bit
-
-## How-To
+## Usage
 
 All settings for the mod can be configured using OneConfig (press right shift).
 
@@ -74,6 +68,11 @@ To check an **individual**'s bedwars stats type `/bw <username>`
 To **skin denick** type `/denick skin <player_name>`
 
 To use the **number denicker** add the Aurora API key, you can get a key from [here](https://discord.com/oauth2/authorize?client_id=1244205279697174539), automatic during game, you can also manually use `/denick <finals | beds> <number>` afterwards
+
+## Known issues
+
+- Doesn't work on few VPN's, cant reproduce. PIA & Windscribe should work.
+- Sometimes stats are failed to fetch due to ratelimits, you can either switch stats provider in settings or run `/who` again after a bit
 
 
 ## Owner Info
