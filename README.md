@@ -3,7 +3,13 @@
 <img width="1920" height="392" src="https://i.ibb.co/hRmQV02D/Ads-z.png">
 </p>
 <div align="center">
-High functional & API keyless Stats (overlay-like) Forge mod, that utilizes Scraping, for Hypixel Bedwars &amp; Duels
+Keyless stats mod for Hypixel Bedwars &amp; Duels
+</div>
+
+<br>
+
+<div align="center">
+This project is a fork continuation of <a href="https://github.com/xanning/Fontaine" >Fontaine</a>
 </div>
 
 ## Features
