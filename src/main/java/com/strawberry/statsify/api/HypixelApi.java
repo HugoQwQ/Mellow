@@ -2,6 +2,7 @@ package com.strawberry.statsify.api;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.util.FormattingUtils;
 import com.strawberry.statsify.util.PlayerUtils;
 import com.strawberry.statsify.util.TagUtils;
@@ -13,11 +14,11 @@ import net.minecraft.util.EnumChatFormatting;
 
 public class HypixelApi {
 
-    private final StatsProvider statsProvider;
+    private final Statsify statsify;
     private final TagUtils tagUtils;
 
-    public HypixelApi(StatsProvider statsProvider, TagUtils tagUtils) {
-        this.statsProvider = statsProvider;
+    public HypixelApi(Statsify statsify, TagUtils tagUtils) {
+        this.statsify = statsify;
         this.tagUtils = tagUtils;
     }
 
@@ -38,7 +39,7 @@ public class HypixelApi {
                 );
             }
 
-            String stjson = statsProvider.fetchPlayerData(uuid);
+            String stjson = statsify.getStatsProvider().fetchPlayerData(uuid);
             if (stjson == null || stjson.isEmpty()) {
                 return (
                     "§cFailed to get stats for " +

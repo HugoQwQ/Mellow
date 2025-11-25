@@ -40,20 +40,20 @@ public class Statsify {
         new HashMap<>();
     public static final NickUtils nickUtils = new NickUtils();
 
+    private Map<String, StatsProvider> statsProviders;
+
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         config = new StatsifyOneConfig();
 
         // APIs
         MojangApi mojangApi = new MojangApi();
-        StatsProvider statsProvider;
-        if (config.statsProvider == 1) {
-            statsProvider = new AbyssApi(mojangApi);
-        } else {
-            statsProvider = new NadeshikoApi(mojangApi);
-        }
-        TagUtils tagUtils = new TagUtils(statsProvider);
-        HypixelApi hypixelApi = new HypixelApi(statsProvider, tagUtils);
+        statsProviders = new HashMap<>();
+        statsProviders.put("Nadeshiko", new NadeshikoApi(mojangApi));
+        statsProviders.put("Abyss", new AbyssApi(mojangApi));
+
+        TagUtils tagUtils = new TagUtils(this);
+        HypixelApi hypixelApi = new HypixelApi(this, tagUtils);
         UrchinApi urchinApi = new UrchinApi();
         PlanckeApi planckeApi = new PlanckeApi();
         AuroraApi auroraApi = new AuroraApi();
@@ -65,8 +65,8 @@ public class Statsify {
             auroraApi
         );
         PregameStats pregameStats = new PregameStats(
+            this,
             config,
-            statsProvider,
             urchinApi,
             mojangApi
         );
@@ -97,7 +97,7 @@ public class Statsify {
 
         // Commands
         ClientCommandHandler.instance.registerCommand(
-            new BedwarsCommand(config, statsProvider, urchinApi)
+            new BedwarsCommand(this, config, urchinApi)
         );
         ClientCommandHandler.instance.registerCommand(new StatsifyCommand());
         ClientCommandHandler.instance.registerCommand(
@@ -106,5 +106,13 @@ public class Statsify {
         ClientCommandHandler.instance.registerCommand(
             new DenickCommand(config, auroraApi)
         );
+    }
+
+    public StatsProvider getStatsProvider() {
+        if (config.statsProvider == 1) {
+            return statsProviders.get("Abyss");
+        } else {
+            return statsProviders.get("Nadeshiko");
+        }
     }
 }

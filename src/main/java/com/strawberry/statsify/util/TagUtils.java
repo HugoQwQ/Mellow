@@ -1,9 +1,7 @@
 package com.strawberry.statsify.util;
 
-import com.strawberry.statsify.api.AbyssApi;
-import com.strawberry.statsify.api.AbyssApi;
+import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.NadeshikoApi;
-import com.strawberry.statsify.api.StatsProvider;
 import com.strawberry.statsify.api.StatsProvider;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -19,10 +17,10 @@ import net.minecraft.util.EnumChatFormatting;
 
 public class TagUtils {
 
-    private final StatsProvider statsProvider;
+    private final Statsify statsify;
 
-    public TagUtils(StatsProvider statsProvider) {
-        this.statsProvider = statsProvider;
+    public TagUtils(Statsify statsify) {
+        this.statsify = statsify;
     }
 
     public String buildTags(
@@ -122,6 +120,7 @@ public class TagUtils {
             e.printStackTrace();
         }
 
+        StatsProvider statsProvider = statsify.getStatsProvider();
         String playerData = statsProvider.fetchPlayerData(uuid);
         Pattern timestampPattern;
         if (statsProvider instanceof NadeshikoApi) {

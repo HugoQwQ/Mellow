@@ -118,7 +118,7 @@ public class AbyssApi implements StatsProvider {
         String formattedFkdr = df.format(fkdr);
         return (
             displayedName +
-            " §r" +
+            " [ABYSS] §r" +
             level +
             " FKDR: " +
             fkdrColor +

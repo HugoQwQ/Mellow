@@ -1,19 +1,16 @@
 package com.strawberry.statsify.util;
 
 import cc.polyfrost.oneconfig.utils.hypixel.HypixelUtils;
+import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.MojangApi;
-import com.strawberry.statsify.api.StatsProvider;
 import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.config.StatsifyOneConfig;
-import com.strawberry.statsify.util.PlayerUtils;
 import java.io.IOException;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
@@ -25,8 +22,8 @@ import org.apache.logging.log4j.Logger;
 public class PregameStats {
 
     private final Minecraft mc = Minecraft.getMinecraft();
+    private final Statsify statsify;
     private final StatsifyOneConfig config;
-    private final StatsProvider statsProvider;
     private final UrchinApi urchinApi;
     private final MojangApi mojangApi;
 
@@ -49,13 +46,13 @@ public class PregameStats {
     );
 
     public PregameStats(
+        Statsify statsify,
         StatsifyOneConfig config,
-        StatsProvider statsProvider,
         UrchinApi urchinApi,
         MojangApi mojangApi
     ) {
+        this.statsify = statsify;
         this.config = config;
-        this.statsProvider = statsProvider;
         this.urchinApi = urchinApi;
         this.mojangApi = mojangApi;
     }
@@ -125,7 +122,9 @@ public class PregameStats {
     private void handlePlayer(String username) {
         if (config.pregameStats) {
             try {
-                String stats = statsProvider.fetchPlayerStats(username);
+                String stats = statsify
+                    .getStatsProvider()
+                    .fetchPlayerStats(username);
                 mc.addScheduledTask(() ->
                     mc.thePlayer.addChatMessage(
                         new ChatComponentText("§r[§bF§r] " + stats)
