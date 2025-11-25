@@ -101,6 +101,9 @@ public class UrchinApi {
 
     public String fetchUrchinTags(String playerName, String urchinKey)
         throws IOException {
+        // https://coral.urchin.ws/api/urchin?uuid=<UUID>
+        // 'Referer: https://coral.urchin.ws/player/<UUID>
+        // {"uuid":"uuid","tags":[{"type":"account","reason":"some example reason","added_by_id":00000000000000,"added_by_username":"ddc username","added_on":"2025-10-25T05:26:29.193870"}]}
         String tagsURL =
             "https://urchin.ws/player/" +
             playerName +

@@ -5,6 +5,7 @@ import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.BedwarsPlayer;
 import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.config.StatsifyOneConfig;
+import com.strawberry.statsify.util.UrchinUtils;
 import java.io.IOException;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -81,7 +82,12 @@ public class BedwarsCommand extends CommandBase {
                     )
                 );
                 if (config.urchin) {
-                    fetchTags(username);
+                    UrchinUtils.checkAndPrintUrchinTags(
+                        username,
+                        urchinApi,
+                        config.urchinKey,
+                        false
+                    );
                 }
             } catch (IOException e) {
                 Minecraft.getMinecraft().addScheduledTask(() ->
@@ -105,38 +111,6 @@ public class BedwarsCommand extends CommandBase {
             }
         })
             .start();
-    }
-
-    private void fetchTags(String username) {
-        try {
-            String tags = urchinApi
-                .fetchUrchinTags(username, config.urchinKey)
-                .replace("sniper", "§4§lSniper")
-                .replace("blatant_cheater", "§4§lBlatant Cheater")
-                .replace("closet_cheater", "§e§lCloset Cheater")
-                .replace("confirmed_cheater", "§4§lConfirmed Cheater");
-
-            if (!tags.isEmpty()) {
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(
-                        new ChatComponentText(
-                            "§r[§bF§r] §c⚠ §r§cTagged§r for: " + tags
-                        )
-                    )
-                );
-            }
-        } catch (IOException e) {
-            Minecraft.getMinecraft().addScheduledTask(() ->
-                Minecraft.getMinecraft().thePlayer.addChatMessage(
-                    new ChatComponentText(
-                        "§r[§bF§r] Failed to fetch tags for " +
-                            username +
-                            " | " +
-                            e.getMessage()
-                    )
-                )
-            );
-        }
     }
 
     @Override

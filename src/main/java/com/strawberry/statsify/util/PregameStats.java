@@ -165,41 +165,11 @@ public class PregameStats {
         }
 
         if (config.pregameTags) {
-            fetchTags(username);
-        }
-    }
-
-    private void fetchTags(String username) {
-        try {
-            String tags = urchinApi
-                .fetchUrchinTags(username, config.urchinKey)
-                .replace("sniper", "§4§lSniper")
-                .replace("blatant_cheater", "§4§lBlatant Cheater")
-                .replace("closet_cheater", "§e§lCloset Cheater")
-                .replace("confirmed_cheater", "§4§lConfirmed Cheater");
-
-            if (!tags.isEmpty()) {
-                mc.addScheduledTask(() ->
-                    mc.thePlayer.addChatMessage(
-                        new ChatComponentText(
-                            "§r[§bF§r] §c⚠ §r" +
-                                PlayerUtils.getTabDisplayName(username) +
-                                " §ris §ctagged§r for: " +
-                                tags
-                        )
-                    )
-                );
-            }
-        } catch (IOException e) {
-            mc.addScheduledTask(() ->
-                mc.thePlayer.addChatMessage(
-                    new ChatComponentText(
-                        "§r[§bF§r] Failed to fetch tags for " +
-                            username +
-                            " | " +
-                            e.getMessage()
-                    )
-                )
+            UrchinUtils.checkAndPrintUrchinTags(
+                username,
+                urchinApi,
+                config.urchinKey,
+                true
             );
         }
     }

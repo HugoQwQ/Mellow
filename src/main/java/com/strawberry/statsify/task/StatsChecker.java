@@ -5,6 +5,7 @@ import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import com.strawberry.statsify.util.NickUtils;
 import com.strawberry.statsify.util.PlayerUtils;
+import com.strawberry.statsify.util.UrchinUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -41,41 +42,14 @@ public class StatsChecker {
         ExecutorService executor = Executors.newFixedThreadPool(5);
         for (String playerName : onlinePlayers) {
             if (nickUtils.isNicked(playerName)) continue;
-            executor.submit(() -> {
-                try {
-                    String tags = urchinApi
-                        .fetchUrchinTags(playerName, config.urchinKey)
-                        .replace("sniper", "§4§lSniper")
-                        .replace("blatant_cheater", "§4§lBlatant Cheater")
-                        .replace("closet_cheater", "§e§lCloset Cheater")
-                        .replace("confirmed_cheater", "§4§lConfirmed Cheater");
-                    if (!tags.isEmpty()) {
-                        mc.addScheduledTask(() ->
-                            mc.thePlayer.addChatMessage(
-                                new ChatComponentText(
-                                    "§r[§bF§r] §c\u26a0 §r" +
-                                        PlayerUtils.getTabDisplayName(
-                                            playerName
-                                        ) +
-                                        " §ris §ctagged§r for: " +
-                                        tags
-                                )
-                            )
-                        );
-                    }
-                } catch (IOException e) {
-                    mc.addScheduledTask(() ->
-                        mc.thePlayer.addChatMessage(
-                            new ChatComponentText(
-                                "§r[§bF§r] Failed to fetch tags for: " +
-                                    playerName +
-                                    " | " +
-                                    e.getMessage()
-                            )
-                        )
-                    );
-                }
-            });
+            executor.submit(() ->
+                UrchinUtils.checkAndPrintUrchinTags(
+                    playerName,
+                    urchinApi,
+                    config.urchinKey,
+                    true
+                )
+            );
         }
         executor.shutdown();
     }
