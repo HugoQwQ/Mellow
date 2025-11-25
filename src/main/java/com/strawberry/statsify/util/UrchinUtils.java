@@ -50,10 +50,14 @@ public class UrchinUtils {
     public static void checkAndPrintUrchinTags(
         String username,
         UrchinApi urchinApi,
+        String urchinKey,
         boolean withPlayerName
     ) {
         try {
-            List<UrchinTag> tags = urchinApi.fetchUrchinTags(username);
+            List<UrchinTag> tags = urchinApi.fetchUrchinTags(
+                username,
+                urchinKey
+            );
             if (!tags.isEmpty()) {
                 String formattedTags = getFormattedTags(tags);
                 String message;
