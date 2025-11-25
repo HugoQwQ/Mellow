@@ -2,6 +2,7 @@ package com.strawberry.statsify.commands;
 
 import com.mojang.authlib.GameProfile;
 import com.strawberry.statsify.Statsify;
+import com.strawberry.statsify.api.BedwarsPlayer;
 import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import java.io.IOException;
@@ -53,10 +54,27 @@ public class BedwarsCommand extends CommandBase {
         String username = args[0];
         new Thread(() -> {
             try {
-                String stats = statsify
+                BedwarsPlayer player = statsify
                     .getStatsProvider()
                     .fetchPlayerStats(username);
-                String finalStats = stats;
+                if (player == null) {
+                    Minecraft.getMinecraft().addScheduledTask(() ->
+                        Minecraft.getMinecraft().thePlayer.addChatMessage(
+                            new ChatComponentText(
+                                "§r[§bF§r] §cFailed to fetch stats for: §r" +
+                                    username
+                            )
+                        )
+                    );
+                    return;
+                }
+                String finalStats =
+                    player.getName() +
+                    " §r" +
+                    player.getStars() +
+                    " FKDR: " +
+                    player.getFkdrColor() +
+                    player.getFormattedFkdr();
                 Minecraft.getMinecraft().addScheduledTask(() ->
                     Minecraft.getMinecraft().thePlayer.addChatMessage(
                         new ChatComponentText("§r[§bF§r] " + finalStats)

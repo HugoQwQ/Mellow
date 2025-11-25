@@ -2,7 +2,9 @@ package com.strawberry.statsify.util;
 
 import cc.polyfrost.oneconfig.utils.hypixel.HypixelUtils;
 import com.strawberry.statsify.Statsify;
+import com.strawberry.statsify.api.BedwarsPlayer;
 import com.strawberry.statsify.api.MojangApi;
+import com.strawberry.statsify.api.StatsProvider;
 import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import java.io.IOException;
@@ -122,14 +124,33 @@ public class PregameStats {
     private void handlePlayer(String username) {
         if (config.pregameStats) {
             try {
-                String stats = statsify
+                BedwarsPlayer player = statsify
                     .getStatsProvider()
                     .fetchPlayerStats(username);
-                mc.addScheduledTask(() ->
-                    mc.thePlayer.addChatMessage(
-                        new ChatComponentText("§r[§bF§r] " + stats)
-                    )
-                );
+                if (player == null) {
+                    mc.addScheduledTask(() ->
+                        mc.thePlayer.addChatMessage(
+                            new ChatComponentText(
+                                "§r[§bF§r] §cFailed to fetch stats for: §r" +
+                                    username +
+                                    " (possibly nicked)"
+                            )
+                        )
+                    );
+                } else {
+                    String stats =
+                        player.getName() +
+                        " §r" +
+                        player.getStars() +
+                        " FKDR: " +
+                        player.getFkdrColor() +
+                        player.getFormattedFkdr();
+                    mc.addScheduledTask(() ->
+                        mc.thePlayer.addChatMessage(
+                            new ChatComponentText("§r[§bF§r] " + stats)
+                        )
+                    );
+                }
             } catch (IOException e) {
                 mc.addScheduledTask(() ->
                     mc.thePlayer.addChatMessage(

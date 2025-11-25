@@ -1,13 +1,10 @@
 package com.strawberry.statsify.api;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.util.FormattingUtils;
 import com.strawberry.statsify.util.PlayerUtils;
 import com.strawberry.statsify.util.TagUtils;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.util.EnumChatFormatting;
@@ -30,115 +27,66 @@ public class HypixelApi {
         Map<String, List<String>> playerSuffixes
     ) throws IOException {
         try {
-            String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
-            if (uuid == null) {
-                return (
-                    "§cCould not find " +
-                    PlayerUtils.getTabDisplayName(playerName) +
-                    " in the current lobby."
-                );
-            }
+            BedwarsPlayer player = statsify
+                .getStatsProvider()
+                .fetchPlayerStats(playerName);
 
-            String stjson = statsify.getStatsProvider().fetchPlayerData(uuid);
-            if (stjson == null || stjson.isEmpty()) {
+            if (player == null) {
                 return (
                     "§cFailed to get stats for " +
                     PlayerUtils.getTabDisplayName(playerName)
                 );
             }
 
-            JsonObject rootObject = new JsonParser()
-                .parse(stjson)
-                .getAsJsonObject();
-            JsonObject profile = rootObject.getAsJsonObject("profile");
-            String displayedName = profile.has("tagged_name")
-                ? profile.get("tagged_name").getAsString()
-                : playerName;
-            JsonObject ach = rootObject.getAsJsonObject("achievements");
-            String levelStr = ach.has("bedwars_level")
-                ? ach.get("bedwars_level").getAsString()
-                : "0";
-            String formattedStars = FormattingUtils.formatStars(levelStr);
-
-            JsonObject bedwarsStats = rootObject
-                .getAsJsonObject("stats")
-                .getAsJsonObject("Bedwars");
-
-            String finalKillsStr = bedwarsStats.has("final_kills_bedwars")
-                ? bedwarsStats.get("final_kills_bedwars").getAsString()
-                : "0";
-            String finalDeathsStr = bedwarsStats.has("final_deaths_bedwars")
-                ? bedwarsStats.get("final_deaths_bedwars").getAsString()
-                : "0";
-            int wins = bedwarsStats.has("wins_bedwars")
-                ? bedwarsStats.get("wins_bedwars").getAsInt()
-                : 0;
-            int losses = bedwarsStats.has("losses_bedwars")
-                ? bedwarsStats.get("losses_bedwars").getAsInt()
-                : 0;
-            double wlr = losses == 0 ? wins : (double) wins / losses;
-            DecimalFormat dfm = new DecimalFormat("#.##");
-            String wlrStr = dfm.format(wlr);
-            String wsStr = bedwarsStats.has("winstreak")
-                ? bedwarsStats.get("winstreak").getAsString()
-                : "0";
-
-            int finalKills = Integer.parseInt(finalKillsStr.replace(",", ""));
-            int finalDeaths = Integer.parseInt(finalDeathsStr.replace(",", ""));
-            double fkdrValue = finalDeaths == 0
-                ? finalKills
-                : (double) finalKills / finalDeaths;
-
-            if (fkdrValue < minFkdr) {
+            if (player.getFkdr() < minFkdr) {
                 return "";
             }
 
-            String fkdrColor = "§7";
-            if (fkdrValue >= 1 && fkdrValue < 3) fkdrColor = "§f";
-            if (fkdrValue >= 3 && fkdrValue < 8) fkdrColor = "§a";
-            if (fkdrValue >= 8 && fkdrValue < 16) fkdrColor = "§6";
-            if (fkdrValue >= 16 && fkdrValue < 25) fkdrColor = "§d";
-            if (fkdrValue > 25) fkdrColor = "§4";
-
-            DecimalFormat df = new DecimalFormat("#.##");
-            String formattedFkdr = df.format(fkdrValue);
-            String formattedWinstreak = "";
-            int winstreak = Integer.parseInt(wsStr.replace(",", "").trim());
-            if (winstreak > 0) {
-                formattedWinstreak = FormattingUtils.formatWinstreak(wsStr);
-            }
-
-            String tabfkdr = fkdrColor + formattedFkdr;
             if (tabstats) {
                 java.util.List<String> suffixes = new java.util.ArrayList<>();
-                suffixes.add(formattedStars);
-                suffixes.add(tabfkdr);
+                suffixes.add(player.getStars());
+                suffixes.add(player.getFkdrColor() + player.getFormattedFkdr());
 
-                if (winstreak > 0) {
+                if (player.getWinstreak() > 0) {
                     String wsColor = "§7";
-                    if (winstreak >= 20) {
+                    if (player.getWinstreak() >= 20) {
                         wsColor = "§d";
-                    } else if (winstreak >= 10) {
+                    } else if (player.getWinstreak() >= 10) {
                         wsColor = "§6";
-                    } else if (winstreak >= 5) {
+                    } else if (player.getWinstreak() >= 5) {
                         wsColor = "§a";
                     } else {
                         wsColor = "§f";
                     }
-                    suffixes.add(wsColor + wsStr);
+                    suffixes.add(wsColor + player.getWinstreak());
                 }
                 playerSuffixes.put(playerName, suffixes);
             }
 
+            String formattedWinstreak = "";
+            if (player.getWinstreak() > 0) {
+                formattedWinstreak = FormattingUtils.formatWinstreak(
+                    String.valueOf(player.getWinstreak())
+                );
+            }
+
             if (tags) {
+                String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
                 String tagsValue = tagUtils.buildTags(
                     playerName,
                     uuid,
-                    Integer.parseInt(levelStr),
-                    fkdrValue,
-                    winstreak,
-                    finalKills,
-                    finalDeaths
+                    Integer.parseInt(
+                        player
+                            .getStars()
+                            .replaceAll("§.", "")
+                            .replace("[", "")
+                            .replace("]", "")
+                            .replace("✫", "")
+                    ),
+                    player.getFkdr(),
+                    player.getWinstreak(),
+                    player.getFinalKills(),
+                    player.getFinalDeaths()
                 );
                 if (tagsValue.endsWith(" ")) {
                     tagsValue = tagsValue.substring(0, tagsValue.length() - 1);
@@ -147,10 +95,10 @@ public class HypixelApi {
                     return (
                         PlayerUtils.getTabDisplayName(playerName) +
                         " §r" +
-                        formattedStars +
+                        player.getStars() +
                         "§r§7 |§r FKDR: " +
-                        fkdrColor +
-                        formattedFkdr +
+                        player.getFkdrColor() +
+                        player.getFormattedFkdr() +
                         " §r§7|§r [ " +
                         tagsValue +
                         " ]"
@@ -159,10 +107,10 @@ public class HypixelApi {
                     return (
                         PlayerUtils.getTabDisplayName(playerName) +
                         " §r" +
-                        formattedStars +
+                        player.getStars() +
                         "§r§7 |§r FKDR: " +
-                        fkdrColor +
-                        formattedFkdr +
+                        player.getFkdrColor() +
+                        player.getFormattedFkdr() +
                         " §r§7|§r WS: " +
                         formattedWinstreak +
                         "§r [ " +
@@ -175,20 +123,20 @@ public class HypixelApi {
                     return (
                         PlayerUtils.getTabDisplayName(playerName) +
                         " §r" +
-                        formattedStars +
+                        player.getStars() +
                         "§r§7 |§r FKDR: " +
-                        fkdrColor +
-                        formattedFkdr +
+                        player.getFkdrColor() +
+                        player.getFormattedFkdr() +
                         "§r"
                     );
                 } else {
                     return (
                         PlayerUtils.getTabDisplayName(playerName) +
                         " §r" +
-                        formattedStars +
+                        player.getStars() +
                         "§r§7 |§r FKDR: " +
-                        fkdrColor +
-                        formattedFkdr +
+                        player.getFkdrColor() +
+                        player.getFormattedFkdr() +
                         " §r§7|§r WS: " +
                         formattedWinstreak +
                         "§r"
