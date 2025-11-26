@@ -24,7 +24,6 @@ public class UrchinApi {
     private final Set<String> fetchInProgress = ConcurrentHashMap.newKeySet();
     private static final long CACHE_DURATION_MS = 7_200_000; // 2 hours
 
-    // MojangApi is no longer needed here directly, but other methods use it.
     private final MojangApi mojangApi;
 
     public UrchinApi(MojangApi mojangApi) {
@@ -36,20 +35,56 @@ public class UrchinApi {
         String playerName,
         String urchinKey
     ) throws IOException {
-        // First, try the modern endpoint with UUID
         try {
-            if (uuid != null && !uuid.equals("ERROR") && !uuid.isEmpty()) {
-                URL url = new URL(
-                    "https://coral.urchin.ws/api/urchin?uuid=" + uuid
+            // If the UUID is invalid for any reason, throw an exception to trigger the fallback.
+            if (uuid == null || uuid.equals("ERROR") || uuid.isEmpty()) {
+                throw new IOException(
+                    "Invalid UUID provided, attempting fallback."
                 );
+            }
+
+            URL url = new URL(
+                "https://coral.urchin.ws/api/urchin?uuid=" + uuid
+            );
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+            conn.setRequestProperty(
+                "Referer",
+                "https://coral.urchin.ws/player/" + uuid
+            );
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream())
+                );
+                String response = in.lines().collect(Collectors.joining());
+                in.close();
+                return parseTags(response);
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                return new ArrayList<>(); // Player has no tags, this is a success, so don't fallback.
+            } else {
+                // For any other error code (e.g., 500), throw to trigger the fallback.
+                throw new IOException(
+                    "Primary Urchin endpoint failed with code: " + responseCode
+                );
+            }
+        } catch (IOException e) {
+            // Fallback to the legacy endpoint with playerName
+            try {
+                String fallbackUrl = "https://urchin.ws/player/" + playerName;
+                if (urchinKey != null && !urchinKey.isEmpty()) {
+                    fallbackUrl += "?key=" + urchinKey;
+                }
+                URL url = new URL(fallbackUrl);
                 HttpURLConnection conn =
                     (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("User-Agent", "Mozilla/5.0");
-                conn.setRequestProperty(
-                    "Referer",
-                    "https://coral.urchin.ws/player/" + uuid
-                );
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -60,39 +95,18 @@ public class UrchinApi {
                     in.close();
                     return parseTags(response);
                 } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                    return new ArrayList<>(); // No tags for player, don't fallback
+                    return new ArrayList<>(); // No tags on fallback either.
+                } else {
+                    throw new IOException(
+                        "Urchin fallback API request failed with response code: " +
+                            responseCode
+                    );
                 }
-                // For other errors, we'll fall through to the catch block and try the fallback
+            } catch (IOException fallbackException) {
+                // If the fallback also fails, return an empty list.
+                return new ArrayList<>();
             }
-        } catch (IOException e) {
-            // Fall through to the legacy endpoint
         }
-
-        // Fallback to the legacy endpoint with playerName
-        URL url = new URL(
-            "https://urchin.ws/player/" + playerName + "?key=" + urchinKey
-        );
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-
-        int responseCode = conn.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                return new ArrayList<>(); // No tags for player
-            }
-            throw new IOException(
-                "Urchin legacy API request failed with response code: " +
-                    responseCode
-            );
-        }
-
-        BufferedReader in = new BufferedReader(
-            new InputStreamReader(conn.getInputStream())
-        );
-        String response = in.lines().collect(Collectors.joining());
-        in.close();
-
-        return parseTags(response);
     }
 
     private List<UrchinTag> parseTags(String response) {
@@ -123,7 +137,7 @@ public class UrchinApi {
         return new ArrayList<>();
     }
 
-    // Other methods like ping cache remain unchanged for now
+    // Other methods like ping cache remain unchanged
     public int getCachedPing(String uuid) {
         Pair<Integer, Long> cached = pingCache.get(uuid);
         if (

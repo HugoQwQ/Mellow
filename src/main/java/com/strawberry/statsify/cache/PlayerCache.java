@@ -5,12 +5,16 @@ import com.strawberry.statsify.api.MojangApi;
 import com.strawberry.statsify.api.StatsProvider;
 import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.api.UrchinTag;
+import com.strawberry.statsify.config.StatsifyOneConfig;
 import com.strawberry.statsify.data.PlayerProfile;
 import com.strawberry.statsify.util.PlayerUtils;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ChatComponentText;
 
 public class PlayerCache {
 
@@ -21,17 +25,20 @@ public class PlayerCache {
     private final StatsProvider statsProvider;
     private final UrchinApi urchinApi;
     private final String urchinApiKey;
+    private final StatsifyOneConfig config;
 
     public PlayerCache(
         MojangApi mojangApi,
         StatsProvider statsProvider,
         UrchinApi urchinApi,
-        String urchinApiKey
+        String urchinApiKey,
+        StatsifyOneConfig config
     ) {
         this.mojangApi = mojangApi;
         this.statsProvider = statsProvider;
         this.urchinApi = urchinApi;
         this.urchinApiKey = urchinApiKey;
+        this.config = config;
     }
 
     public PlayerProfile getProfile(String playerName) {
@@ -42,7 +49,6 @@ public class PlayerCache {
             return profile;
         }
 
-        // Not in cache or expired, so fetch fresh data
         return fetchAndCachePlayer(playerName);
     }
 
@@ -55,20 +61,30 @@ public class PlayerCache {
                 return null;
             }
 
-            // Prioritize getting UUID from local tab list
             String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
             if (uuid == null || uuid.isEmpty()) {
-                // Fallback to Mojang API if not in tab
                 uuid = mojangApi.fetchUUID(playerName);
             }
 
             List<UrchinTag> urchinTags = null;
-            if (urchinApiKey != null && !urchinApiKey.isEmpty()) {
-                urchinTags = urchinApi.fetchUrchinTags(
-                    uuid,
-                    playerName,
-                    urchinApiKey
-                );
+            if (config.urchin) {
+                try {
+                    urchinTags = urchinApi.fetchUrchinTags(
+                        uuid,
+                        playerName,
+                        urchinApiKey
+                    );
+                } catch (IOException e) {
+                    Minecraft.getMinecraft().addScheduledTask(() ->
+                        Minecraft.getMinecraft().thePlayer.addChatMessage(
+                            new ChatComponentText(
+                                "§r[§bStatsify§r] §cFailed to fetch Urchin tags for " +
+                                    playerName +
+                                    "."
+                            )
+                        )
+                    );
+                }
             }
 
             PlayerProfile newProfile = new PlayerProfile(
@@ -80,8 +96,6 @@ public class PlayerCache {
             cache.put(playerName.toLowerCase(), newProfile);
             return newProfile;
         } catch (Exception e) {
-            // Log the exception (if a logger is available)
-            // e.g., Statsify.getLogger().error("Failed to fetch profile for " + playerName, e);
             return null;
         }
     }

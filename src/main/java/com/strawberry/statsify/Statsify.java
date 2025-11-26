@@ -55,12 +55,13 @@ public class Statsify {
             mojangApi,
             getStatsProvider(),
             urchinApi,
-            config.urchinKey
+            config.urchinKey,
+            config
         );
 
         // Utils
-        TagUtils tagUtils = new TagUtils(this); // 'this' might need to be replaced if it causes issues.
-        HypixelApi hypixelApi = new HypixelApi(this, tagUtils); // Same here.
+        TagUtils tagUtils = new TagUtils(this);
+        HypixelApi hypixelApi = new HypixelApi(this, tagUtils);
         NumberDenicker numberDenicker = new NumberDenicker(
             config,
             nickUtils,
@@ -107,7 +108,6 @@ public class Statsify {
     }
 
     public StatsProvider getStatsProvider() {
-        // This needs to be safe before config is loaded, but in init it's fine.
         if (config != null && config.statsProvider == 1) {
             return statsProviders.get("Abyss");
         } else {
