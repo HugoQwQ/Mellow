@@ -3,6 +3,7 @@ package com.strawberry.statsify.mixin;
 import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.urchin.UrchinTag;
 import com.strawberry.statsify.data.TabStats;
+import com.strawberry.statsify.util.player.PlayerUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
