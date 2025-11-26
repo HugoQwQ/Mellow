@@ -1,9 +1,13 @@
 package com.strawberry.statsify.events;
 
+import com.strawberry.statsify.api.bedwars.BedwarsPlayer;
 import com.strawberry.statsify.api.duels.PlanckeApi;
+import com.strawberry.statsify.cache.PlayerCache;
 import com.strawberry.statsify.config.StatsifyOneConfig;
+import com.strawberry.statsify.data.PlayerProfile;
 import com.strawberry.statsify.task.StatsChecker;
 import com.strawberry.statsify.util.StringUtils;
+import com.strawberry.statsify.util.formatting.FormattingUtils;
 import com.strawberry.statsify.util.nicks.NickUtils;
 import com.strawberry.statsify.util.nicks.NumberDenicker;
 import com.strawberry.statsify.util.player.PregameStats;
@@ -30,6 +34,7 @@ public class ChatHandler {
     private final PregameStats pregameStats;
     private final PlanckeApi planckeApi;
     private final StatsChecker statsChecker;
+    private final PlayerCache playerCache;
 
     public ChatHandler(
         StatsifyOneConfig config,
@@ -37,7 +42,8 @@ public class ChatHandler {
         NumberDenicker numberDenicker,
         PregameStats pregameStats,
         PlanckeApi planckeApi,
-        StatsChecker statsChecker
+        StatsChecker statsChecker,
+        PlayerCache playerCache
     ) {
         this.config = config;
         this.nickUtils = nickUtils;
@@ -45,6 +51,7 @@ public class ChatHandler {
         this.pregameStats = pregameStats;
         this.planckeApi = planckeApi;
         this.statsChecker = statsChecker;
+        this.playerCache = playerCache;
     }
 
     @SubscribeEvent
@@ -105,6 +112,70 @@ public class ChatHandler {
                                                 realName
                                         )
                                     );
+                                    final String finalRealName = realName;
+                                    new Thread(() -> {
+                                        PlayerProfile profile =
+                                            playerCache.getProfile(
+                                                finalRealName
+                                            );
+
+                                        if (
+                                            profile == null ||
+                                            profile.getBedwarsPlayer() == null
+                                        ) {
+                                            mc.addScheduledTask(() ->
+                                                mc.thePlayer.addChatMessage(
+                                                    new ChatComponentText(
+                                                        "§r[§bStatsify§r] §cFailed to fetch stats for: §r" +
+                                                            finalRealName
+                                                    )
+                                                )
+                                            );
+                                            return;
+                                        }
+
+                                        BedwarsPlayer player =
+                                            profile.getBedwarsPlayer();
+                                        String statsMessage =
+                                            "§r[§bStatsify§r] " +
+                                            player.getName() +
+                                            " §r" +
+                                            player.getStars() +
+                                            " §7|§r FKDR: " +
+                                            player.getFkdrColor() +
+                                            player.getFormattedFkdr();
+
+                                        mc.addScheduledTask(() ->
+                                            mc.thePlayer.addChatMessage(
+                                                new ChatComponentText(
+                                                    statsMessage
+                                                )
+                                            )
+                                        );
+
+                                        if (
+                                            config.urchin &&
+                                            profile.isUrchinTagged()
+                                        ) {
+                                            String tags =
+                                                FormattingUtils.formatUrchinTags(
+                                                    profile.getUrchinTags()
+                                                );
+                                            String urchinMessage =
+                                                "§r[§bStatsify§r] §c" +
+                                                finalRealName +
+                                                " is tagged for: " +
+                                                tags;
+                                            mc.addScheduledTask(() ->
+                                                mc.thePlayer.addChatMessage(
+                                                    new ChatComponentText(
+                                                        urchinMessage
+                                                    )
+                                                )
+                                            );
+                                        }
+                                    })
+                                        .start();
                                 }
                             }
                         }

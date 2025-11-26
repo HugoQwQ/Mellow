@@ -93,7 +93,8 @@ public class Statsify {
                 numberDenicker,
                 pregameStats,
                 planckeApi,
-                statsChecker
+                statsChecker,
+                playerCache
             )
         );
         MinecraftForge.EVENT_BUS.register(
