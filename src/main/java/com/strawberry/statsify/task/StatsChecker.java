@@ -73,7 +73,7 @@ public class StatsChecker {
                         );
                     }
                     TabStats newTabStats = new TabStats(
-                        profile.isUrchinTagged(),
+                        profile.getUrchinTags(),
                         player.getStars(),
                         player.getFkdrColor() + player.getFormattedFkdr(),
                         winstreak

@@ -3,6 +3,7 @@ package com.strawberry.statsify.util.tags;
 import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.provider.NadeshikoApi;
 import com.strawberry.statsify.api.provider.StatsProvider;
+import com.strawberry.statsify.util.blacklist.BlacklistManager;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.util.EnumChatFormatting;
@@ -18,9 +20,11 @@ import net.minecraft.util.EnumChatFormatting;
 public class TagUtils {
 
     private final Statsify statsify;
+    private final BlacklistManager blacklistManager;
 
-    public TagUtils(Statsify statsify) {
+    public TagUtils(Statsify statsify, BlacklistManager blacklistManager) {
         this.statsify = statsify;
+        this.blacklistManager = blacklistManager;
     }
 
     public String buildTags(
@@ -33,6 +37,29 @@ public class TagUtils {
         int fdeaths
     ) {
         String totaltags = "";
+
+        if (uuid != null && !uuid.isEmpty()) {
+            String formattedUUID = uuid;
+            if (!formattedUUID.contains("-")) {
+                formattedUUID = formattedUUID.replaceFirst(
+                    "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})",
+                    "$1-$2-$3-$4-$5"
+                );
+            }
+            try {
+                if (
+                    blacklistManager.isBlacklisted(
+                        UUID.fromString(formattedUUID)
+                    )
+                ) {
+                    totaltags =
+                        totaltags + EnumChatFormatting.DARK_RED + "BL §r";
+                }
+            } catch (IllegalArgumentException e) {
+                // Invalid UUID format, ignore.
+            }
+        }
+
         String[] suswords = {
             "msmc",
             "kikin",

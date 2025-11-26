@@ -15,6 +15,7 @@ import com.strawberry.statsify.data.TabStats;
 import com.strawberry.statsify.events.ChatHandler;
 import com.strawberry.statsify.events.WorldLoadHandler;
 import com.strawberry.statsify.task.StatsChecker;
+import com.strawberry.statsify.util.blacklist.BlacklistManager;
 import com.strawberry.statsify.util.nicks.NickUtils;
 import com.strawberry.statsify.util.nicks.NumberDenicker;
 import com.strawberry.statsify.util.player.PregameStats;
@@ -40,12 +41,16 @@ public class Statsify {
     public static MojangApi mojangApi;
     public static UrchinApi urchinApi;
     public static PlayerCache playerCache;
+    public static BlacklistManager blacklistManager;
 
     private Map<String, StatsProvider> statsProviders;
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         config = new StatsifyOneConfig();
+
+        // Blacklist
+        blacklistManager = new BlacklistManager();
 
         // APIs
         mojangApi = new MojangApi();
@@ -67,7 +72,7 @@ public class Statsify {
         );
 
         // Utils
-        TagUtils tagUtils = new TagUtils(this);
+        TagUtils tagUtils = new TagUtils(this, blacklistManager);
         HypixelApi hypixelApi = new HypixelApi(this, tagUtils);
         NumberDenicker numberDenicker = new NumberDenicker(
             config,
@@ -113,6 +118,9 @@ public class Statsify {
             new DenickCommand(config, auroraApi)
         );
         ClientCommandHandler.instance.registerCommand(new SkinDenickCommand());
+        ClientCommandHandler.instance.registerCommand(
+            new BlacklistCommand(blacklistManager, mojangApi)
+        );
     }
 
     public StatsProvider getStatsProvider() {
