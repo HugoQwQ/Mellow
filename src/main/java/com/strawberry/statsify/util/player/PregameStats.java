@@ -58,7 +58,8 @@ public class PregameStats {
             if (!inBedwars) return;
         }
 
-        String message = event.message.getUnformattedText().trim();
+        String raw = event.message.getUnformattedText();
+        String message = raw.replaceAll("§.", "").trim(); // idk why the hell it doesn't work w/o this
 
         Matcher joinMatch = BEDWARS_JOIN_PATTERN.matcher(message);
         if (joinMatch.find()) {

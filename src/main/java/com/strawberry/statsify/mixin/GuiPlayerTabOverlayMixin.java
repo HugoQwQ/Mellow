@@ -58,7 +58,7 @@ public class GuiPlayerTabOverlayMixin {
 
         // This is the new feature implementation
         if (stats.isUrchinTagged()) {
-            name = "§c⚠" + name;
+            name = "§c⚠ " + name;
         }
 
         String teamColor = team.length() >= 2 ? team.substring(0, 2) : "";
