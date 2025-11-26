@@ -1,7 +1,10 @@
 package com.strawberry.statsify.util;
 
+import com.strawberry.statsify.api.UrchinTag;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class FormattingUtils {
 
@@ -122,6 +125,26 @@ public class FormattingUtils {
         return color + text;
     }
 
+    public static String formatUrchinTags(List<UrchinTag> tags) {
+        return tags
+            .stream()
+            .map(tag -> {
+                String formattedType = tag
+                    .getType()
+                    .replace("sniper", "§4§lSniper")
+                    .replace("blatant_cheater", "§4§lBlatant Cheater")
+                    .replace("closet_cheater", "§e§lCloset Cheater")
+                    .replace("confirmed_cheater", "§4§lConfirmed Cheater")
+                    .replace("possible_sniper", "§e§lPossible Sniper")
+                    .replace("legit_sniper", "§e§lLegit Sniper")
+                    .replace("caution", "§e§lCaution")
+                    .replace("account", "§e§lAccount")
+                    .replace("info", "§f§lInfo");
+                return formattedType + " §7(" + tag.getReason() + ")";
+            })
+            .collect(Collectors.joining(", "));
+    }
+
     public static String formatStars(String text) {
         try {
             int stars = Integer.parseInt(text);
@@ -142,14 +165,58 @@ public class FormattingUtils {
                 }
 
                 if (stars < 2000) {
-                     return colors[0] + digits[0] + colors[1] + digits[1] + colors[2] + digits[2] + colors[3] + digits[3] + colors[4] + colors[5];
+                    return (
+                        colors[0] +
+                        digits[0] +
+                        colors[1] +
+                        digits[1] +
+                        colors[2] +
+                        digits[2] +
+                        colors[3] +
+                        digits[3] +
+                        colors[4] +
+                        colors[5]
+                    );
                 } else if (stars < 3000) {
-                    if (entry.getKey() == 2300) { // Special case for 2300
-                        return colors[0] + digits[0] + colors[1] + digits[1] + colors[2] + digits[2] + colors[3] + digits[3] + colors[4] + colors[5];
+                    if (entry.getKey() == 2300) {
+                        // Special case for 2300
+                        return (
+                            colors[0] +
+                            digits[0] +
+                            colors[1] +
+                            digits[1] +
+                            colors[2] +
+                            digits[2] +
+                            colors[3] +
+                            digits[3] +
+                            colors[4] +
+                            colors[5]
+                        );
                     }
-                    return colors[0] + digits[0] + colors[1] + digits[1] + colors[2] + digits[2] + colors[3] + digits[3] + colors[5];
-                } else { // 3000+
-                    return colors[0] + digits[0] + colors[1] + digits[1] + colors[2] + digits[2] + colors[3] + digits[3] + colors[5];
+                    return (
+                        colors[0] +
+                        digits[0] +
+                        colors[1] +
+                        digits[1] +
+                        colors[2] +
+                        digits[2] +
+                        colors[3] +
+                        digits[3] +
+                        colors[5]
+                    );
+                } else {
+                    // 3000+
+                    return (
+                        colors[0] +
+                        digits[0] +
+                        colors[1] +
+                        digits[1] +
+                        colors[2] +
+                        digits[2] +
+                        colors[3] +
+                        digits[3] +
+                        colors[5]
+                    );
                 }
             }
         } catch (NumberFormatException e) {

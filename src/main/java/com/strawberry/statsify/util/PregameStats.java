@@ -124,11 +124,9 @@ public class PregameStats {
         }
 
         if (config.pregameTags && profile.isUrchinTagged()) {
-            String tags = profile
-                .getUrchinTags()
-                .stream()
-                .map(UrchinTag::getReason)
-                .collect(Collectors.joining(", "));
+            String tags = FormattingUtils.formatUrchinTags(
+                profile.getUrchinTags()
+            );
             String urchinMessage =
                 "§r[§bStatsify§r] §c" + username + " is tagged for: " + tags;
             mc.addScheduledTask(() ->

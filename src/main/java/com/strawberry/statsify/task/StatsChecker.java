@@ -92,6 +92,23 @@ public class StatsChecker {
                         );
                     }
                 }
+
+                // Print Urchin tags to chat if enabled
+                if (config.urchin && profile.isUrchinTagged()) {
+                    String tags = FormattingUtils.formatUrchinTags(
+                        profile.getUrchinTags()
+                    );
+                    String urchinMessage =
+                        "§r[§bStatsify§r] §c" +
+                        profile.getName() +
+                        " is tagged for: " +
+                        tags;
+                    mc.addScheduledTask(() ->
+                        mc.thePlayer.addChatMessage(
+                            new ChatComponentText(urchinMessage)
+                        )
+                    );
+                }
             });
         }
 

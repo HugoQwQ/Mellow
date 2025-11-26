@@ -6,6 +6,7 @@ import com.strawberry.statsify.api.StatsProvider;
 import com.strawberry.statsify.api.UrchinApi;
 import com.strawberry.statsify.api.UrchinTag;
 import com.strawberry.statsify.data.PlayerProfile;
+import com.strawberry.statsify.util.PlayerUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,11 +55,17 @@ public class PlayerCache {
                 return null;
             }
 
-            String uuid = mojangApi.fetchUUID(playerName);
+            // Prioritize getting UUID from local tab list
+            String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
+            if (uuid == null || uuid.isEmpty()) {
+                // Fallback to Mojang API if not in tab
+                uuid = mojangApi.fetchUUID(playerName);
+            }
+
             List<UrchinTag> urchinTags = null;
             if (urchinApiKey != null && !urchinApiKey.isEmpty()) {
-                // Urchin API requires player name, not UUID for its main fetch method
                 urchinTags = urchinApi.fetchUrchinTags(
+                    uuid,
                     playerName,
                     urchinApiKey
                 );

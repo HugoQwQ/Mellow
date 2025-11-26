@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.strawberry.statsify.api.UrchinTag;
-import com.strawberry.statsify.util.PlayerUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,17 +21,109 @@ public class UrchinApi {
 
     private final Map<String, Pair<Integer, Long>> pingCache =
         new ConcurrentHashMap<>();
-
-    // Prevent duplicate fetches for the same player
     private final Set<String> fetchInProgress = ConcurrentHashMap.newKeySet();
     private static final long CACHE_DURATION_MS = 7_200_000; // 2 hours
 
+    // MojangApi is no longer needed here directly, but other methods use it.
     private final MojangApi mojangApi;
 
     public UrchinApi(MojangApi mojangApi) {
         this.mojangApi = mojangApi;
     }
 
+    public List<UrchinTag> fetchUrchinTags(
+        String uuid,
+        String playerName,
+        String urchinKey
+    ) throws IOException {
+        // First, try the modern endpoint with UUID
+        try {
+            if (uuid != null && !uuid.equals("ERROR") && !uuid.isEmpty()) {
+                URL url = new URL(
+                    "https://coral.urchin.ws/api/urchin?uuid=" + uuid
+                );
+                HttpURLConnection conn =
+                    (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+                conn.setRequestProperty(
+                    "Referer",
+                    "https://coral.urchin.ws/player/" + uuid
+                );
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream())
+                    );
+                    String response = in.lines().collect(Collectors.joining());
+                    in.close();
+                    return parseTags(response);
+                } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    return new ArrayList<>(); // No tags for player, don't fallback
+                }
+                // For other errors, we'll fall through to the catch block and try the fallback
+            }
+        } catch (IOException e) {
+            // Fall through to the legacy endpoint
+        }
+
+        // Fallback to the legacy endpoint with playerName
+        URL url = new URL(
+            "https://urchin.ws/player/" + playerName + "?key=" + urchinKey
+        );
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                return new ArrayList<>(); // No tags for player
+            }
+            throw new IOException(
+                "Urchin legacy API request failed with response code: " +
+                    responseCode
+            );
+        }
+
+        BufferedReader in = new BufferedReader(
+            new InputStreamReader(conn.getInputStream())
+        );
+        String response = in.lines().collect(Collectors.joining());
+        in.close();
+
+        return parseTags(response);
+    }
+
+    private List<UrchinTag> parseTags(String response) {
+        try {
+            JsonObject json = new JsonParser()
+                .parse(response)
+                .getAsJsonObject();
+            if (json.has("tags")) {
+                JsonArray tagsArray = json.getAsJsonArray("tags");
+                if (tagsArray.size() > 0) {
+                    List<UrchinTag> tags = new ArrayList<>();
+                    for (JsonElement tagElement : tagsArray) {
+                        JsonObject tagObj = tagElement.getAsJsonObject();
+                        String type = tagObj.has("type")
+                            ? tagObj.get("type").getAsString()
+                            : "unknown";
+                        String reason = tagObj.has("reason")
+                            ? tagObj.get("reason").getAsString()
+                            : "No reason provided.";
+                        tags.add(new UrchinTag(type, reason));
+                    }
+                    return tags;
+                }
+            }
+        } catch (Exception e) {
+            // If parsing fails, return empty list
+        }
+        return new ArrayList<>();
+    }
+
+    // Other methods like ping cache remain unchanged for now
     public int getCachedPing(String uuid) {
         Pair<Integer, Long> cached = pingCache.get(uuid);
         if (
@@ -49,10 +139,6 @@ public class UrchinApi {
         pingCache.put(uuid, Pair.of(ping, System.currentTimeMillis()));
     }
 
-    /**
-     * Returns true if fetch started, false if it was blocked
-     * (already in progress).
-     */
     public boolean tryStartFetch(String uuid) {
         return fetchInProgress.add(uuid);
     }
@@ -67,11 +153,6 @@ public class UrchinApi {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("User-Agent", "Mozilla/5.0");
-            conn.setRequestProperty("Accept", "*/*");
-            conn.setRequestProperty(
-                "Referer",
-                "https://coral.urchin.ws/player/" + uuid
-            );
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
 
@@ -79,13 +160,11 @@ public class UrchinApi {
                 BufferedReader in = new BufferedReader(
                     new InputStreamReader(conn.getInputStream())
                 );
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) response.append(line);
+                String response = in.lines().collect(Collectors.joining());
                 in.close();
 
                 JsonObject json = new JsonParser()
-                    .parse(response.toString())
+                    .parse(response)
                     .getAsJsonObject();
                 if (json.has("success") && json.get("success").getAsBoolean()) {
                     JsonArray data = json.getAsJsonArray("data");
@@ -99,98 +178,5 @@ public class UrchinApi {
             }
         } catch (Exception ignored) {}
         return -1;
-    }
-
-    public List<UrchinTag> fetchUrchinTags(String playerName, String urchinKey)
-        throws IOException {
-        String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
-        if (uuid == null) {
-            uuid = mojangApi.fetchUUID(playerName);
-            if (uuid == null || uuid.equals("ERROR")) {
-                throw new IOException(
-                    "Could not get UUID for player " + playerName
-                );
-            }
-        }
-
-        try {
-            URL url = new URL(
-                "https://coral.urchin.ws/api/urchin?uuid=" + uuid
-            );
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
-            conn.setRequestProperty(
-                "Referer",
-                "https://coral.urchin.ws/player/" + uuid
-            );
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                    return new ArrayList<>(); // No tags for player
-                }
-                throw new IOException(
-                    "Urchin API request failed with response code: " +
-                        responseCode
-                );
-            }
-
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(conn.getInputStream())
-            );
-            String response = in.lines().collect(Collectors.joining());
-            in.close();
-
-            return parseTags(response);
-        } catch (IOException e) {
-            // Fallback to old endpoint
-            URL url = new URL(
-                "https://urchin.ws/player/" + playerName + "?key=" + urchinKey
-            );
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                    return new ArrayList<>(); // No tags for player
-                }
-                throw new IOException(
-                    "Urchin API request failed with response code: " +
-                        responseCode
-                );
-            }
-
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(conn.getInputStream())
-            );
-            String response = in.lines().collect(Collectors.joining());
-            in.close();
-
-            return parseTags(response);
-        }
-    }
-
-    private List<UrchinTag> parseTags(String response) {
-        JsonObject json = new JsonParser().parse(response).getAsJsonObject();
-        if (json.has("tags")) {
-            JsonArray tagsArray = json.getAsJsonArray("tags");
-            if (tagsArray.size() > 0) {
-                List<UrchinTag> tags = new ArrayList<>();
-                for (JsonElement tagElement : tagsArray) {
-                    JsonObject tagObj = tagElement.getAsJsonObject();
-                    String type = tagObj.has("type")
-                        ? tagObj.get("type").getAsString()
-                        : "unknown";
-                    String reason = tagObj.has("reason")
-                        ? tagObj.get("reason").getAsString()
-                        : "No reason provided.";
-                    tags.add(new UrchinTag(type, reason));
-                }
-                return tags;
-            }
-        }
-        return new ArrayList<>();
     }
 }

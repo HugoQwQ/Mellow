@@ -6,6 +6,7 @@ import com.strawberry.statsify.api.UrchinTag;
 import com.strawberry.statsify.cache.PlayerCache;
 import com.strawberry.statsify.config.StatsifyOneConfig;
 import com.strawberry.statsify.data.PlayerProfile;
+import com.strawberry.statsify.util.FormattingUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
@@ -77,11 +78,9 @@ public class BedwarsCommand extends CommandBase {
             );
 
             if (config.urchin && profile.isUrchinTagged()) {
-                String tags = profile
-                    .getUrchinTags()
-                    .stream()
-                    .map(UrchinTag::getReason)
-                    .collect(Collectors.joining(", "));
+                String tags = FormattingUtils.formatUrchinTags(
+                    profile.getUrchinTags()
+                );
                 String urchinMessage =
                     "§r[§bStatsify§r] §c" +
                     username +
