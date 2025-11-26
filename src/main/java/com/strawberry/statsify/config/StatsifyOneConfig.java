@@ -77,6 +77,9 @@ public class StatsifyOneConfig extends Config {
     @Switch(name = "Auto /who")
     public boolean autoWho = true;
 
+    @Switch(name = "Auto Skin Denicker")
+    public boolean autoSkinDenick = true;
+
     @Switch(name = "Auto Pregame Stats")
     public boolean pregameStats = true;
 
