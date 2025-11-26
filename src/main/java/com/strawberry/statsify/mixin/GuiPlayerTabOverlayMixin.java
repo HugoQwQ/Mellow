@@ -1,8 +1,8 @@
 package com.strawberry.statsify.mixin;
 
 import com.strawberry.statsify.Statsify;
+import com.strawberry.statsify.data.TabStats;
 import com.strawberry.statsify.util.PlayerUtils;
-import java.util.List;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -30,30 +30,22 @@ public class GuiPlayerTabOverlayMixin {
             return;
         }
 
-        List<String> suffixes = Statsify.playerSuffixes.get(playerName);
+        TabStats stats = Statsify.tabStats.get(playerName);
         boolean isNicked = Statsify.nickUtils.isNicked(playerName);
         String originalDisplayName = getOriginalDisplayName(
             networkPlayerInfoIn
         );
 
-        if (suffixes != null && suffixes.size() >= 2) {
-            handlePlayerWithStats(
-                playerName,
-                suffixes,
-                originalDisplayName,
-                cir
-            );
+        if (stats != null) {
+            handlePlayerWithStats(playerName, stats, originalDisplayName, cir);
         } else if (isNicked && !originalDisplayName.contains("§c[NICK]")) {
             handleNickedPlayer(playerName, originalDisplayName, cir);
         }
     }
 
-    /**
-     * Handles modifying the display name for a player with stats.
-     */
     private void handlePlayerWithStats(
         String playerName,
-        List<String> suffixes,
+        TabStats stats,
         String originalDisplayName,
         CallbackInfoReturnable<String> cir
     ) {
@@ -64,13 +56,17 @@ public class GuiPlayerTabOverlayMixin {
         String team = tabData[0];
         String name = tabData[1];
 
-        String teamColor = team.length() >= 2 ? team.substring(0, 2) : "";
+        // This is the new feature implementation
+        if (stats.isUrchinTagged()) {
+            name = "§c⚠" + name;
+        }
 
+        String teamColor = team.length() >= 2 ? team.substring(0, 2) : "";
         String newDisplayName = formatDisplayNameWithStats(
             team,
             name,
             teamColor,
-            suffixes
+            stats
         );
 
         if (!originalDisplayName.equals(newDisplayName)) {
@@ -78,57 +74,55 @@ public class GuiPlayerTabOverlayMixin {
         }
     }
 
-    /**
-     * Formats the display name for a player with stats based on the config.
-     */
     private String formatDisplayNameWithStats(
         String team,
         String name,
         String teamColor,
-        List<String> suffixes
+        TabStats stats
     ) {
         String newDisplayName;
-        String suffix1 = suffixes.get(0); // Star
-        String suffix2 = suffixes.get(1); //FKDR
+        String stars = stats.getStars();
+        String fkdr = stats.getFkdr();
+        String winstreak = stats.getWinstreak();
 
         switch (Statsify.config.tabFormat) {
-            case 1:
+            case 1: // [Star] Name · FKDR
                 newDisplayName =
                     team +
-                    suffix1 +
-                    MIDDLE_DOT +
+                    stars +
+                    " " +
                     teamColor +
                     name +
                     MIDDLE_DOT +
-                    suffix2;
+                    "§r" +
+                    fkdr;
                 break;
-            case 2:
-                newDisplayName = team + teamColor + name + MIDDLE_DOT + suffix2;
+            case 2: // Name · FKDR
+                newDisplayName =
+                    team + teamColor + name + MIDDLE_DOT + "§r" + fkdr;
                 break;
-            case 0:
+            case 0: // [Star] Name · FKDR
             default:
                 newDisplayName =
                     team +
                     "§7[" +
-                    suffix1 +
+                    stars +
                     "§7] " +
                     teamColor +
                     name +
                     MIDDLE_DOT +
-                    suffix2;
+                    "§r" +
+                    fkdr;
                 break;
         }
 
-        if (suffixes.size() >= 3) {
-            newDisplayName += "§7" + MIDDLE_DOT + suffixes.get(2);
+        if (winstreak != null && !winstreak.isEmpty()) {
+            newDisplayName += MIDDLE_DOT + "§r" + winstreak;
         }
 
         return newDisplayName;
     }
 
-    /**
-     * Handles modifying the display name for a nicked player.
-     */
     private void handleNickedPlayer(
         String playerName,
         String originalDisplayName,
@@ -146,9 +140,6 @@ public class GuiPlayerTabOverlayMixin {
         }
     }
 
-    /**
-     * Gets the original display name of a player.
-     */
     private String getOriginalDisplayName(
         NetworkPlayerInfo networkPlayerInfoIn
     ) {

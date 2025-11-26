@@ -1,11 +1,14 @@
 package com.strawberry.statsify.task;
 
-import com.strawberry.statsify.api.HypixelApi;
-import com.strawberry.statsify.api.UrchinApi;
+import com.strawberry.statsify.api.BedwarsPlayer;
+import com.strawberry.statsify.cache.PlayerCache;
 import com.strawberry.statsify.config.StatsifyOneConfig;
+import com.strawberry.statsify.data.PlayerProfile;
+import com.strawberry.statsify.data.TabStats;
+import com.strawberry.statsify.util.FormattingUtils;
 import com.strawberry.statsify.util.NickUtils;
 import com.strawberry.statsify.util.PlayerUtils;
-import com.strawberry.statsify.util.UrchinUtils;
+import com.strawberry.statsify.util.TagUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -16,99 +19,151 @@ import net.minecraft.util.ChatComponentText;
 
 public class StatsChecker {
 
-    private final HypixelApi hypixelApi;
-    private final UrchinApi urchinApi;
+    private final PlayerCache playerCache;
     private final NickUtils nickUtils;
     private final StatsifyOneConfig config;
-    private final Map<String, List<String>> playerSuffixes;
+    private final Map<String, TabStats> tabStats;
+    private final TagUtils tagUtils;
     private final Minecraft mc = Minecraft.getMinecraft();
 
     public StatsChecker(
-        HypixelApi hypixelApi,
-        UrchinApi urchinApi,
+        PlayerCache playerCache,
         NickUtils nickUtils,
         StatsifyOneConfig config,
-        Map<String, List<String>> playerSuffixes
+        Map<String, TabStats> tabStats,
+        TagUtils tagUtils
     ) {
-        this.hypixelApi = hypixelApi;
-        this.urchinApi = urchinApi;
+        this.playerCache = playerCache;
         this.nickUtils = nickUtils;
         this.config = config;
-        this.playerSuffixes = playerSuffixes;
+        this.tabStats = tabStats;
+        this.tagUtils = tagUtils;
     }
 
-    public void checkUrchinTags(List<String> onlinePlayers) {
-        ExecutorService executor = Executors.newFixedThreadPool(5);
-        for (String playerName : onlinePlayers) {
-            if (nickUtils.isNicked(playerName)) continue;
-            executor.submit(() ->
-                UrchinUtils.checkAndPrintUrchinTags(
-                    playerName,
-                    urchinApi,
-                    config.urchinKey,
-                    true
-                )
-            );
-        }
-        executor.shutdown();
-    }
-
-    public void checkStatsRatelimitless(List<String> onlinePlayers) {
+    public void checkPlayerStats(List<String> onlinePlayers) {
+        tabStats.clear();
         final int MAX_THREADS = 20;
         int poolSize = Math.min(onlinePlayers.size(), MAX_THREADS);
         ExecutorService executor = Executors.newFixedThreadPool(poolSize);
 
         for (String playerName : onlinePlayers) {
             if (nickUtils.isNicked(playerName)) continue;
+
             executor.submit(() -> {
-                String stats = hypixelApi.fetchBedwarsStats(
-                    playerName,
-                    config.minFkdr,
-                    config.tags,
-                    config.tabStats,
-                    playerSuffixes
-                );
-                if (!stats.isEmpty() && config.printStats) {
-                    mc.addScheduledTask(() ->
-                        mc.thePlayer.addChatMessage(
-                            new ChatComponentText("§r[§bF§r] " + stats)
-                        )
+                PlayerProfile profile = playerCache.getProfile(playerName);
+
+                if (profile == null || profile.getBedwarsPlayer() == null) {
+                    return;
+                }
+
+                BedwarsPlayer player = profile.getBedwarsPlayer();
+
+                if (player.getFkdr() < config.minFkdr) {
+                    return;
+                }
+
+                // Populate TabStats for the tab list
+                if (config.tabStats) {
+                    String winstreak = "";
+                    if (player.getWinstreak() > 0) {
+                        winstreak = FormattingUtils.formatWinstreak(
+                            String.valueOf(player.getWinstreak())
+                        );
+                    }
+                    TabStats newTabStats = new TabStats(
+                        profile.isUrchinTagged(),
+                        player.getStars(),
+                        player.getFkdrColor() + player.getFormattedFkdr(),
+                        winstreak
                     );
+                    tabStats.put(playerName, newTabStats);
+                }
+
+                // Print stats to chat if enabled
+                if (config.printStats) {
+                    String chatMessage = formatChatStats(profile);
+                    if (!chatMessage.isEmpty()) {
+                        mc.addScheduledTask(() ->
+                            mc.thePlayer.addChatMessage(
+                                new ChatComponentText(
+                                    "§r[§bStatsify§r] " + chatMessage
+                                )
+                            )
+                        );
+                    }
                 }
             });
         }
 
         executor.shutdown();
+        // The notification for completion can be added back if desired
+    }
 
-        new Thread(() -> {
-            try {
-                if (executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    mc.addScheduledTask(() ->
-                        mc.thePlayer.addChatMessage(
-                            new ChatComponentText(
-                                "§r[§bF§r]§a Checks completed."
-                            )
-                        )
-                    );
-                } else {
-                    mc.addScheduledTask(() ->
-                        mc.thePlayer.addChatMessage(
-                            new ChatComponentText(
-                                "§r[§bF§r]§c Timeout waiting for completion."
-                            )
-                        )
-                    );
-                }
-            } catch (InterruptedException e) {
-                mc.addScheduledTask(() ->
-                    mc.thePlayer.addChatMessage(
-                        new ChatComponentText(
-                            "§r[§bF§r] §cError while waiting: " + e.getMessage()
-                        )
-                    )
+    private String formatChatStats(PlayerProfile profile) {
+        BedwarsPlayer player = profile.getBedwarsPlayer();
+        String playerName = profile.getName();
+
+        String displayName = PlayerUtils.getTabDisplayName(playerName);
+        String stars = player.getStars();
+        String fkdr = player.getFkdrColor() + player.getFormattedFkdr();
+
+        String winstreak = "";
+        if (player.getWinstreak() > 0) {
+            winstreak = FormattingUtils.formatWinstreak(
+                String.valueOf(player.getWinstreak())
+            );
+        }
+
+        String base = String.format(
+            "%s §r%s§r§7 |§r FKDR: %s",
+            displayName,
+            stars,
+            fkdr
+        );
+
+        if (config.tags) {
+            String tagsValue = buildTagsValue(profile);
+            if (winstreak.isEmpty()) {
+                return String.format("%s §r§7|§r [ %s ]", base, tagsValue);
+            } else {
+                return String.format(
+                    "%s §r§7|§r WS: %s§r [ %s ]",
+                    base,
+                    winstreak,
+                    tagsValue
                 );
             }
-        })
-            .start();
+        } else {
+            if (winstreak.isEmpty()) {
+                return base;
+            } else {
+                return String.format("%s §r§7|§r WS: %s§r", base, winstreak);
+            }
+        }
+    }
+
+    private String buildTagsValue(PlayerProfile profile) {
+        BedwarsPlayer player = profile.getBedwarsPlayer();
+        int starsInt = 0;
+        try {
+            starsInt = Integer.parseInt(
+                player.getStars().replaceAll("§.", "").replaceAll("[^0-9]", "")
+            );
+        } catch (NumberFormatException ignored) {}
+
+        String tagsValue = tagUtils.buildTags(
+            profile.getName(),
+            profile.getUuid(),
+            starsInt,
+            player.getFkdr(),
+            player.getWinstreak(),
+            player.getFinalKills(),
+            player.getFinalDeaths()
+        );
+
+        if (tagsValue.endsWith(" ")) {
+            return tagsValue.substring(0, tagsValue.length() - 1);
+        }
+        return tagsValue;
     }
 }

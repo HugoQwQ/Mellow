@@ -65,10 +65,7 @@ public class ChatHandler {
                 Arrays.asList(players)
             );
             nickUtils.updateNickedPlayers(onlinePlayers);
-            statsChecker.checkStatsRatelimitless(onlinePlayers);
-            if (config.urchin) {
-                statsChecker.checkUrchinTags(onlinePlayers);
-            }
+            statsChecker.checkPlayerStats(onlinePlayers);
         }
 
         if (message.startsWith(" ") && message.contains("Opponent:")) {

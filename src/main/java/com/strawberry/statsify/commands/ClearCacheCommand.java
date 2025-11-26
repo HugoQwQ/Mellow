@@ -1,6 +1,7 @@
 package com.strawberry.statsify.commands;
 
-import java.util.List;
+import com.strawberry.statsify.cache.PlayerCache;
+import com.strawberry.statsify.data.TabStats;
 import java.util.Map;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -8,28 +9,36 @@ import net.minecraft.util.ChatComponentText;
 
 public class ClearCacheCommand extends CommandBase {
 
-    private final Map<String, List<String>> playerSuffixes;
+    private final PlayerCache playerCache;
+    private final Map<String, TabStats> tabStats;
 
-    public ClearCacheCommand(Map<String, List<String>> playerSuffixes) {
-        this.playerSuffixes = playerSuffixes;
+    public ClearCacheCommand(
+        PlayerCache playerCache,
+        Map<String, TabStats> tabStats
+    ) {
+        this.playerCache = playerCache;
+        this.tabStats = tabStats;
     }
 
     @Override
     public String getCommandName() {
-        return "cleartabcache";
+        return "clearcache"; // Renaming for clarity, as it clears more than just tab
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/cleartabcache";
+        return "/clearcache";
     }
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
+        playerCache.clearCache();
+        tabStats.clear();
         sender.addChatMessage(
-            new ChatComponentText("§r[§bF§r] §aTab cache has been wiped")
+            new ChatComponentText(
+                "§r[§bStatsify§r] §aAll caches have been cleared."
+            )
         );
-        playerSuffixes.clear();
     }
 
     @Override

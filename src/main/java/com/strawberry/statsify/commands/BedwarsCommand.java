@@ -1,13 +1,13 @@
 package com.strawberry.statsify.commands;
 
 import com.mojang.authlib.GameProfile;
-import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.BedwarsPlayer;
-import com.strawberry.statsify.api.UrchinApi;
+import com.strawberry.statsify.api.UrchinTag;
+import com.strawberry.statsify.cache.PlayerCache;
 import com.strawberry.statsify.config.StatsifyOneConfig;
-import com.strawberry.statsify.util.UrchinUtils;
-import java.io.IOException;
+import com.strawberry.statsify.data.PlayerProfile;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.command.CommandBase;
@@ -17,18 +17,12 @@ import net.minecraft.util.ChatComponentText;
 
 public class BedwarsCommand extends CommandBase {
 
-    private final Statsify statsify;
-    private final UrchinApi urchinApi;
+    private final PlayerCache playerCache;
     private final StatsifyOneConfig config;
 
-    public BedwarsCommand(
-        Statsify statsify,
-        StatsifyOneConfig config,
-        UrchinApi urchinApi
-    ) {
-        this.statsify = statsify;
+    public BedwarsCommand(PlayerCache playerCache, StatsifyOneConfig config) {
+        this.playerCache = playerCache;
         this.config = config;
-        this.urchinApi = urchinApi;
     }
 
     @Override
@@ -46,7 +40,7 @@ public class BedwarsCommand extends CommandBase {
         if (args.length != 1) {
             sender.addChatMessage(
                 new ChatComponentText(
-                    "§r[§bF§r]§c Invalid usage!§r Use /bw §5<username>§r"
+                    "§r[§bStatsify§r]§c Invalid usage! Use /bw <username>"
                 )
             );
             return;
@@ -54,60 +48,48 @@ public class BedwarsCommand extends CommandBase {
 
         String username = args[0];
         new Thread(() -> {
-            try {
-                BedwarsPlayer player = statsify
-                    .getStatsProvider()
-                    .fetchPlayerStats(username);
-                if (player == null) {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        Minecraft.getMinecraft().thePlayer.addChatMessage(
-                            new ChatComponentText(
-                                "§r[§bF§r] §cFailed to fetch stats for: §r" +
-                                    username
-                            )
-                        )
-                    );
-                    return;
-                }
-                String finalStats =
-                    player.getName() +
-                    " §r" +
-                    player.getStars() +
-                    " FKDR: " +
-                    player.getFkdrColor() +
-                    player.getFormattedFkdr();
+            PlayerProfile profile = playerCache.getProfile(username);
+
+            if (profile == null || profile.getBedwarsPlayer() == null) {
                 Minecraft.getMinecraft().addScheduledTask(() ->
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(
-                        new ChatComponentText("§r[§bF§r] " + finalStats)
-                    )
-                );
-                if (config.urchin) {
-                    UrchinUtils.checkAndPrintUrchinTags(
-                        username,
-                        urchinApi,
-                        config.urchinKey,
-                        false
-                    );
-                }
-            } catch (IOException e) {
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(
+                    sender.addChatMessage(
                         new ChatComponentText(
-                            "§r[§bF§r] §cFailed to fetch stats for: §r" +
+                            "§r[§bStatsify§r] §cFailed to fetch stats for: §r" +
                                 username
                         )
                     )
                 );
-            } catch (Exception e) {
+                return;
+            }
+
+            BedwarsPlayer player = profile.getBedwarsPlayer();
+            String statsMessage =
+                "§r[§bStatsify§r] " +
+                player.getName() +
+                " §r" +
+                player.getStars() +
+                " §7|§r FKDR: " +
+                player.getFkdrColor() +
+                player.getFormattedFkdr();
+
+            Minecraft.getMinecraft().addScheduledTask(() ->
+                sender.addChatMessage(new ChatComponentText(statsMessage))
+            );
+
+            if (config.urchin && profile.isUrchinTagged()) {
+                String tags = profile
+                    .getUrchinTags()
+                    .stream()
+                    .map(UrchinTag::getReason)
+                    .collect(Collectors.joining(", "));
+                String urchinMessage =
+                    "§r[§bStatsify§r] §c" +
+                    username +
+                    " is tagged for: " +
+                    tags;
                 Minecraft.getMinecraft().addScheduledTask(() ->
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(
-                        new ChatComponentText(
-                            "§r[§bF§r] §cAn unexpected error occurred while fetching stats for: §r" +
-                                username
-                        )
-                    )
+                    sender.addChatMessage(new ChatComponentText(urchinMessage))
                 );
-                e.printStackTrace();
             }
         })
             .start();
