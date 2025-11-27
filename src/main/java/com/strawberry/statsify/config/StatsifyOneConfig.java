@@ -123,10 +123,18 @@ public class StatsifyOneConfig extends Config {
     public boolean numberDenicker = false;
 
     @Switch(
-        name = "Print all potential players & distance",
+        name = "Print all potential players",
         category = "Number Denicker"
     )
-    public boolean numberDenickerFuzzy = false;
+    public boolean numberDenickerFuzzy = true;
+
+    @Info(
+        text = "Turning all potential players off, will only print players with both matching beds and finals.",
+        type = InfoType.INFO,
+        size = OptionSize.DUAL,
+        category = "Number Denicker"
+    )
+    public static boolean ignored5
 
     @Text(
         name = "Aurora API Key",
