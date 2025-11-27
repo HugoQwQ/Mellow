@@ -34,7 +34,17 @@ public class StatsifyCommand extends CommandBase {
         );
         sender.addChatMessage(
             new ChatComponentText(
+                "§r§3/blacklist <add | remove | list> <player> <reason>:§b Add a player to your local blacklist.§r"
+            )
+        );
+        sender.addChatMessage(
+            new ChatComponentText(
                 "§r§3/denick <finals | beds> <number>:§b Manually denick a player based on finals or beds.§r"
+            )
+        );
+        sender.addChatMessage(
+            new ChatComponentText(
+                "§r§3/skindenick <username>:§b Manually denick a player based on their skin.§r"
             )
         );
         sender.addChatMessage(

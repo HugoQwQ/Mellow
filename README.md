@@ -65,7 +65,9 @@ To display **help command** type `/st`
 
 To check an **individual**'s bedwars stats type `/bw <username>`
 
-To **skin denick** type `/denick skin <player_name>`
+To add a player to your **blacklist** type `/blacklist add <username>`
+
+To **skin denick** type `/skindenick skin <username>`
 
 To use the **number denicker** add the Aurora API key, you can get a key from [here](https://discord.com/oauth2/authorize?client_id=1244205279697174539), automatic during game, you can also manually use `/denick <finals | beds> <number>` afterwards
 

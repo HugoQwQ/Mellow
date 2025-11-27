@@ -32,6 +32,11 @@ public class BlacklistCommand extends CommandBase {
     }
 
     @Override
+    public List<String> getCommandAliases() {
+        return Arrays.asList("bl");
+    }
+
+    @Override
     public String getCommandUsage(ICommandSender sender) {
         return "/blacklist <add | remove | list> <player> [reason]";
     }
