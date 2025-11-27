@@ -52,11 +52,12 @@ public class StatsifyOneConfig extends Config {
         category = "Ping",
         options = { "None", "Polsu", "Urchin" }
     )
-    public int pingProvider = 2;
+    public int pingProvider = 0;
 
     @Info(
-        text = "Polsu requires an API key to be able to be used.",
+        text = "Polsu requires an API key to be able to be used, Urchin does not.",
         type = InfoType.INFO,
+        size = OptionSize.DUAL,
         category = "Ping"
     )
     public static boolean ignored3;
