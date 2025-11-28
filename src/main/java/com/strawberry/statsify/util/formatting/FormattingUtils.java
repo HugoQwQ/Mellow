@@ -145,6 +145,28 @@ public class FormattingUtils {
             .collect(Collectors.joining(", "));
     }
 
+    public static String formatUrchinTagIcon(UrchinTag tag) {
+        String type = tag.getType().toLowerCase();
+        switch (type) {
+            case "sniper":
+                return "§8[§4S§8]";
+            case "confirmed_cheater":
+                return "§8[§cCC§8]";
+            case "blatant_cheater":
+                return "§8[§cBC§8]";
+            case "closet_cheater":
+                return "§8[§eCC§8]";
+            case "possible_sniper":
+                return "§8[§ePS§8]";
+            case "legit_sniper":
+                return "§8[§aLS§8]";
+            case "caution":
+                return "§8[§eC§8]";
+            default:
+                return "";
+        }
+    }
+
     public static String formatStars(String text) {
         try {
             int stars = Integer.parseInt(text);

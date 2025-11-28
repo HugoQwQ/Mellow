@@ -3,9 +3,8 @@ package com.strawberry.statsify.mixin;
 import com.strawberry.statsify.Statsify;
 import com.strawberry.statsify.api.urchin.UrchinTag;
 import com.strawberry.statsify.data.TabStats;
+import com.strawberry.statsify.util.formatting.FormattingUtils;
 import com.strawberry.statsify.util.player.PlayerUtils;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -19,12 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class GuiPlayerTabOverlayMixin {
 
     private static final String MIDDLE_DOT = "\u30fb";
-    private static final List<String> RED_URCHIN_TAGS = Arrays.asList(
-        "sniper",
-        "blatant cheater",
-        "closet cheater",
-        "confirmed cheater"
-    );
 
     @Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
     public void getPlayerName(
@@ -47,79 +40,80 @@ public class GuiPlayerTabOverlayMixin {
         );
         UUID playerUUID = networkPlayerInfoIn.getGameProfile().getId();
 
+        String newDisplayName;
+
         if (stats != null) {
-            handlePlayerWithStats(
+            newDisplayName = handlePlayerWithStats(
                 playerName,
                 stats,
-                originalDisplayName,
-                playerUUID,
-                cir
+                playerUUID
             );
         } else if (isNicked && !originalDisplayName.contains("§8[§5NICK§8]")) {
-            handleNickedPlayer(
+            newDisplayName = handleNickedPlayer(
                 playerName,
-                originalDisplayName,
-                playerUUID,
-                cir
+                originalDisplayName
             );
         } else {
-            // Handle players who are not nicked and have no stats (e.g. in lobby)
-            String newDisplayName = originalDisplayName;
-            if (
-                playerUUID != null &&
-                Statsify.blacklistManager.isBlacklisted(playerUUID)
-            ) {
-                newDisplayName += " §c[BL]";
-            }
-            if (!originalDisplayName.equals(newDisplayName)) {
-                cir.setReturnValue(newDisplayName);
-            }
+            newDisplayName = originalDisplayName;
         }
-    }
 
-    private void handlePlayerWithStats(
-        String playerName,
-        TabStats stats,
-        String originalDisplayName,
-        UUID playerUUID,
-        CallbackInfoReturnable<String> cir
-    ) {
-        String[] tabData = PlayerUtils.getTabDisplayName2(playerName);
-        if (tabData == null || tabData.length < 2) {
-            return;
-        }
-        String team = tabData[0];
-        String name = tabData[1];
-
-        String teamColor = team.length() >= 2 ? team.substring(0, 2) : "";
-        String newDisplayName = formatDisplayNameWithStats(
-            team,
-            name,
-            teamColor,
-            stats,
-            playerUUID
-        );
+        newDisplayName = appendBlacklistTag(newDisplayName, playerUUID);
 
         if (!originalDisplayName.equals(newDisplayName)) {
             cir.setReturnValue(newDisplayName);
         }
     }
 
+    private String handlePlayerWithStats(
+        String playerName,
+        TabStats stats,
+        UUID playerUUID
+    ) {
+        String[] tabData = PlayerUtils.getTabDisplayName2(playerName);
+        if (tabData == null || tabData.length < 2) {
+            return "";
+        }
+        String team = tabData[0];
+        String name = tabData[1];
+
+        String teamColor = team.length() >= 2 ? team.substring(0, 2) : "";
+        return formatDisplayNameWithStats(team, name, teamColor, stats);
+    }
+
     private String formatDisplayNameWithStats(
         String team,
         String name,
         String teamColor,
-        TabStats stats,
-        UUID playerUUID
+        TabStats stats
     ) {
-        String newDisplayName;
+        String newDisplayName = getStatsString(team, name, teamColor, stats);
+
+        if (stats.getWinstreak() != null && !stats.getWinstreak().isEmpty()) {
+            newDisplayName += MIDDLE_DOT + "§r" + stats.getWinstreak();
+        }
+
+        if (stats.isUrchinTagged()) {
+            for (UrchinTag tag : stats.getUrchinTags()) {
+                newDisplayName +=
+                    " " + FormattingUtils.formatUrchinTagIcon(tag);
+            }
+        }
+
+        return newDisplayName;
+    }
+
+    private String getStatsString(
+        String team,
+        String name,
+        String teamColor,
+        TabStats stats
+    ) {
         String stars = stats.getStars();
         String fkdr = stats.getFkdr();
-        String winstreak = stats.getWinstreak();
 
         switch (Statsify.config.tabFormat) {
             case 1: // [Star] Name · FKDR
-                newDisplayName =
+                return (
                     team +
                     stars +
                     " " +
@@ -127,15 +121,13 @@ public class GuiPlayerTabOverlayMixin {
                     name +
                     MIDDLE_DOT +
                     "§r" +
-                    fkdr;
-                break;
+                    fkdr
+                );
             case 2: // Name · FKDR
-                newDisplayName =
-                    team + teamColor + name + MIDDLE_DOT + "§r" + fkdr;
-                break;
+                return team + teamColor + name + MIDDLE_DOT + "§r" + fkdr;
             case 0: // [Star] Name · FKDR
             default:
-                newDisplayName =
+                return (
                     team +
                     "§7[" +
                     stars +
@@ -144,61 +136,35 @@ public class GuiPlayerTabOverlayMixin {
                     name +
                     MIDDLE_DOT +
                     "§r" +
-                    fkdr;
-                break;
+                    fkdr
+                );
         }
-
-        if (winstreak != null && !winstreak.isEmpty()) {
-            newDisplayName += MIDDLE_DOT + "§r" + winstreak;
-        }
-
-        if (stats.isUrchinTagged()) {
-            boolean isRed = false;
-            for (UrchinTag tag : stats.getUrchinTags()) {
-                if (RED_URCHIN_TAGS.contains(tag.getType().toLowerCase())) {
-                    isRed = true;
-                    break;
-                }
-            }
-            newDisplayName += (isRed ? " §c⚠" : " §e⚠");
-        }
-
-        if (
-            playerUUID != null &&
-            Statsify.blacklistManager.isBlacklisted(playerUUID)
-        ) {
-            newDisplayName += " §c[BL]";
-        }
-
-        return newDisplayName;
     }
 
-    private void handleNickedPlayer(
+    private String handleNickedPlayer(
         String playerName,
-        String originalDisplayName,
-        UUID playerUUID,
-        CallbackInfoReturnable<String> cir
+        String originalDisplayName
     ) {
         String[] tabData = PlayerUtils.getTabDisplayName2(playerName);
-        String newDisplayName;
         if (tabData != null && tabData.length >= 3) {
             String team = tabData[0] != null ? tabData[0] : "";
             String name = tabData[1] != null ? tabData[1] : "";
             String suffix = tabData[2] != null ? tabData[2] : "";
             String teamColor = team.length() >= 2 ? team.substring(0, 2) : "";
-            newDisplayName = team + "§8[§5NICK§8] " + teamColor + name + suffix;
+            return team + "§8[§5NICK§8] " + teamColor + name + suffix;
         } else {
-            newDisplayName = "§8[§5NICK§8] " + originalDisplayName;
+            return "§8[§5NICK§8] " + originalDisplayName;
         }
+    }
 
+    private String appendBlacklistTag(String displayName, UUID playerUUID) {
         if (
             playerUUID != null &&
             Statsify.blacklistManager.isBlacklisted(playerUUID)
         ) {
-            newDisplayName += " §c[BL]";
+            return displayName + " §8[§6BL§8]";
         }
-
-        cir.setReturnValue(newDisplayName);
+        return displayName;
     }
 
     private String getOriginalDisplayName(
