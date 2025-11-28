@@ -125,6 +125,9 @@ public class Statsify {
         ClientCommandHandler.instance.registerCommand(
             new BlacklistCommand(blacklistManager, mojangApi)
         );
+        ClientCommandHandler.instance.registerCommand(
+            new UrchinCommand(urchinApi, mojangApi, config)
+        );
     }
 
     public StatsProvider getStatsProvider() {

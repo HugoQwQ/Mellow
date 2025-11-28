@@ -104,8 +104,8 @@ public class UrchinApi {
                     );
                 }
             } catch (IOException fallbackException) {
-                // If the fallback also fails, return an empty list.
-                return new ArrayList<>();
+                // If the fallback also fails, re-throw the exception so the caller can handle it.
+                throw fallbackException;
             }
         }
     }
