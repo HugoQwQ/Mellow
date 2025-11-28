@@ -17,23 +17,58 @@ import com.strawberry.statsify.Statsify;
 
 public class StatsifyOneConfig extends Config {
 
-    @Number(name = "Minimum FKDR", min = -1, max = 500, step = 1)
-    public int minFkdr = -1;
+    @Switch(name = "Auto /who", subcategory = "General")
+    public boolean autoWho = true;
 
-    @Dropdown(name = "Stats Provider", options = { "Nadeshiko", "Abyss" })
-    public int statsProvider = 0;
-
-    @Switch(name = "Show Tags")
-    public boolean tags = false;
-
-    @Switch(name = "Show Tab Stats")
+    @Switch(name = "Show Tab Stats", subcategory = "General")
     public boolean tabStats = true;
 
-    @Switch(name = "Enable Urchin", category = "Urchin")
+    @Switch(name = "Show Tags", subcategory = "General")
+    public boolean tags = false;
+
+    @Switch(name = "Print Stats to Chat", subcategory = "General")
+    public boolean printStats = false;
+
+    @Number(
+        name = "Minimum FKDR to show",
+        min = -1,
+        max = 500,
+        step = 1,
+        subcategory = "General"
+    )
+    public int minFkdr = -1;
+
+    @Dropdown(
+        name = "Stats Provider",
+        options = { "Nadeshiko", "Abyss" },
+        subcategory = "Stats"
+    )
+    public int statsProvider = 0;
+
+    @Switch(name = "Enable Urchin", subcategory = "Tags")
     public boolean urchin = false;
 
+    @Switch(name = "Auto Pregame Stats", subcategory = "Pregame")
+    public boolean pregameStats = true;
+
+    @Switch(name = "Auto Skin Denicker", subcategory = "Denicker")
+    public boolean autoSkinDenick = true;
+
+    @Dropdown(
+        name = "Tab Format",
+        options = {
+            "[Star] Name • FKDR • WS",
+            "Star • Name • FKDR • WS",
+            "Name • FKDR • WS",
+        },
+        subcategory = "Stats"
+    )
+    public int tabFormat = 0;
+
+    // Urchin Configs
     @Info(
-        text = "Urchin does not require a key to view tags.",
+        text = "Urchin does not require a key to view tags, these settings are deprecated",
+        size = OptionSize.DUAL,
         type = InfoType.INFO,
         category = "Urchin"
     )
@@ -47,6 +82,7 @@ public class StatsifyOneConfig extends Config {
     )
     public String urchinKey = "";
 
+    // Ping Configs
     @Dropdown(
         name = "Ping Provider",
         category = "Ping",
@@ -62,7 +98,12 @@ public class StatsifyOneConfig extends Config {
     )
     public static boolean ignored3;
 
-    @Button(name = "Polsu API Key", text = "Get Key", category = "Ping")
+    @Button(
+        name = "Polsu API Key",
+        text = "Get Key",
+        category = "Ping",
+        subcategory = "Polsu"
+    )
     Runnable polsuLinkButton = () -> {
         NetworkUtils.browseLink("https://polsu.xyz/api/apikey");
     };
@@ -70,36 +111,13 @@ public class StatsifyOneConfig extends Config {
     @Text(
         name = "Polsu API Key",
         category = "Ping",
+        subcategory = "Polsu",
         secure = true,
         multiline = false
     )
     public String polsuApiKey = "";
 
-    @Switch(name = "Auto /who")
-    public boolean autoWho = true;
-
-    @Switch(name = "Auto Skin Denicker")
-    public boolean autoSkinDenick = true;
-
-    @Switch(name = "Auto Pregame Stats")
-    public boolean pregameStats = true;
-
-    @Switch(name = "Auto Pregame Tags")
-    public boolean pregameTags = true;
-
-    @Switch(name = "Print Stats to Chat")
-    public boolean printStats = false;
-
-    @Dropdown(
-        name = "Tab Format",
-        options = {
-            "[Star] Name • FKDR • WS",
-            "Star • Name • FKDR • WS",
-            "Name • FKDR • WS",
-        }
-    )
-    public int tabFormat = 0;
-
+    // Number denicker
     @Info(
         text = "This module attempts to denick players based the number of finals and beds broken from chat messages.",
         type = InfoType.INFO,

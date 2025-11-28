@@ -58,7 +58,7 @@ public class PregameStats {
     }
 
     public void onChat(ClientChatReceivedEvent event) {
-        if (!config.pregameStats && !config.pregameTags) return;
+        if (!config.pregameStats) return;
         if (!HypixelUtils.INSTANCE.isHypixel()) return;
 
         if (!inBedwars) {
@@ -158,7 +158,7 @@ public class PregameStats {
             );
         }
 
-        if (config.pregameTags && profile.isUrchinTagged()) {
+        if (config.urchin && profile.isUrchinTagged()) {
             String tags = FormattingUtils.formatUrchinTags(
                 profile.getUrchinTags()
             );
