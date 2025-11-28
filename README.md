@@ -3,7 +3,7 @@
 <img width="1920" height="392" src="https://i.ibb.co/hRmQV02D/Ads-z.png">
 </p>
 <div align="center">
-Keyless stats mod for Hypixel Bedwars &amp; Duels
+Keyless stats mod for Hypixel BedWars &amp; Duels
 </div>
 
 <br>
@@ -16,21 +16,22 @@ This project is a fork continuation of <a href="https://github.com/xanning/Fonta
 
 ![Powered by OneConfig](https://polyfrost.org/media/branding/badges/badge_1.svg)
 
-- Check Bedwars stats in tablist like Lilith
+- **No API key required for core features**
+
+- View Bedwars stats in the tablist, similar to Lilith.
+
+- See other players' ping. Recommended to use with [VanillaHUD](https://modrinth.com/mod/vanillahud)
+ to view ping numerically instead of as bars.
+
+- Supports Urchin API Tags
+
+- Check any player's BedWars stats with `/bw`
+
+- Supports skin denicking and finals/beds denicking.
 
 - Check Classic Duels stats of your opponent when you queue a Classic duels match
 
-- See other players' ping, recommended to use with [VanillaHUD](https://modrinth.com/mod/vanillahud) to see ping as a number rather than bars
-
-- Urchin API Tags support
-
-- Check any player's Bedwars stats with `/bw`
-
-- No API key required for core features
-
-- Support skin and finals/beds denicking
-
-- Pretty
+- Pretty & Aesthetic
 
 ## Showcase
 
@@ -51,36 +52,38 @@ This project is a fork continuation of <a href="https://github.com/xanning/Fonta
 
 Go to the releases tab and download.
 
-
-## Description
-
-Mellow is an internal Forge 1.8.9 mod for Hypixel Bedwars, allows its users to check the stats of the players in their game, without having to bother with an external overlay, proxy, or an API key.
-
 ## Usage
 
-All settings for the mod can be configured using OneConfig (press right shift).
+All settings can be configured through OneConfig (press **Right Shift**).
+
+### Commands
+
+To display **help command** type `/mellow`
 
 To **check the stats of players in your game**, type `/who` in-game, or enable Auto Who in settings
 
-To display **help command** type `/st`
+To check an **individual player’s** BedWars stats, type `/bw <username>`
 
-To check an **individual**'s Bedwars stats type `/bw <username>`
-
-To add a player to your **blacklist** type `/blacklist add <username>`
+To add a player to your **blacklist**, type `/blacklist add <username>`
 
 To **skin denick** type `/skindenick <username>`
 
-To use the **number denicker** add the Aurora API key, you can get a key from [here](https://discord.com/oauth2/authorize?client_id=1244205279697174539), automatic during game, you can also manually use `/denick <finals | beds> <number>` afterwards
+To use the **number denicker** add your Aurora API key
+
+- You can obtain one [here](https://discord.com/oauth2/authorize?client_id=1244205279697174539)
+- After setup, denicking happens automatically during games, but you can also manually run: `/denick <finals | beds> <number>`
 
 ## Known issues
 
-- Doesn't work on few VPN's, cant reproduce. PIA & Windscribe should work.
-- Sometimes stats are failed to fetch due to ratelimits, you can either switch stats provider in settings or run `/who` again after a bit
+- Occasionally stats fail to fetch due to rate limits. You can either try switching the stats provider in settings or try running `/who` again after a while.
+- Does not work on some VPNs
+
+If any other issues or bugs are found please report them [here](https://github.com/Roxiun/Mellow)
 
 
-## Owner Info
+## Credits
 Original Creator: `melissalmao` - Melissa (fwrina)
 
-Fontaine: `xanning`
+[Fontaine](https://github.com/xanning/Fontaine): `xanning`
 
-Fork: `Roxiun`
+Mellow (Fork): `Roxiun`
