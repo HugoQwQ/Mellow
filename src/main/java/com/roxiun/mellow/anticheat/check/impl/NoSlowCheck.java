@@ -3,6 +3,7 @@ package com.roxiun.mellow.anticheat.check.impl;
 import com.roxiun.mellow.anticheat.AnticheatManager;
 import com.roxiun.mellow.anticheat.check.Check;
 import com.roxiun.mellow.anticheat.data.ACPlayerData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemFood;
@@ -25,7 +26,13 @@ public class NoSlowCheck extends Check {
         ACPlayerData data
     ) {
         EntityPlayer player = data.getPlayer();
-        if (player == null || event.phase == TickEvent.Phase.END) return;
+        if (
+            player == null ||
+            event.phase == TickEvent.Phase.END ||
+            player == Minecraft.getMinecraft().thePlayer
+        ) {
+            return;
+        }
 
         boolean isUsingSlowdownItem = isUsingSlowdownItem(player);
         boolean isSprinting = player.isSprinting();
