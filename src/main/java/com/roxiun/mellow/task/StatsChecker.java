@@ -91,7 +91,11 @@ public class StatsChecker {
                 }
 
                 // Print Urchin tags to chat if enabled
-                if (config.urchin && profile.isUrchinTagged()) {
+                if (
+                    config.urchin &&
+                    config.printUrchinTags &&
+                    profile.isUrchinTagged()
+                ) {
                     String tags = FormattingUtils.formatUrchinTags(
                         profile.getUrchinTags()
                     );
