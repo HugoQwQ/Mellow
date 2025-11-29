@@ -48,7 +48,7 @@ public class MellowOneConfig extends Config {
     public boolean urchin = false;
 
     @Switch(name = "Print Urchin Tags in /who", subcategory = "Tags")
-    public boolean urchinTagsInWho = true;
+    public boolean printUrchinTags = true;
 
     @Switch(name = "Auto Pregame Stats", subcategory = "Pregame")
     public boolean pregameStats = true;
