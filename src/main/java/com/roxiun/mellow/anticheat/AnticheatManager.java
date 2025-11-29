@@ -10,6 +10,7 @@ import com.roxiun.mellow.anticheat.check.impl.ScaffoldCheck;
 import com.roxiun.mellow.anticheat.data.ACPlayerData;
 import com.roxiun.mellow.anticheat.event.AnticheatListener;
 import com.roxiun.mellow.util.ChatUtils;
+import com.roxiun.mellow.util.formatting.FormattingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,9 @@ public class AnticheatManager {
                 IChatComponent mainMessage = new ChatComponentText(
                     String.format(
                         "§8[§cAC§8] §7%s §ffailed §c%s §7(%s) §c[VL: %.1f]",
-                        player.getName(),
+                        FormattingUtils.formatNickedPlayerName(
+                            player.getName()
+                        ),
                         check.getName(),
                         info,
                         checkData.violations
