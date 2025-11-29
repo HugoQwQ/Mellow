@@ -1,5 +1,6 @@
 package com.roxiun.mellow;
 
+import com.roxiun.mellow.anticheat.AnticheatManager;
 import com.roxiun.mellow.api.aurora.AuroraApi;
 import com.roxiun.mellow.api.bedwars.HypixelApi;
 import com.roxiun.mellow.api.duels.PlanckeApi;
@@ -42,12 +43,16 @@ public class Mellow {
     public static UrchinApi urchinApi;
     public static PlayerCache playerCache;
     public static BlacklistManager blacklistManager;
+    private static AnticheatManager anticheatManager;
 
     private Map<String, StatsProvider> statsProviders;
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         config = new MellowOneConfig();
+
+        // Anticheat
+        anticheatManager = new AnticheatManager(this);
 
         // Blacklist
         blacklistManager = new BlacklistManager();
@@ -138,5 +143,9 @@ public class Mellow {
         } else {
             return statsProviders.get("Nadeshiko");
         }
+    }
+
+    public static AnticheatManager getAnticheatManager() {
+        return anticheatManager;
     }
 }

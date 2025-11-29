@@ -190,11 +190,39 @@ public class MellowOneConfig extends Config {
     )
     public int maxResults = 0; // Index for 5
 
+    @Switch(name = "Enable Anticheat", category = "Anticheat")
+    public boolean anticheatEnabled = true;
+
+    @Switch(name = "NoSlow Check", category = "Anticheat")
+    public boolean noSlowCheckEnabled = true;
+
+    @Switch(name = "AutoBlock Check", category = "Anticheat")
+    public boolean autoBlockCheckEnabled = true;
+
+    @Switch(name = "Eagle Check", category = "Anticheat")
+    public boolean eagleCheckEnabled = true;
+
+    @Switch(name = "Scaffold Check", category = "Anticheat")
+    public boolean scaffoldCheckEnabled = true;
+
+    @Number(
+        name = "Violation Level",
+        category = "Anticheat",
+        min = 1,
+        max = 100
+    )
+    public int anticheatVl = 10;
+
+    @Number(
+        name = "Cooldown (seconds)",
+        category = "Anticheat",
+        min = 1,
+        max = 60
+    )
+    public int anticheatCooldown = 5;
+
     public MellowOneConfig() {
-        super(
-            new Mod(Mellow.NAME, ModType.HYPIXEL),
-            Mellow.MODID + ".json"
-        );
+        super(new Mod(Mellow.NAME, ModType.HYPIXEL), Mellow.MODID + ".json");
         initialize();
     }
 }
