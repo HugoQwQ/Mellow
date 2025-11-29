@@ -102,8 +102,14 @@ public class ChatHandler {
                                     realName != null &&
                                     !realName.equalsIgnoreCase(playerName)
                                 ) {
+                                    String nickedPlayerDisplay =
+                                        FormattingUtils.formatNickedPlayerName(
+                                            playerName
+                                        );
                                     ChatUtils.sendMessage(
-                                        "§a" + playerName + " is " + realName
+                                        nickedPlayerDisplay +
+                                            " §d> §a" +
+                                            realName
                                     );
                                     final String finalRealName = realName;
                                     new Thread(() -> {

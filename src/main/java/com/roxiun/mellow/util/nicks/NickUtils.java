@@ -1,6 +1,9 @@
 package com.roxiun.mellow.util.nicks;
 
 import com.roxiun.mellow.util.ChatUtils;
+import com.roxiun.mellow.util.formatting.FormattingUtils;
+import com.roxiun.mellow.util.player.PlayerUtils;
+import com.roxiun.mellow.util.skins.SkinUtils;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.scoreboard.ScorePlayerTeam;
 
 public class NickUtils {
 
@@ -37,7 +41,41 @@ public class NickUtils {
                 UUID uuid = playerToUuid.get(player);
                 if (uuid != null && uuid.version() == 1) {
                     if (nickedPlayers.add(player)) {
-                        ChatUtils.sendMessage("§c" + player + " is nicked.");
+                        String nickedPlayerDisplay =
+                            FormattingUtils.formatNickedPlayerName(player);
+
+                        NetworkPlayerInfo playerInfo = null;
+                        for (NetworkPlayerInfo info : mc
+                            .getNetHandler()
+                            .getPlayerInfoMap()) {
+                            if (
+                                info
+                                    .getGameProfile()
+                                    .getName()
+                                    .equalsIgnoreCase(player)
+                            ) {
+                                playerInfo = info;
+                                break;
+                            }
+                        }
+
+                        if (playerInfo != null) {
+                            String realName = SkinUtils.getRealName(playerInfo);
+                            if (realName != null) {
+                                ChatUtils.sendMessage(
+                                    nickedPlayerDisplay + " §d> §a" + realName
+                                );
+                            } else {
+                                ChatUtils.sendMessage(
+                                    nickedPlayerDisplay +
+                                        " §dis a nicked player!"
+                                );
+                            }
+                        } else {
+                            ChatUtils.sendMessage(
+                                nickedPlayerDisplay + " §dis a nicked player!"
+                            );
+                        }
                     }
                 }
             }

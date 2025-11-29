@@ -1,6 +1,7 @@
 package com.roxiun.mellow.commands;
 
 import com.roxiun.mellow.util.ChatUtils;
+import com.roxiun.mellow.util.formatting.FormattingUtils;
 import com.roxiun.mellow.util.skins.SkinUtils;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -53,9 +54,12 @@ public class SkinDenickCommand extends CommandBase {
         String realName = SkinUtils.getRealName(playerInfo);
 
         if (realName != null) {
+            String nickedPlayerDisplay = FormattingUtils.formatNickedPlayerName(
+                playerName
+            );
             ChatUtils.sendCommandMessage(
                 sender,
-                "§aThe real name of " + playerName + " is " + realName
+                nickedPlayerDisplay + " §d> §a" + realName
             );
         } else {
             ChatUtils.sendCommandMessage(

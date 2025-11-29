@@ -253,4 +253,34 @@ public class FormattingUtils {
             .replace("[MVP+", "§b[MVP+")
             .replace("[MVP++", "§6[MVP++");
     }
+
+    public static String formatNickedPlayerName(String playerName) {
+        net.minecraft.client.Minecraft mc =
+            net.minecraft.client.Minecraft.getMinecraft();
+        if (mc.theWorld == null) {
+            return playerName;
+        }
+
+        net.minecraft.scoreboard.ScorePlayerTeam playerTeam = mc.theWorld
+            .getScoreboard()
+            .getPlayersTeam(playerName);
+        String[] tabData =
+            com.roxiun.mellow.util.player.PlayerUtils.getTabDisplayName2(
+                playerName
+            );
+        String nickedPlayerDisplay;
+
+        if (playerTeam != null && playerTeam.getColorPrefix().length() >= 2) {
+            String teamName = playerTeam.getRegisteredName();
+            String teamInitial = teamName.substring(0, 1).toUpperCase();
+            String teamColor = playerTeam.getColorPrefix().substring(0, 2);
+
+            String teamInfo = teamColor + "§l" + teamInitial + " §r";
+            String coloredPlayerName = teamColor + tabData[1] + tabData[2];
+            nickedPlayerDisplay = teamInfo + coloredPlayerName;
+        } else {
+            nickedPlayerDisplay = tabData[0] + tabData[1] + tabData[2];
+        }
+        return nickedPlayerDisplay;
+    }
 }
