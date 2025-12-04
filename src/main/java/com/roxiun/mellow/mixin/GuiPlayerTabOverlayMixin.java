@@ -99,6 +99,13 @@ public class GuiPlayerTabOverlayMixin {
             }
         }
 
+        if (stats.isSeraphTagged()) {
+            for (com.roxiun.mellow.api.seraph.SeraphTag tag : stats.getSeraphTags()) {
+                newDisplayName +=
+                    " " + FormattingUtils.formatSeraphTagIcon(tag);
+            }
+        }
+
         return newDisplayName;
     }
 

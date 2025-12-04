@@ -9,6 +9,7 @@ import com.roxiun.mellow.api.mojang.MojangApi;
 import com.roxiun.mellow.api.provider.AbyssApi;
 import com.roxiun.mellow.api.provider.NadeshikoApi;
 import com.roxiun.mellow.api.provider.StatsProvider;
+import com.roxiun.mellow.api.seraph.SeraphApi;
 import com.roxiun.mellow.api.urchin.UrchinApi;
 import com.roxiun.mellow.cache.PlayerCache;
 import com.roxiun.mellow.commands.*;
@@ -43,6 +44,7 @@ public class Mellow {
 
     public static MojangApi mojangApi;
     public static UrchinApi urchinApi;
+    public static SeraphApi seraphApi;
     public static PlayerCache playerCache;
     public static BlacklistManager blacklistManager;
     private static AnticheatManager anticheatManager;
@@ -66,6 +68,7 @@ public class Mellow {
         statsProviders.put("Abyss", new AbyssApi(mojangApi));
 
         urchinApi = new UrchinApi(mojangApi);
+        seraphApi = new SeraphApi(mojangApi);
         PlanckeApi planckeApi = new PlanckeApi();
         AuroraApi auroraApi = new AuroraApi();
 
@@ -74,7 +77,9 @@ public class Mellow {
             mojangApi,
             getStatsProvider(),
             urchinApi,
+            seraphApi,
             config.urchinKey,
+            config.seraphKey,
             config
         );
 
@@ -139,6 +144,9 @@ public class Mellow {
         );
         ClientCommandHandler.instance.registerCommand(
             new UrchinCommand(urchinApi, mojangApi, config)
+        );
+        ClientCommandHandler.instance.registerCommand(
+            new SeraphCommand(seraphApi, mojangApi, config)
         );
     }
 

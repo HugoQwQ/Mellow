@@ -73,6 +73,7 @@ public class StatsChecker {
                     }
                     TabStats newTabStats = new TabStats(
                         profile.getUrchinTags(),
+                        profile.getSeraphTags(),
                         player.getStars(),
                         player.getFkdrColor() + player.getFormattedFkdr(),
                         winstreak
@@ -100,10 +101,46 @@ public class StatsChecker {
                         profile.getUrchinTags()
                     );
                     String urchinMessage =
-                        "§c" + profile.getName() + " is tagged for: " + tags;
+                        "§c" +
+                        profile.getName() +
+                        " is tagged on §5Urchin§c for: " +
+                        tags;
                     mc.addScheduledTask(() ->
                         ChatUtils.sendMessage(urchinMessage)
                     );
+                }
+
+                // Print Seraph tags to chat if enabled
+                if (config.seraph && profile.isSeraphTagged()) {
+                    String formattedTags = FormattingUtils.formatSeraphTags(
+                        profile.getSeraphTags()
+                    );
+                    // Split the formatted tags by the newline separator and send as separate messages
+                    String[] tagMessages = formattedTags.split("\n§c");
+                    if (
+                        tagMessages.length > 0 &&
+                        !tagMessages[0].trim().isEmpty()
+                    ) {
+                        // Send the first tag with the main message
+                        String firstMessage =
+                            "§c" +
+                            profile.getName() +
+                            " is tagged on §3Seraph§c for: " +
+                            tagMessages[0];
+                        mc.addScheduledTask(() ->
+                            ChatUtils.sendMessage(firstMessage)
+                        );
+                        // Send additional tags as separate messages
+                        for (int i = 1; i < tagMessages.length; i++) {
+                            if (!tagMessages[i].trim().isEmpty()) {
+                                String additionalMessage =
+                                    "§c" + tagMessages[i];
+                                mc.addScheduledTask(() ->
+                                    ChatUtils.sendMessage(additionalMessage)
+                                );
+                            }
+                        }
+                    }
                 }
             });
         }

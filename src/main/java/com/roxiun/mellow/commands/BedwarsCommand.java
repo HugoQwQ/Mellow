@@ -81,10 +81,43 @@ public class BedwarsCommand extends CommandBase {
                     profile.getUrchinTags()
                 );
                 String urchinMessage =
-                    "§c" + username + " is tagged for: " + tags;
+                    "§c" + username + " is tagged on §5Urchin§c for: " + tags;
                 Minecraft.getMinecraft().addScheduledTask(() ->
                     ChatUtils.sendCommandMessage(sender, urchinMessage)
                 );
+            }
+
+            if (config.seraph && profile.isSeraphTagged()) {
+                String formattedTags = FormattingUtils.formatSeraphTags(
+                    profile.getSeraphTags()
+                );
+                // Split the formatted tags by the newline separator and send as separate messages
+                String[] tagMessages = formattedTags.split("\n§c");
+                if (
+                    tagMessages.length > 0 && !tagMessages[0].trim().isEmpty()
+                ) {
+                    // Send the first tag with the main message
+                    String firstMessage =
+                        "§c" +
+                        username +
+                        " is tagged on §3Seraph§c for: " +
+                        tagMessages[0];
+                    Minecraft.getMinecraft().addScheduledTask(() ->
+                        ChatUtils.sendCommandMessage(sender, firstMessage)
+                    );
+                    // Send additional tags as separate messages
+                    for (int i = 1; i < tagMessages.length; i++) {
+                        if (!tagMessages[i].trim().isEmpty()) {
+                            String additionalMessage = "§c" + tagMessages[i];
+                            Minecraft.getMinecraft().addScheduledTask(() ->
+                                ChatUtils.sendCommandMessage(
+                                    sender,
+                                    additionalMessage
+                                )
+                            );
+                        }
+                    }
+                }
             }
         })
             .start();

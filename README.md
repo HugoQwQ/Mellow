@@ -24,6 +24,7 @@ This project is a fork continuation of <a href="https://github.com/xanning/Fonta
  to view ping numerically instead of as bars.
 
 - Supports Urchin API Tags
+- Supports Seraph API Tags
 
 - Check any player's BedWars stats with `/bw`
 

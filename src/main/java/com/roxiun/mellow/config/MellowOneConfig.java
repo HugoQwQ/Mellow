@@ -59,6 +59,9 @@ public class MellowOneConfig extends Config {
     @Switch(name = "Print Urchin Tags in /who", subcategory = "Tags")
     public boolean printUrchinTags = true;
 
+    @Switch(name = "Enable Seraph", subcategory = "Tags")
+    public boolean seraph = false;
+
     @Switch(name = "Auto Pregame Stats", subcategory = "Pregame")
     public boolean pregameStats = true;
 
@@ -92,6 +95,15 @@ public class MellowOneConfig extends Config {
         multiline = false
     )
     public String urchinKey = "";
+
+    // Seraph Configs
+    @Text(
+        name = "Seraph API Key",
+        category = "Seraph",
+        secure = true,
+        multiline = false
+    )
+    public String seraphKey = "";
 
     // Ping Configs
     @Dropdown(

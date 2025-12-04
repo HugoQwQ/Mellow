@@ -58,6 +58,11 @@ public class MellowCommand extends CommandBase {
         );
         sender.addChatMessage(
             new ChatComponentText(
+                "§r§5/seraph <username>:§d View a player's seraph tags.§r"
+            )
+        );
+        sender.addChatMessage(
+            new ChatComponentText(
                 "§r§5/denick <finals | beds> <number>:§d Manually denick a player based on finals or beds.§r"
             )
         );

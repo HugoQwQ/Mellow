@@ -109,11 +109,58 @@ public class NickUtils {
                                         String urchinMessage =
                                             "§c" +
                                             finalRealName +
-                                            " is tagged for: " +
+                                            " is tagged on §5Urchin§c for: " +
                                             tags;
                                         mc.addScheduledTask(() ->
                                             ChatUtils.sendMessage(urchinMessage)
                                         );
+                                    }
+
+                                    if (
+                                        config.seraph &&
+                                        profile.isSeraphTagged()
+                                    ) {
+                                        String formattedTags =
+                                            FormattingUtils.formatSeraphTags(
+                                                profile.getSeraphTags()
+                                            );
+                                        // Split the formatted tags by the newline separator and send as separate messages
+                                        String[] tagMessages =
+                                            formattedTags.split("\n§c");
+                                        if (
+                                            tagMessages.length > 0 &&
+                                            !tagMessages[0].trim().isEmpty()
+                                        ) {
+                                            // Send the first tag with the main message
+                                            String firstMessage =
+                                                "§c" +
+                                                finalRealName +
+                                                " is tagged on §3Seraph§c for: " +
+                                                tagMessages[0];
+                                            mc.addScheduledTask(() ->
+                                                ChatUtils.sendMessage(
+                                                    firstMessage
+                                                )
+                                            );
+                                            // Send additional tags as separate messages
+                                            for (
+                                                int i = 1;
+                                                i < tagMessages.length;
+                                                i++
+                                            ) {
+                                                if (
+                                                    !tagMessages[i].trim().isEmpty()
+                                                ) {
+                                                    String additionalMessage =
+                                                        "§c" + tagMessages[i];
+                                                    mc.addScheduledTask(() ->
+                                                        ChatUtils.sendMessage(
+                                                            additionalMessage
+                                                        )
+                                                    );
+                                                }
+                                            }
+                                        }
                                     }
                                 })
                                     .start();

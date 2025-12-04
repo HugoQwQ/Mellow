@@ -3,6 +3,8 @@ package com.roxiun.mellow.cache;
 import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
 import com.roxiun.mellow.api.mojang.MojangApi;
 import com.roxiun.mellow.api.provider.StatsProvider;
+import com.roxiun.mellow.api.seraph.SeraphApi;
+import com.roxiun.mellow.api.seraph.SeraphTag;
 import com.roxiun.mellow.api.urchin.UrchinApi;
 import com.roxiun.mellow.api.urchin.UrchinTag;
 import com.roxiun.mellow.config.MellowOneConfig;
@@ -21,20 +23,26 @@ public class PlayerCache {
     private final MojangApi mojangApi;
     private final StatsProvider statsProvider;
     private final UrchinApi urchinApi;
+    private final SeraphApi seraphApi;
     private final String urchinApiKey;
+    private final String seraphApiKey;
     private final MellowOneConfig config;
 
     public PlayerCache(
         MojangApi mojangApi,
         StatsProvider statsProvider,
         UrchinApi urchinApi,
+        SeraphApi seraphApi,
         String urchinApiKey,
+        String seraphApiKey,
         MellowOneConfig config
     ) {
         this.mojangApi = mojangApi;
         this.statsProvider = statsProvider;
         this.urchinApi = urchinApi;
+        this.seraphApi = seraphApi;
         this.urchinApiKey = urchinApiKey;
+        this.seraphApiKey = seraphApiKey;
         this.config = config;
     }
 
@@ -82,11 +90,27 @@ public class PlayerCache {
                 }
             }
 
+            List<SeraphTag> seraphTags = null;
+            if (config.seraph) {
+                try {
+                    seraphTags = seraphApi.fetchSeraphTags(uuid, seraphApiKey);
+                } catch (IOException e) {
+                    Minecraft.getMinecraft().addScheduledTask(() ->
+                        ChatUtils.sendMessage(
+                            "§cFailed to fetch Seraph tags for " +
+                                playerName +
+                                "."
+                        )
+                    );
+                }
+            }
+
             PlayerProfile newProfile = new PlayerProfile(
                 uuid,
                 playerName,
                 bedwarsPlayer,
-                urchinTags
+                urchinTags,
+                seraphTags
             );
             cache.put(playerName.toLowerCase(), newProfile);
             return newProfile;
