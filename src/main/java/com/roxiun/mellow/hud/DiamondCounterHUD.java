@@ -9,7 +9,7 @@ public class DiamondCounterHUD extends SingleTextHud {
     public DiamondCounterHUD() {
         super(
             "", // title is actually useful now
-            true, // enabled obviously
+            false, // enabled obviously
             5, // x
             45, // y - placed below emerald counter
             1, // normal size

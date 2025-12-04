@@ -9,7 +9,7 @@ public class EmeraldCounterHUD extends SingleTextHud {
     public EmeraldCounterHUD() {
         super(
             "", // title is actually useful now
-            true, // enabled obviously
+            false, // enabled obviously
             5, // x
             25, // y
             1, // normal size

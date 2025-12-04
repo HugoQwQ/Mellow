@@ -43,9 +43,9 @@ public class HypixelFeatures {
             !packet.getLobbyName().isPresent();
 
         // Reset if we just left a Bedwars game
-        if (wasInBedwars && !inBedwars) {
-            resetEmeraldTimer();
-        }
+        // if (wasInBedwars && !inBedwars) {
+        //     resetEmeraldTimer();
+        // }
     }
 
     // Method to be called every tick to update the emerald timer
