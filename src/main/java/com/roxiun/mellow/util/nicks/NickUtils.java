@@ -117,11 +117,6 @@ public class NickUtils {
                                     }
                                 })
                                     .start();
-                            } else {
-                                ChatUtils.sendMessage(
-                                    nickedPlayerDisplay +
-                                        " §dis a nicked player!"
-                                );
                             }
                         }
                     }
