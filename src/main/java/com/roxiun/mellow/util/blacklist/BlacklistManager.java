@@ -228,10 +228,14 @@ public class BlacklistManager {
         return newEntriesCount;
     }
 
-    public void addPlayer(UUID uuid, String name, String reason) {
+    public boolean addPlayer(UUID uuid, String name, String reason) {
+        if (blacklist.containsKey(uuid)) {
+            return false; // Player already in blacklist
+        }
         blacklist.put(uuid, new BlacklistedPlayer(name, reason));
         saveBlacklist();
         saveToTxtFile(); // Also update the txt file
+        return true; // Player added successfully
     }
 
     public void removePlayer(UUID uuid) {

@@ -88,7 +88,7 @@ public class PregameStats {
 
         String username = chatMatch.group(1);
 
-        if (username.equalsIgnoreCase(mc.thePlayer.getName())) return;
+        //if (username.equalsIgnoreCase(mc.thePlayer.getName())) return;
         if (!alreadyLookedUp.add(username.toLowerCase())) return;
 
         new Thread(
@@ -126,11 +126,13 @@ public class PregameStats {
             String reason = blacklistManager
                 .getBlacklistedPlayer(uuid)
                 .getReason();
-            mc.addScheduledTask(() ->
+            mc.addScheduledTask(() -> {
                 ChatUtils.sendMessage(
                     "§c" + username + " is on your blacklist: " + reason
-                )
-            );
+                );
+                // Play pling sound when blacklisted player talks
+                mc.thePlayer.playSound("note.pling", 1.0F, 1.0F);
+            });
         }
 
         if (config.pregameStats) {

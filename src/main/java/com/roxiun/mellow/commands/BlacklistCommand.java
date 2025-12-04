@@ -251,13 +251,31 @@ public class BlacklistCommand extends CommandBase {
                     );
                 }
 
-                blacklistManager.addPlayer(uuid, playerName, reason);
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§aAdded " + playerName + " to the blacklist."
-                    )
+                boolean playerAdded = blacklistManager.addPlayer(
+                    uuid,
+                    playerName,
+                    reason
                 );
+                if (playerAdded) {
+                    Minecraft.getMinecraft().addScheduledTask(() ->
+                        ChatUtils.sendCommandMessage(
+                            sender,
+                            "§aAdded " + playerName + " to the blacklist."
+                        )
+                    );
+                } else {
+                    Minecraft.getMinecraft().addScheduledTask(() ->
+                        ChatUtils.sendCommandMessage(
+                            sender,
+                            "§c" +
+                                playerName +
+                                " is already on the blacklist for reason: " +
+                                blacklistManager
+                                    .getBlacklistedPlayer(uuid)
+                                    .getReason()
+                        )
+                    );
+                }
             } else if ("remove".equalsIgnoreCase(subCommand)) {
                 blacklistManager.removePlayer(uuid);
                 Minecraft.getMinecraft().addScheduledTask(() ->
