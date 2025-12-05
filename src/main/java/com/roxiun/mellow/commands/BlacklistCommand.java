@@ -41,7 +41,7 @@ public class BlacklistCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/blacklist <add | remove | list | sync>";
+        return "/blacklist <add | remove | list | import>";
     }
 
     @Override
@@ -130,12 +130,12 @@ public class BlacklistCommand extends CommandBase {
                 ChatUtils.sendCommandMessage(sender, navigationMessage);
             }
             return;
-        } else if ("sync".equalsIgnoreCase(subCommand)) {
-            // Handle sync command: /blacklist sync <filename>
+        } else if ("import".equalsIgnoreCase(subCommand)) {
+            // Handle sync command: /blacklist import <filename>
             if (args.length < 2) {
                 ChatUtils.sendCommandMessage(
                     sender,
-                    "§cUsage: /blacklist sync <filename>"
+                    "§cUsage: /blacklist import <filename>"
                 );
                 return;
             }
@@ -160,7 +160,7 @@ public class BlacklistCommand extends CommandBase {
                 Minecraft.getMinecraft().addScheduledTask(() -> {
                     ChatUtils.sendCommandMessage(
                         sender,
-                        "§eSyncing blacklist with file: " +
+                        "§eImporting blacklist with file: " +
                             syncFile.getAbsolutePath()
                     );
                 });
@@ -172,13 +172,13 @@ public class BlacklistCommand extends CommandBase {
                     String message;
                     if (newEntries > 0) {
                         message =
-                            "§aSuccessfully synced! Added " +
+                            "§aSuccessfully imported! Added " +
                             newEntries +
                             " new entries from " +
                             filename;
                     } else if (syncFile.exists()) {
                         message =
-                            "§eSync completed! No new entries found in " +
+                            "§eImport completed! No new entries found in " +
                             filename;
                     } else {
                         message =
@@ -196,7 +196,7 @@ public class BlacklistCommand extends CommandBase {
                     Minecraft.getMinecraft().addScheduledTask(() ->
                         ChatUtils.sendCommandMessage(
                             sender,
-                            "§cError syncing with file: " + e.getMessage()
+                            "§cError importing file: " + e.getMessage()
                         )
                     );
                 }
@@ -301,7 +301,7 @@ public class BlacklistCommand extends CommandBase {
                 "add",
                 "remove",
                 "list",
-                "sync"
+                "import"
             );
         }
 
@@ -326,8 +326,8 @@ public class BlacklistCommand extends CommandBase {
             return null; // Let the game handle player name completion
         }
 
-        // For sync command, return null to allow file name completion (or default behavior)
-        if (args.length == 2 && "sync".equalsIgnoreCase(args[0])) {
+        // For import command, return null to allow file name completion (or default behavior)
+        if (args.length == 2 && "import".equalsIgnoreCase(args[0])) {
             return null; // Let the client handle file name completion
         }
 

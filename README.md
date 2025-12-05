@@ -70,7 +70,7 @@ To check an **individual player’s** BedWars stats, type `/bw <username>`
 
 To add a player to your **blacklist**, type `/blacklist add <username>`
 
-You can **import** your own **blacklist** by doing, type `/blacklist sync <filename>`, place the file in `.minecraft/config/mellow`
+You can **import** your own **blacklist** by doing, type `/blacklist import <filename>`, place the file in `.minecraft/config/mellow`
 
 To **skin denick** type `/skindenick <username>`
 
