@@ -34,23 +34,18 @@ public class MellowOneConfig extends Config {
     public boolean printStats = false;
 
     // Tab Stats Configuration
-    @Switch(name = "Show Urchin Tags in Tab", subcategory = "Tab Stats")
-    public boolean showUrchinTagsInTab = true;
 
-    @Switch(name = "Show Seraph Tags in Tab", subcategory = "Tab Stats")
-    public boolean showSeraphTagsInTab = true;
-
-    @Switch(name = "Show Stars with Brackets", subcategory = "Tab Stats")
+    @Switch(name = "Show Stars with Brackets", category = "Tab Stats")
     public boolean showStarsWithBrackets = true;
 
-    @Switch(name = "Show Nick with Brackets", subcategory = "Tab Stats")
+    @Switch(name = "Show Nick with Brackets", category = "Tab Stats")
     public boolean showNickWithBrackets = true;
 
     @Info(
         text = "Set the order of stats in the tab list",
         type = InfoType.INFO,
         size = OptionSize.DUAL,
-        subcategory = "Tab Stats"
+        category = "Tab Stats"
     )
     public static boolean ignoredStatsOrderInfo;
 
@@ -69,7 +64,7 @@ public class MellowOneConfig extends Config {
             "Finals",
             "None",
         },
-        subcategory = "Tab Stats"
+        category = "Tab Stats"
     )
     public int customStat1 = 0;
 
@@ -88,7 +83,7 @@ public class MellowOneConfig extends Config {
             "Finals",
             "None",
         },
-        subcategory = "Tab Stats"
+        category = "Tab Stats"
     )
     public int customStat2 = 1; // Stars
 
@@ -107,7 +102,7 @@ public class MellowOneConfig extends Config {
             "Finals",
             "None",
         },
-        subcategory = "Tab Stats"
+        category = "Tab Stats"
     )
     public int customStat3 = 2; // Name
 
@@ -126,7 +121,7 @@ public class MellowOneConfig extends Config {
             "Finals",
             "None",
         },
-        subcategory = "Tab Stats"
+        category = "Tab Stats"
     )
     public int customStat4 = 3; // FKDR
 
@@ -145,29 +140,176 @@ public class MellowOneConfig extends Config {
             "Finals",
             "None",
         },
-        subcategory = "Tab Stats"
+        category = "Tab Stats"
     )
     public int customStat5 = 4; // Winstreak
 
+    @Dropdown(
+        name = "Sixth Stat",
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
+        category = "Tab Stats"
+    )
+    public int customStat6 = 10; // None by default
+
+    @Dropdown(
+        name = "Seventh Stat",
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
+        category = "Tab Stats"
+    )
+    public int customStat7 = 10; // None by default
+
+    @Dropdown(
+        name = "Eighth Stat",
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
+        category = "Tab Stats"
+    )
+    public int customStat8 = 10; // None by default
+
+    @Dropdown(
+        name = "Ninth Stat",
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
+        category = "Tab Stats"
+    )
+    public int customStat9 = 10; // None by default
+
+    @Dropdown(
+        name = "Tenth Stat",
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
+        category = "Tab Stats"
+    )
+    public int customStat10 = 10; // None by default
+
     @Info(
-        text = "Toggle dots between stats",
+        text = "Toggle seperator between stats",
         type = InfoType.INFO,
         size = OptionSize.DUAL,
-        subcategory = "Tab Stats"
+        category = "Tab Stats",
+        subcategory = "Seperator"
     )
     public static boolean ignoredDotsInfo;
 
-    @Checkbox(name = "Show Dot Between 1st and 2nd", subcategory = "Tab Stats")
+    @Checkbox(
+        name = "Between 1st and 2nd",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
     public boolean showDot12 = false;
 
-    @Checkbox(name = "Show Dot Between 2nd and 3rd", subcategory = "Tab Stats")
+    @Checkbox(
+        name = "Between 2nd and 3rd",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
     public boolean showDot23 = false;
 
-    @Checkbox(name = "Show Dot Between 3rd and 4th", subcategory = "Tab Stats")
+    @Checkbox(
+        name = "Between 3rd and 4th",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
     public boolean showDot34 = true;
 
-    @Checkbox(name = "Show Dot Between 4th and 5th", subcategory = "Tab Stats")
+    @Checkbox(
+        name = "Between 4th and 5th",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
     public boolean showDot45 = true;
+
+    @Checkbox(
+        name = "Between 5th and 6th",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
+    public boolean showDot56 = true;
+
+    @Checkbox(
+        name = "Between 6th and 7th",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
+    public boolean showDot67 = true;
+
+    @Checkbox(
+        name = "Between 7th and 8th",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
+    public boolean showDot78 = true;
+
+    @Checkbox(
+        name = "Between 8th and 9th",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
+    public boolean showDot89 = true;
+
+    @Checkbox(
+        name = "Between 9th and 10th",
+        category = "Tab Stats",
+        subcategory = "Seperator"
+    )
+    public boolean showDot910 = true;
 
     @HUD(name = "Emerald Counter HUD", category = "HUD")
     public EmeraldCounterHUD emeraldCounterHUD = new EmeraldCounterHUD();
@@ -227,6 +369,9 @@ public class MellowOneConfig extends Config {
     @Switch(name = "Enable Urchin", category = "Urchin")
     public boolean urchin = false;
 
+    @Switch(name = "Show Urchin Tags in Tab", category = "Urchin")
+    public boolean showUrchinTagsInTab = true;
+
     @Info(
         text = "Enabling Urchin will send requests to them and be subject to their ToS, this could enable tracking of your data (IP, Urchin API Key, Game Info).",
         size = OptionSize.DUAL,
@@ -262,6 +407,9 @@ public class MellowOneConfig extends Config {
 
     @Switch(name = "Enable Seraph", category = "Seraph")
     public boolean seraph = false;
+
+    @Switch(name = "Show Seraph Tags in Tab", category = "Seraph")
+    public boolean showSeraphTagsInTab = true;
 
     @Info(
         text = "Enabling Seraph will send requests to them and be subject to their ToS, this could enable tracking of your data (IP, Seraph API Key, Game Info).",

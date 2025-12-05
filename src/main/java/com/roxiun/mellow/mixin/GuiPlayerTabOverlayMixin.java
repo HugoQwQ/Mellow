@@ -236,6 +236,46 @@ public class GuiPlayerTabOverlayMixin {
             teamColor,
             stats
         );
+        addValidPartWithConfigStat(
+            validPartsWithType,
+            Mellow.config.customStat6,
+            team,
+            name,
+            teamColor,
+            stats
+        );
+        addValidPartWithConfigStat(
+            validPartsWithType,
+            Mellow.config.customStat7,
+            team,
+            name,
+            teamColor,
+            stats
+        );
+        addValidPartWithConfigStat(
+            validPartsWithType,
+            Mellow.config.customStat8,
+            team,
+            name,
+            teamColor,
+            stats
+        );
+        addValidPartWithConfigStat(
+            validPartsWithType,
+            Mellow.config.customStat9,
+            team,
+            name,
+            teamColor,
+            stats
+        );
+        addValidPartWithConfigStat(
+            validPartsWithType,
+            Mellow.config.customStat10,
+            team,
+            name,
+            teamColor,
+            stats
+        );
 
         // Build the string with configurable dot separators between positions
         StringBuilder result = new StringBuilder();
@@ -272,6 +312,46 @@ public class GuiPlayerTabOverlayMixin {
                 } else if (i == 4) {
                     // Between 4th and 5th (index 3 and 4)
                     if (Mellow.config.showDot45) {
+                        result.append(MIDDLE_DOT).append("§r");
+                    } else if (!previousIsTeam) {
+                        result.append(" ");
+                    }
+                    // If previous is team, don't add any separator since team already has internal spacing
+                } else if (i == 5) {
+                    // Between 5th and 6th (index 4 and 5)
+                    if (Mellow.config.showDot56) {
+                        result.append(MIDDLE_DOT).append("§r");
+                    } else if (!previousIsTeam) {
+                        result.append(" ");
+                    }
+                    // If previous is team, don't add any separator since team already has internal spacing
+                } else if (i == 6) {
+                    // Between 6th and 7th (index 5 and 6)
+                    if (Mellow.config.showDot67) {
+                        result.append(MIDDLE_DOT).append("§r");
+                    } else if (!previousIsTeam) {
+                        result.append(" ");
+                    }
+                    // If previous is team, don't add any separator since team already has internal spacing
+                } else if (i == 7) {
+                    // Between 7th and 8th (index 6 and 7)
+                    if (Mellow.config.showDot78) {
+                        result.append(MIDDLE_DOT).append("§r");
+                    } else if (!previousIsTeam) {
+                        result.append(" ");
+                    }
+                    // If previous is team, don't add any separator since team already has internal spacing
+                } else if (i == 8) {
+                    // Between 8th and 9th (index 7 and 8)
+                    if (Mellow.config.showDot89) {
+                        result.append(MIDDLE_DOT).append("§r");
+                    } else if (!previousIsTeam) {
+                        result.append(" ");
+                    }
+                    // If previous is team, don't add any separator since team already has internal spacing
+                } else if (i == 9) {
+                    // Between 9th and 10th (index 8 and 9)
+                    if (Mellow.config.showDot910) {
                         result.append(MIDDLE_DOT).append("§r");
                     } else if (!previousIsTeam) {
                         result.append(" ");
