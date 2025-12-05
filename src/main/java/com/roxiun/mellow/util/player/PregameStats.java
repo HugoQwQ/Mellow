@@ -89,7 +89,7 @@ public class PregameStats {
 
         String username = chatMatch.group(1);
 
-        //if (username.equalsIgnoreCase(mc.thePlayer.getName())) return;
+        if (username.equalsIgnoreCase(mc.thePlayer.getName())) return;
         if (!alreadyLookedUp.add(username.toLowerCase())) return;
 
         new Thread(

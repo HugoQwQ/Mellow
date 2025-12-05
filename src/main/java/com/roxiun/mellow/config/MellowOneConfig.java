@@ -2,6 +2,7 @@ package com.roxiun.mellow.config;
 
 import cc.polyfrost.oneconfig.config.Config;
 import cc.polyfrost.oneconfig.config.annotations.Button;
+import cc.polyfrost.oneconfig.config.annotations.Checkbox;
 import cc.polyfrost.oneconfig.config.annotations.Dropdown;
 import cc.polyfrost.oneconfig.config.annotations.HUD;
 import cc.polyfrost.oneconfig.config.annotations.Info;
@@ -31,6 +32,82 @@ public class MellowOneConfig extends Config {
 
     @Switch(name = "Print Stats to Chat", subcategory = "General")
     public boolean printStats = false;
+
+    // Tab Stats Configuration
+    @Switch(name = "Show Urchin Tags in Tab", subcategory = "Tab Stats")
+    public boolean showUrchinTagsInTab = true;
+
+    @Switch(name = "Show Seraph Tags in Tab", subcategory = "Tab Stats")
+    public boolean showSeraphTagsInTab = true;
+
+    @Switch(name = "Show Stars with Brackets", subcategory = "Tab Stats")
+    public boolean showStarsWithBrackets = true;
+
+    @Switch(name = "Show Nick with Brackets", subcategory = "Tab Stats")
+    public boolean showNickWithBrackets = true;
+
+    @Info(
+        text = "Set the order of stats in the tab list",
+        type = InfoType.INFO,
+        size = OptionSize.DUAL,
+        subcategory = "Tab Stats"
+    )
+    public static boolean ignoredStatsOrderInfo;
+
+    @Dropdown(
+        name = "First Stat",
+        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        subcategory = "Tab Stats"
+    )
+    public int customStat1 = 0;
+
+    @Dropdown(
+        name = "Second Stat",
+        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        subcategory = "Tab Stats"
+    )
+    public int customStat2 = 1; // Stars
+
+    @Dropdown(
+        name = "Third Stat",
+        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        subcategory = "Tab Stats"
+    )
+    public int customStat3 = 2; // Name
+
+    @Dropdown(
+        name = "Fourth Stat",
+        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        subcategory = "Tab Stats"
+    )
+    public int customStat4 = 3; // FKDR
+
+    @Dropdown(
+        name = "Fifth Stat",
+        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        subcategory = "Tab Stats"
+    )
+    public int customStat5 = 4; // Winstreak
+
+    @Info(
+        text = "Toggle dots between stats",
+        type = InfoType.INFO,
+        size = OptionSize.DUAL,
+        subcategory = "Tab Stats"
+    )
+    public static boolean ignoredDotsInfo;
+
+    @Checkbox(name = "Show Dot Between 1st and 2nd", subcategory = "Tab Stats")
+    public boolean showDot12 = false;
+
+    @Checkbox(name = "Show Dot Between 2nd and 3rd", subcategory = "Tab Stats")
+    public boolean showDot23 = false;
+
+    @Checkbox(name = "Show Dot Between 3rd and 4th", subcategory = "Tab Stats")
+    public boolean showDot34 = true;
+
+    @Checkbox(name = "Show Dot Between 4th and 5th", subcategory = "Tab Stats")
+    public boolean showDot45 = true;
 
     @HUD(name = "Emerald Counter HUD", category = "HUD")
     public EmeraldCounterHUD emeraldCounterHUD = new EmeraldCounterHUD();
