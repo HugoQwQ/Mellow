@@ -69,4 +69,31 @@ public class PlayerProfile {
     public boolean isSeraphTagged() {
         return seraphTags != null && !seraphTags.isEmpty();
     }
+
+    public TabStats getTabStats() {
+        // Format numbers with appropriate formatting including colors
+        String formattedWins = getBedwarsPlayer().getFormattedWinsWithColor();
+        String formattedBeds = getBedwarsPlayer().getFormattedBedsWithColor();
+        String formattedFinals =
+            getBedwarsPlayer().getFormattedFinalsWithColor();
+        String formattedFkdr =
+            bedwarsPlayer.getFkdrColor() + bedwarsPlayer.getFormattedFkdr();
+        String formattedWinstreak =
+            getBedwarsPlayer().getFormattedWinstreakWithColor();
+        String formattedWLR = getBedwarsPlayer().getFormattedWLRWithColor();
+        String formattedBBLR = getBedwarsPlayer().getFormattedBBLRWithColor();
+
+        return new TabStats(
+            urchinTags,
+            seraphTags,
+            bedwarsPlayer.getStars(),
+            formattedFkdr,
+            formattedWinstreak,
+            formattedWLR,
+            formattedBBLR,
+            formattedWins,
+            formattedBeds,
+            formattedFinals
+        );
+    }
 }

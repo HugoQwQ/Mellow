@@ -101,6 +101,19 @@ public class HypixelApiUtils {
         int winstreak = bedwarsStats.has("winstreak")
             ? bedwarsStats.get("winstreak").getAsInt()
             : 0;
+        int wins = bedwarsStats.has("wins_bedwars")
+            ? bedwarsStats.get("wins_bedwars").getAsInt()
+            : 0;
+        int losses = bedwarsStats.has("losses_bedwars")
+            ? bedwarsStats.get("losses_bedwars").getAsInt()
+            : 0;
+        int bedsBroken = bedwarsStats.has("beds_broken_bedwars")
+            ? bedwarsStats.get("beds_broken_bedwars").getAsInt()
+            : 0;
+        int bedsLost = bedwarsStats.has("beds_lost_bedwars")
+            ? bedwarsStats.get("beds_lost_bedwars").getAsInt()
+            : 0;
+        int finals = finalKills + finalDeaths; // Calculate finals as finalKills + finalDeaths
 
         return new BedwarsPlayer(
             name,
@@ -108,7 +121,12 @@ public class HypixelApiUtils {
             fkdr,
             winstreak,
             finalKills,
-            finalDeaths
+            finalDeaths,
+            wins,
+            losses,
+            bedsBroken,
+            bedsLost,
+            finals
         );
     }
 }

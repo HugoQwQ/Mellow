@@ -56,35 +56,95 @@ public class MellowOneConfig extends Config {
 
     @Dropdown(
         name = "First Stat",
-        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
         subcategory = "Tab Stats"
     )
     public int customStat1 = 0;
 
     @Dropdown(
         name = "Second Stat",
-        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
         subcategory = "Tab Stats"
     )
     public int customStat2 = 1; // Stars
 
     @Dropdown(
         name = "Third Stat",
-        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
         subcategory = "Tab Stats"
     )
     public int customStat3 = 2; // Name
 
     @Dropdown(
         name = "Fourth Stat",
-        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
         subcategory = "Tab Stats"
     )
     public int customStat4 = 3; // FKDR
 
     @Dropdown(
         name = "Fifth Stat",
-        options = { "Team", "Stars", "Name", "FKDR", "Winstreak", "None" },
+        options = {
+            "Team",
+            "Stars",
+            "Name",
+            "FKDR",
+            "Winstreak",
+            "WLR",
+            "BBLR",
+            "Wins",
+            "Beds",
+            "Finals",
+            "None",
+        },
         subcategory = "Tab Stats"
     )
     public int customStat5 = 4; // Winstreak

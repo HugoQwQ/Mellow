@@ -70,19 +70,7 @@ public class StatsChecker {
 
                 // Populate TabStats for the tab list
                 if (config.tabStats) {
-                    String winstreak = "";
-                    if (player.getWinstreak() > 0) {
-                        winstreak = FormattingUtils.formatWinstreak(
-                            String.valueOf(player.getWinstreak())
-                        );
-                    }
-                    TabStats newTabStats = new TabStats(
-                        profile.getUrchinTags(),
-                        profile.getSeraphTags(),
-                        player.getStars(),
-                        player.getFkdrColor() + player.getFormattedFkdr(),
-                        winstreak
-                    );
+                    TabStats newTabStats = profile.getTabStats();
                     tabStats.put(playerName, newTabStats);
                 }
 

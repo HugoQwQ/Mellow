@@ -70,7 +70,17 @@ public class BedwarsCommand extends CommandBase {
                 player.getStars() +
                 " §7|§r FKDR: " +
                 player.getFkdrColor() +
-                player.getFormattedFkdr();
+                player.getFormattedFkdr() +
+                " §7|§r WLR: " +
+                player.getFormattedWLRWithColor() +
+                " §7|§r BBLR: " +
+                player.getFormattedBBLRWithColor() +
+                " §7|§r Wins: " +
+                player.getFormattedWinsWithColor() +
+                " §7|§r Beds: " +
+                player.getFormattedBedsWithColor() +
+                " §7|§r Finals: " +
+                player.getFormattedFinalsWithColor();
 
             Minecraft.getMinecraft().addScheduledTask(() ->
                 ChatUtils.sendCommandMessage(sender, statsMessage)

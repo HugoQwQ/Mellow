@@ -65,7 +65,12 @@ public class GuiPlayerTabOverlayMixin {
                     null, // seraphTags
                     null, // stars
                     null, // fkdr
-                    null // winstreak
+                    null, // winstreak
+                    null, // wlr
+                    null, // bblr
+                    null, // wins
+                    null, // beds
+                    null // finals
                 );
 
                 newDisplayName = formatDisplayNameWithStats(
@@ -91,7 +96,12 @@ public class GuiPlayerTabOverlayMixin {
                     null, // seraphTags
                     null, // stars
                     null, // fkdr
-                    null // winstreak
+                    null, // winstreak
+                    null, // wlr
+                    null, // bblr
+                    null, // wins
+                    null, // beds
+                    null // finals
                 );
 
                 newDisplayName = formatDisplayNameWithStats(
@@ -342,7 +352,32 @@ public class GuiPlayerTabOverlayMixin {
                     return new String[] { stats.getWinstreak(), "false" };
                 }
                 break;
-            case 5: // None
+            case 5: // WLR
+                if (stats.getWlr() != null && !stats.getWlr().isEmpty()) {
+                    return new String[] { stats.getWlr(), "false" }; // The color is already included in the string
+                }
+                break;
+            case 6: // BBLR
+                if (stats.getBblr() != null && !stats.getBblr().isEmpty()) {
+                    return new String[] { stats.getBblr(), "false" }; // The color is already included in the string (if implemented)
+                }
+                break;
+            case 7: // Wins
+                if (stats.getWins() != null && !stats.getWins().isEmpty()) {
+                    return new String[] { stats.getWins(), "false" }; // The color is already included in the string
+                }
+                break;
+            case 8: // Beds
+                if (stats.getBeds() != null && !stats.getBeds().isEmpty()) {
+                    return new String[] { stats.getBeds(), "false" }; // The color is already included in the string
+                }
+                break;
+            case 9: // Finals
+                if (stats.getFinals() != null && !stats.getFinals().isEmpty()) {
+                    return new String[] { stats.getFinals(), "false" }; // The color is already included in the string
+                }
+                break;
+            case 10: // None
                 return null;
         }
         return null;
