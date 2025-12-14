@@ -107,6 +107,9 @@ public class ChatHandler {
                 }
             })
                 .start();
+            if (config.autoWho) {
+                mc.thePlayer.sendChatMessage("/who");
+            }
         }
 
         if (message.startsWith("ONLINE:")) {
