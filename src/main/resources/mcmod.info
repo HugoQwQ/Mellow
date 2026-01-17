@@ -7,7 +7,7 @@
     "mcversion": "${mcVersionStr}",
     "authorList": ["HugoQwQ", "Strawberry", "melissalmao", "xanning", "Roxiun"],
     "credits": "melissalmao and xanning for og mod",
-    "logoFile": "",
+    "logoFile": "assets/mellow/textures/logo.gif",
     "screenshots": [],
     "dependencies": []
   }
