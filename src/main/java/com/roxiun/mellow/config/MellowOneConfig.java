@@ -283,7 +283,7 @@ public class MellowOneConfig extends Config {
 
     @Info(
             text =
-                    "Native Hypixel requires an API key obtained from Hypixel by running /api new in-game",
+                    "Native Hypixel requires an API key obtained from Hypixel Developer Dashboard",
             type = InfoType.INFO,
             size = OptionSize.DUAL,
             subcategory = "Stats")
