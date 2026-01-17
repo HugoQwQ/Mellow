@@ -2,7 +2,7 @@
 
 A fork of Mellow, a stats mod for Hypixel BedWars &amp; Duels adding some additional features.
 
-# Features
+## Features
 
 - Adding Native Hypixel API support
 
