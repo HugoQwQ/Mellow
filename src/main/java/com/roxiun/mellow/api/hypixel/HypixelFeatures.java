@@ -7,7 +7,8 @@ import net.hypixel.modapi.packet.impl.clientbound.event.ClientboundLocationPacke
 public class HypixelFeatures {
 
     //
-    // thanks yedelo - https://github.com/Yedelo/YedelMod/blob/master/src/main/java/at/yedel/yedelmod/features/major/BedwarsFeatures.java
+    // thanks yedelo -
+    // https://github.com/Yedelo/YedelMod/blob/master/src/main/java/at/yedel/yedelmod/features/major/BedwarsFeatures.java
     private static final HypixelFeatures INSTANCE = new HypixelFeatures();
 
     private boolean inBedwars;
@@ -29,18 +30,16 @@ public class HypixelFeatures {
     }
 
     private HypixelFeatures() {
-        HypixelModAPI.getInstance().registerHandler(
-            ClientboundLocationPacket.class,
-            this::handleLocationPacket
-        );
+        HypixelModAPI.getInstance()
+                .registerHandler(ClientboundLocationPacket.class, this::handleLocationPacket);
     }
 
     private void handleLocationPacket(ClientboundLocationPacket packet) {
         boolean wasInBedwars = inBedwars;
         inBedwars =
-            packet.getServerType().isPresent() &&
-            packet.getServerType().get() == GameType.BEDWARS &&
-            !packet.getLobbyName().isPresent();
+                packet.getServerType().isPresent()
+                        && packet.getServerType().get() == GameType.BEDWARS
+                        && !packet.getLobbyName().isPresent();
 
         // Reset if we just left a Bedwars game
         // if (wasInBedwars && !inBedwars) {
@@ -100,7 +99,8 @@ public class HypixelFeatures {
             }
         }
 
-        // Update diamond timer logic - diamonds start after 16 seconds (common timing for diamond generation)
+        // Update diamond timer logic - diamonds start after 16 seconds (common timing for diamond
+        // generation)
         if (secondsSinceGameStart == 1) {
             diamondStage = 1;
             timeUntilDiamond = 30; // Diamond tier 1: 30 seconds (same for doubles/fours)

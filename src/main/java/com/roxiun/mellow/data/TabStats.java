@@ -18,42 +18,29 @@ public class TabStats {
     private final String finals;
 
     public TabStats(
-        List<UrchinTag> urchinTags,
-        String stars,
-        String fkdr,
-        String winstreak,
-        String wlr,
-        String bblr,
-        String wins,
-        String beds,
-        String finals
-    ) {
-        this(
-            urchinTags,
-            null,
-            stars,
-            fkdr,
-            winstreak,
-            wlr,
-            bblr,
-            wins,
-            beds,
-            finals
-        );
+            List<UrchinTag> urchinTags,
+            String stars,
+            String fkdr,
+            String winstreak,
+            String wlr,
+            String bblr,
+            String wins,
+            String beds,
+            String finals) {
+        this(urchinTags, null, stars, fkdr, winstreak, wlr, bblr, wins, beds, finals);
     }
 
     public TabStats(
-        List<UrchinTag> urchinTags,
-        List<SeraphTag> seraphTags,
-        String stars,
-        String fkdr,
-        String winstreak,
-        String wlr,
-        String bblr,
-        String wins,
-        String beds,
-        String finals
-    ) {
+            List<UrchinTag> urchinTags,
+            List<SeraphTag> seraphTags,
+            String stars,
+            String fkdr,
+            String winstreak,
+            String wlr,
+            String bblr,
+            String wins,
+            String beds,
+            String finals) {
         this.urchinTags = urchinTags;
         this.seraphTags = seraphTags;
         this.stars = stars;

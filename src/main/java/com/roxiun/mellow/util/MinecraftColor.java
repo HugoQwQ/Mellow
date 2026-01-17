@@ -26,7 +26,8 @@ public enum MinecraftColor {
     private final int green;
     private final int blue;
 
-    MinecraftColor(String displayName, EnumChatFormatting formatting, int red, int green, int blue) {
+    MinecraftColor(
+            String displayName, EnumChatFormatting formatting, int red, int green, int blue) {
         this.displayName = displayName;
         this.formatting = formatting;
         this.red = red;

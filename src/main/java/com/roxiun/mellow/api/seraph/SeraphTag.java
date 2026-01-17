@@ -9,7 +9,8 @@ public class SeraphTag {
     private final String text;
     private final int textColor;
 
-    public SeraphTag(String icon, String tooltip, int color, String tagName, String text, int textColor) {
+    public SeraphTag(
+            String icon, String tooltip, int color, String tagName, String text, int textColor) {
         this.icon = icon;
         this.tooltip = tooltip;
         this.color = color;

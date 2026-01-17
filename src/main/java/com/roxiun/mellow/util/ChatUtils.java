@@ -13,17 +13,13 @@ public class ChatUtils {
 
     public static void sendMessage(String message) {
         if (Minecraft.getMinecraft().thePlayer == null) return;
-        Minecraft.getMinecraft().thePlayer.addChatMessage(
-            new ChatComponentText(PREFIX + message)
-        );
+        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(PREFIX + message));
     }
 
     public static void sendMessage(IChatComponent message) {
         if (Minecraft.getMinecraft().thePlayer == null) return;
         IChatComponent prefixComponent = new ChatComponentText(PREFIX);
-        Minecraft.getMinecraft().thePlayer.addChatMessage(
-            prefixComponent.appendSibling(message)
-        );
+        Minecraft.getMinecraft().thePlayer.addChatMessage(prefixComponent.appendSibling(message));
     }
 
     public static void sendMultilineMessage(String message) {
@@ -33,12 +29,8 @@ public class ChatUtils {
     public static void sendMultilineMessage(IChatComponent message) {
         if (Minecraft.getMinecraft().thePlayer == null) return;
 
-        IChatComponent prefixComponent = new ChatComponentText(
-            MULTILINE_PREFIX
-        );
-        Minecraft.getMinecraft().thePlayer.addChatMessage(
-            prefixComponent.appendSibling(message)
-        );
+        IChatComponent prefixComponent = new ChatComponentText(MULTILINE_PREFIX);
+        Minecraft.getMinecraft().thePlayer.addChatMessage(prefixComponent.appendSibling(message));
     }
 
     public static void sendMultilineMessage(List<String> messages) {
@@ -49,43 +41,26 @@ public class ChatUtils {
         }
     }
 
-    public static void sendMultilineCommandMessage(
-        ICommandSender sender,
-        String message
-    ) {
+    public static void sendMultilineCommandMessage(ICommandSender sender, String message) {
         sendMultilineCommandMessage(sender, new ChatComponentText(message));
     }
 
-    public static void sendMultilineCommandMessage(
-        ICommandSender sender,
-        IChatComponent message
-    ) {
-        IChatComponent prefixComponent = new ChatComponentText(
-            MULTILINE_PREFIX
-        );
+    public static void sendMultilineCommandMessage(ICommandSender sender, IChatComponent message) {
+        IChatComponent prefixComponent = new ChatComponentText(MULTILINE_PREFIX);
         sender.addChatMessage(prefixComponent.appendSibling(message));
     }
 
-    public static void sendMultilineCommandMessage(
-        ICommandSender sender,
-        List<String> messages
-    ) {
+    public static void sendMultilineCommandMessage(ICommandSender sender, List<String> messages) {
         for (String msg : messages) {
             sendMultilineCommandMessage(sender, msg); // reuse the String version
         }
     }
 
-    public static void sendCommandMessage(
-        ICommandSender sender,
-        String message
-    ) {
+    public static void sendCommandMessage(ICommandSender sender, String message) {
         sender.addChatMessage(new ChatComponentText(PREFIX + message));
     }
 
-    public static void sendCommandMessage(
-        ICommandSender sender,
-        IChatComponent message
-    ) {
+    public static void sendCommandMessage(ICommandSender sender, IChatComponent message) {
         IChatComponent prefixComponent = new ChatComponentText(PREFIX);
         sender.addChatMessage(prefixComponent.appendSibling(message));
     }

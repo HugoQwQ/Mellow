@@ -12,10 +12,7 @@ public class ClearCacheCommand extends CommandBase {
     private final PlayerCache playerCache;
     private final Map<String, TabStats> tabStats;
 
-    public ClearCacheCommand(
-        PlayerCache playerCache,
-        Map<String, TabStats> tabStats
-    ) {
+    public ClearCacheCommand(PlayerCache playerCache, Map<String, TabStats> tabStats) {
         this.playerCache = playerCache;
         this.tabStats = tabStats;
     }

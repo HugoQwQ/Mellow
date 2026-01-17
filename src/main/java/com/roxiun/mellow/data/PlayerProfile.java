@@ -15,21 +15,16 @@ public class PlayerProfile {
     private final long lastUpdated;
 
     public PlayerProfile(
-        String uuid,
-        String name,
-        BedwarsPlayer bedwarsPlayer,
-        List<UrchinTag> urchinTags
-    ) {
+            String uuid, String name, BedwarsPlayer bedwarsPlayer, List<UrchinTag> urchinTags) {
         this(uuid, name, bedwarsPlayer, urchinTags, null);
     }
 
     public PlayerProfile(
-        String uuid,
-        String name,
-        BedwarsPlayer bedwarsPlayer,
-        List<UrchinTag> urchinTags,
-        List<SeraphTag> seraphTags
-    ) {
+            String uuid,
+            String name,
+            BedwarsPlayer bedwarsPlayer,
+            List<UrchinTag> urchinTags,
+            List<SeraphTag> seraphTags) {
         this.uuid = uuid;
         this.name = name;
         this.bedwarsPlayer = bedwarsPlayer;
@@ -74,26 +69,22 @@ public class PlayerProfile {
         // Format numbers with appropriate formatting including colors
         String formattedWins = getBedwarsPlayer().getFormattedWinsWithColor();
         String formattedBeds = getBedwarsPlayer().getFormattedBedsWithColor();
-        String formattedFinals =
-            getBedwarsPlayer().getFormattedFinalsWithColor();
-        String formattedFkdr =
-            bedwarsPlayer.getFkdrColor() + bedwarsPlayer.getFormattedFkdr();
-        String formattedWinstreak =
-            getBedwarsPlayer().getFormattedWinstreakWithColor();
+        String formattedFinals = getBedwarsPlayer().getFormattedFinalsWithColor();
+        String formattedFkdr = bedwarsPlayer.getFkdrColor() + bedwarsPlayer.getFormattedFkdr();
+        String formattedWinstreak = getBedwarsPlayer().getFormattedWinstreakWithColor();
         String formattedWLR = getBedwarsPlayer().getFormattedWLRWithColor();
         String formattedBBLR = getBedwarsPlayer().getFormattedBBLRWithColor();
 
         return new TabStats(
-            urchinTags,
-            seraphTags,
-            bedwarsPlayer.getStars(),
-            formattedFkdr,
-            formattedWinstreak,
-            formattedWLR,
-            formattedBBLR,
-            formattedWins,
-            formattedBeds,
-            formattedFinals
-        );
+                urchinTags,
+                seraphTags,
+                bedwarsPlayer.getStars(),
+                formattedFkdr,
+                formattedWinstreak,
+                formattedWLR,
+                formattedBBLR,
+                formattedWins,
+                formattedBeds,
+                formattedFinals);
     }
 }

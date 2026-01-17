@@ -17,18 +17,17 @@ public class BedwarsPlayer {
     private final int finals;
 
     public BedwarsPlayer(
-        String name,
-        String stars,
-        double fkdr,
-        int winstreak,
-        int finalKills,
-        int finalDeaths,
-        int wins,
-        int losses,
-        int bedsBroken,
-        int bedsLost,
-        int finals
-    ) {
+            String name,
+            String stars,
+            double fkdr,
+            int winstreak,
+            int finalKills,
+            int finalDeaths,
+            int wins,
+            int losses,
+            int bedsBroken,
+            int bedsLost,
+            int finals) {
         this.name = name;
         this.stars = stars;
         this.fkdr = fkdr;

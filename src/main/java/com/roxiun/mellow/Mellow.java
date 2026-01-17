@@ -75,82 +75,55 @@ public class Mellow {
         AuroraApi auroraApi = new AuroraApi();
 
         // Cache
-        playerCache = new PlayerCache(
-            mojangApi,
-            getStatsProvider(),
-            urchinApi,
-            seraphApi,
-            config.urchinKey,
-            config.seraphKey,
-            config
-        );
+        playerCache =
+                new PlayerCache(
+                        mojangApi,
+                        getStatsProvider(),
+                        urchinApi,
+                        seraphApi,
+                        config.urchinKey,
+                        config.seraphKey,
+                        config);
 
         nickUtils = new NickUtils(playerCache, config);
 
         // Utils
         TagUtils tagUtils = new TagUtils(this, blacklistManager);
         HypixelApi hypixelApi = new HypixelApi(this, tagUtils);
-        NumberDenicker numberDenicker = new NumberDenicker(
-            config,
-            nickUtils,
-            auroraApi
-        );
-        PregameStats pregameStats = new PregameStats(
-            playerCache,
-            config,
-            blacklistManager
-        );
+        NumberDenicker numberDenicker = new NumberDenicker(config, nickUtils, auroraApi);
+        PregameStats pregameStats = new PregameStats(playerCache, config, blacklistManager);
 
         // Tasks
-        StatsChecker statsChecker = new StatsChecker(
-            playerCache,
-            nickUtils,
-            config,
-            tabStats,
-            tagUtils,
-            blacklistManager
-        );
+        StatsChecker statsChecker =
+                new StatsChecker(
+                        playerCache, nickUtils, config, tabStats, tagUtils, blacklistManager);
 
         // Event Handlers
         MinecraftForge.EVENT_BUS.register(
-            new ChatHandler(
-                config,
-                nickUtils,
-                numberDenicker,
-                pregameStats,
-                planckeApi,
-                statsChecker,
-                playerCache
-            )
-        );
+                new ChatHandler(
+                        config,
+                        nickUtils,
+                        numberDenicker,
+                        pregameStats,
+                        planckeApi,
+                        statsChecker,
+                        playerCache));
         MinecraftForge.EVENT_BUS.register(
-            new WorldLoadHandler(numberDenicker, pregameStats, nickUtils)
-        );
-        MinecraftForge.EVENT_BUS.register(
-            new EmeraldTimerHandler(HypixelFeatures.getInstance())
-        );
+                new WorldLoadHandler(numberDenicker, pregameStats, nickUtils));
+        MinecraftForge.EVENT_BUS.register(new EmeraldTimerHandler(HypixelFeatures.getInstance()));
 
         // Commands
-        ClientCommandHandler.instance.registerCommand(
-            new BedwarsCommand(playerCache, config)
-        );
+        ClientCommandHandler.instance.registerCommand(new BedwarsCommand(playerCache, config));
         ClientCommandHandler.instance.registerCommand(new MellowCommand());
-        ClientCommandHandler.instance.registerCommand(
-            new ClearCacheCommand(playerCache, tabStats)
-        );
-        ClientCommandHandler.instance.registerCommand(
-            new DenickCommand(config, auroraApi)
-        );
+        ClientCommandHandler.instance.registerCommand(new ClearCacheCommand(playerCache, tabStats));
+        ClientCommandHandler.instance.registerCommand(new DenickCommand(config, auroraApi));
         ClientCommandHandler.instance.registerCommand(new SkinDenickCommand());
         ClientCommandHandler.instance.registerCommand(
-            new BlacklistCommand(blacklistManager, mojangApi)
-        );
+                new BlacklistCommand(blacklistManager, mojangApi));
         ClientCommandHandler.instance.registerCommand(
-            new UrchinCommand(urchinApi, mojangApi, config)
-        );
+                new UrchinCommand(urchinApi, mojangApi, config));
         ClientCommandHandler.instance.registerCommand(
-            new SeraphCommand(seraphApi, mojangApi, config)
-        );
+                new SeraphCommand(seraphApi, mojangApi, config));
     }
 
     public StatsProvider getStatsProvider() {

@@ -1,6 +1,5 @@
 package com.roxiun.mellow.util.bedwars;
 
-import com.roxiun.mellow.api.hypixel.HypixelFeatures;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,8 +8,7 @@ import java.util.regex.Pattern;
 
 public class BedwarsUpgradesTrapsManager {
 
-    private static final BedwarsUpgradesTrapsManager INSTANCE =
-        new BedwarsUpgradesTrapsManager();
+    private static final BedwarsUpgradesTrapsManager INSTANCE = new BedwarsUpgradesTrapsManager();
 
     // Track team upgrades
     private int sharpSwords = 0; // Sharpened Swords
@@ -129,10 +127,8 @@ public class BedwarsUpgradesTrapsManager {
         String cleaned = cleanMessage(message);
 
         // Check for trap triggered messages
-        Pattern trapPattern = Pattern.compile(
-            "^(.+?)\\s+Trap was set off!$",
-            Pattern.CASE_INSENSITIVE
-        );
+        Pattern trapPattern =
+                Pattern.compile("^(.+?)\\s+Trap was set off!$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = trapPattern.matcher(cleaned);
 
         if (matcher.matches()) {
@@ -148,10 +144,9 @@ public class BedwarsUpgradesTrapsManager {
         }
 
         // Handle trap removal messages
-        Pattern removePattern = Pattern.compile(
-            "^Removed\\s+(.+?)\\s+Trap from the queue!$",
-            Pattern.CASE_INSENSITIVE
-        );
+        Pattern removePattern =
+                Pattern.compile(
+                        "^Removed\\s+(.+?)\\s+Trap from the queue!$", Pattern.CASE_INSENSITIVE);
         Matcher removeMatcher = removePattern.matcher(cleaned);
 
         if (removeMatcher.matches()) {
@@ -177,9 +172,7 @@ public class BedwarsUpgradesTrapsManager {
             if (item.contains("IV")) return 4;
             if (item.contains("III")) return 3;
             if (item.contains("II")) return 2;
-            if (
-                item.contains("I") && !item.contains("V") && !item.contains("X")
-            ) return 1;
+            if (item.contains("I") && !item.contains("V") && !item.contains("X")) return 1;
         }
 
         // Look for numeric levels
@@ -215,87 +208,71 @@ public class BedwarsUpgradesTrapsManager {
 
     public List<String> getDisplayLines() {
         return getDisplayLinesWithFormatting(
-            false,
-            false,
-            221, // original purple red value for heading (close to light purple)
-            0, // original purple green value for heading
-            255, // original purple blue value for heading
-            255,
-            255, // white red value for text
-            255, // white green value for text
-            255, // white blue value for text
-            255
-        );
+                false, false, 221, // original purple red value for heading (close to light purple)
+                0, // original purple green value for heading
+                255, // original purple blue value for heading
+                255, 255, // white red value for text
+                255, // white green value for text
+                255, // white blue value for text
+                255);
     }
 
     public List<String> getDisplayLinesWithFormatting(
-        boolean useShortNames,
-        boolean useRomanNumerals,
-        int headingRed,
-        int headingGreen,
-        int headingBlue,
-        int headingAlpha,
-        int textRed,
-        int textGreen,
-        int textBlue,
-        int textAlpha
-    ) {
+            boolean useShortNames,
+            boolean useRomanNumerals,
+            int headingRed,
+            int headingGreen,
+            int headingBlue,
+            int headingAlpha,
+            int textRed,
+            int textGreen,
+            int textBlue,
+            int textAlpha) {
         List<String> lines = new ArrayList<>();
 
         // Create color codes for headings and text
-        String headingColorCode = String.format(
-            "§%s",
-            formatColorCode(headingRed, headingGreen, headingBlue, headingAlpha)
-        );
-        String textColorCode = String.format(
-            "§%s",
-            formatColorCode(textRed, textGreen, textBlue, textAlpha)
-        );
+        String headingColorCode =
+                String.format(
+                        "§%s",
+                        formatColorCode(headingRed, headingGreen, headingBlue, headingAlpha));
+        String textColorCode =
+                String.format("§%s", formatColorCode(textRed, textGreen, textBlue, textAlpha));
 
         // Add Upgrades heading
         lines.add(headingColorCode + "§lUpgrades:");
 
         // Add upgrade lines with short names support
         if (sharpSwords == 2) {
-            String name = useShortNames
-                ? getShortName("Sharpened Swords")
-                : "Sharpened Swords";
+            String name = useShortNames ? getShortName("Sharpened Swords") : "Sharpened Swords";
             String level = useRomanNumerals ? "II" : "2";
             lines.add(textColorCode + name + " §7" + level);
         } else if (sharpSwords == 1) {
-            String name = useShortNames
-                ? getShortName("Sharpened Swords")
-                : "Sharpened Swords";
+            String name = useShortNames ? getShortName("Sharpened Swords") : "Sharpened Swords";
             lines.add(textColorCode + name);
         }
 
         if (reinforcedArmor > 0) {
-            String name = useShortNames
-                ? getShortName("Reinforced Armor")
-                : "Reinforced Armor";
-            String level = useRomanNumerals
-                ? getRomanNumeral(reinforcedArmor)
-                : String.valueOf(reinforcedArmor);
+            String name = useShortNames ? getShortName("Reinforced Armor") : "Reinforced Armor";
+            String level =
+                    useRomanNumerals
+                            ? getRomanNumeral(reinforcedArmor)
+                            : String.valueOf(reinforcedArmor);
             lines.add(textColorCode + name + " §7" + level);
         }
 
         if (maniacMiner > 0) {
-            String name = useShortNames
-                ? getShortName("Maniac Miner")
-                : "Maniac Miner";
-            String level = useRomanNumerals
-                ? getRomanNumeral(maniacMiner)
-                : String.valueOf(maniacMiner);
+            String name = useShortNames ? getShortName("Maniac Miner") : "Maniac Miner";
+            String level =
+                    useRomanNumerals ? getRomanNumeral(maniacMiner) : String.valueOf(maniacMiner);
             lines.add(textColorCode + name + " §7" + level);
         }
 
         if (cushionedBoots > 0) {
-            String name = useShortNames
-                ? getShortName("Cushioned Boots")
-                : "Cushioned Boots";
-            String level = useRomanNumerals
-                ? getRomanNumeral(cushionedBoots)
-                : String.valueOf(cushionedBoots);
+            String name = useShortNames ? getShortName("Cushioned Boots") : "Cushioned Boots";
+            String level =
+                    useRomanNumerals
+                            ? getRomanNumeral(cushionedBoots)
+                            : String.valueOf(cushionedBoots);
             lines.add(textColorCode + name + " §7" + level);
         }
 
@@ -309,21 +286,17 @@ public class BedwarsUpgradesTrapsManager {
 
         if (deadShot > 0) {
             String name = useShortNames ? getShortName("deadShot") : "deadShot";
-            String level = useRomanNumerals
-                ? getRomanNumeral(deadShot)
-                : String.valueOf(deadShot);
+            String level = useRomanNumerals ? getRomanNumeral(deadShot) : String.valueOf(deadShot);
             lines.add(textColorCode + name + " §7" + level);
         }
 
-        if (
-            sharpSwords == 0 &&
-            reinforcedArmor == 0 &&
-            maniacMiner == 0 &&
-            cushionedBoots == 0 &&
-            forgeLevel == 0 &&
-            !healPool &&
-            deadShot == 0
-        ) {
+        if (sharpSwords == 0
+                && reinforcedArmor == 0
+                && maniacMiner == 0
+                && cushionedBoots == 0
+                && forgeLevel == 0
+                && !healPool
+                && deadShot == 0) {
             lines.add(textColorCode + "None");
         }
 
@@ -336,9 +309,7 @@ public class BedwarsUpgradesTrapsManager {
         // Add trap lines with short names support
         if (!activeTraps.isEmpty()) {
             for (String trap : activeTraps) {
-                String formattedTrap = useShortNames
-                    ? getShortTrapName(trap)
-                    : trap;
+                String formattedTrap = useShortNames ? getShortTrapName(trap) : trap;
                 lines.add(textColorCode + formattedTrap);
             }
         } else {
@@ -351,7 +322,9 @@ public class BedwarsUpgradesTrapsManager {
     private String formatColorCode(int red, int green, int blue, int alpha) {
         // Convert RGB to Minecraft color code
         // We'll use the closest matching color code based on the RGB values
-        // Minecraft color codes: 0-black, 1-darkblue, 2-darkgreen, 3-darkaqua, 4-darkred, 5-darkpurple, 6-gold, 7-gray, 8-darkgray, 9-blue, a-green, b-aqua, c-red, d-lightpurple, e-yellow, f-white
+        // Minecraft color codes: 0-black, 1-darkblue, 2-darkgreen, 3-darkaqua, 4-darkred,
+        // 5-darkpurple, 6-gold, 7-gray, 8-darkgray, 9-blue, a-green, b-aqua, c-red, d-lightpurple,
+        // e-yellow, f-white
 
         // Check for exact or near matches to common Minecraft colors
         if (isCloseTo(red, green, blue, 0, 0, 0)) return "0"; // black
@@ -377,11 +350,7 @@ public class BedwarsUpgradesTrapsManager {
 
     private boolean isCloseTo(int r1, int g1, int b1, int r2, int g2, int b2) {
         // Check if the colors are close (within a tolerance of 20 for each component)
-        return (
-            Math.abs(r1 - r2) <= 20 &&
-            Math.abs(g1 - g2) <= 20 &&
-            Math.abs(b1 - b2) <= 20
-        );
+        return (Math.abs(r1 - r2) <= 20 && Math.abs(g1 - g2) <= 20 && Math.abs(b1 - b2) <= 20);
     }
 
     private String getShortName(String fullName) {
@@ -428,9 +397,7 @@ public class BedwarsUpgradesTrapsManager {
                 // For other cases, try to match common patterns
                 String lower = name.toLowerCase();
                 if (lower.contains("fatigue")) return "Fatigue";
-                if (
-                    lower.contains("reveal") || lower.contains("alarm")
-                ) return "Reveal";
+                if (lower.contains("reveal") || lower.contains("alarm")) return "Reveal";
                 if (lower.contains("counter")) return "Jump";
                 if (lower.contains("blind")) return "Blind";
                 return name;

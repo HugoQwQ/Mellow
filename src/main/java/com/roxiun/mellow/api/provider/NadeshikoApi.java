@@ -17,14 +17,12 @@ public class NadeshikoApi implements StatsProvider {
     @Override
     public String fetchPlayerData(String uuid) {
         return HypixelApiUtils.fetchPlayerData(
-            "https://nadeshiko.io/player/" + uuid + "/network",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        );
+                "https://nadeshiko.io/player/" + uuid + "/network",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
     }
 
     @Override
-    public BedwarsPlayer fetchPlayerStats(String playerName)
-        throws IOException {
+    public BedwarsPlayer fetchPlayerStats(String playerName) throws IOException {
         String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
         if (uuid == null) {
             uuid = mojangApi.fetchUUID(playerName);

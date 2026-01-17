@@ -33,17 +33,10 @@ public class ScaffoldCheck extends Check {
 
     @Override
     public void onPlayerTick(
-        AnticheatManager manager,
-        TickEvent.PlayerTickEvent event,
-        ACPlayerData data
-    ) {
+            AnticheatManager manager, TickEvent.PlayerTickEvent event, ACPlayerData data) {
         if (!Mellow.config.scaffoldCheckEnabled) return;
         EntityPlayer player = data.getPlayer();
-        if (
-            player == null ||
-            player == Minecraft.getMinecraft().thePlayer ||
-            player.isRiding()
-        ) {
+        if (player == null || player == Minecraft.getMinecraft().thePlayer || player.isRiding()) {
             return;
         }
 
@@ -53,21 +46,11 @@ public class ScaffoldCheck extends Check {
             return;
         }
 
-        ACPlayerData.PositionSample currentSample = samples.get(
-            samples.size() - 1
-        );
-        ACPlayerData.PositionSample prevSample1 = samples.get(
-            samples.size() - 2
-        );
-        ACPlayerData.PositionSample prevSample2 = samples.get(
-            samples.size() - 3
-        );
-        ACPlayerData.PositionSample prevSample3 = samples.get(
-            samples.size() - 4
-        );
-        ACPlayerData.PositionSample prevSample4 = samples.get(
-            samples.size() - 5
-        );
+        ACPlayerData.PositionSample currentSample = samples.get(samples.size() - 1);
+        ACPlayerData.PositionSample prevSample1 = samples.get(samples.size() - 2);
+        ACPlayerData.PositionSample prevSample2 = samples.get(samples.size() - 3);
+        ACPlayerData.PositionSample prevSample3 = samples.get(samples.size() - 4);
+        ACPlayerData.PositionSample prevSample4 = samples.get(samples.size() - 5);
 
         long tick = data.currentTick;
         double pitch = player.rotationPitch;
@@ -78,105 +61,72 @@ public class ScaffoldCheck extends Check {
         double speedXZ = Math.sqrt(speedXZSq);
 
         // Calculate speed and acceleration over a few ticks to smooth out noise
-        double speedY =
-            (prevSample1.pos.yCoord - prevSample2.pos.yCoord) * 20.0;
+        double speedY = (prevSample1.pos.yCoord - prevSample2.pos.yCoord) * 20.0;
         double avgAccelY =
-            50.0 *
-            (prevSample1.pos.yCoord -
-                prevSample2.pos.yCoord -
-                (prevSample3.pos.yCoord - prevSample4.pos.yCoord));
+                50.0
+                        * (prevSample1.pos.yCoord
+                                - prevSample2.pos.yCoord
+                                - (prevSample3.pos.yCoord - prevSample4.pos.yCoord));
 
-        double angleDiff = getMoveLookAngleDiff(
-            dx / 20.0,
-            dz / 20.0,
-            player.rotationYaw
-        );
+        double angleDiff = getMoveLookAngleDiff(dx / 20.0, dz / 20.0, player.rotationYaw);
 
         boolean flagged = false;
         String checkType = "";
 
-        if (
-            player.isSwingInProgress &&
-            player.hurtTime == 0 &&
-            pitch > 50.0 &&
-            speedXZSq > 9.0 &&
-            player.getHeldItem() != null &&
-            player.getHeldItem().getItem() instanceof ItemBlock &&
-            Math.abs(angleDiff) > 165.0 &&
-            speedXZSq < 100.0 &&
-            !isAlmostZero(avgAccelY)
-        ) {
-            double pitchFactor = Math.max(
-                0.0,
-                Math.min(1.0, (pitch - 50.0) / 40.0)
-            );
-            double angleFactor = Math.max(
-                0.0,
-                Math.min(1.0, (Math.abs(angleDiff) - 165.0) / 15.0)
-            );
+        if (player.isSwingInProgress
+                && player.hurtTime == 0
+                && pitch > 50.0
+                && speedXZSq > 9.0
+                && player.getHeldItem() != null
+                && player.getHeldItem().getItem() instanceof ItemBlock
+                && Math.abs(angleDiff) > 165.0
+                && speedXZSq < 100.0
+                && !isAlmostZero(avgAccelY)) {
+            double pitchFactor = Math.max(0.0, Math.min(1.0, (pitch - 50.0) / 40.0));
+            double angleFactor = Math.max(0.0, Math.min(1.0, (Math.abs(angleDiff) - 165.0) / 15.0));
 
             double baseVL = 0.0;
 
             if (speedY >= 4.0 && speedY <= 15.0 && avgAccelY > -25.0) {
                 checkType = "tower";
-                double ySpeedFactor = Math.max(
-                    0.0,
-                    Math.min(1.0, (speedY - 4.0) / 11.0)
-                );
-                double accelFactor = Math.max(
-                    0.0,
-                    Math.min(1.0, (avgAccelY + 25.0) / 25.0)
-                );
-                double severity = (pitchFactor * 0.3 +
-                    angleFactor * 0.3 +
-                    ySpeedFactor * 0.3 +
-                    accelFactor * 0.1);
+                double ySpeedFactor = Math.max(0.0, Math.min(1.0, (speedY - 4.0) / 11.0));
+                double accelFactor = Math.max(0.0, Math.min(1.0, (avgAccelY + 25.0) / 25.0));
+                double severity =
+                        (pitchFactor * 0.3
+                                + angleFactor * 0.3
+                                + ySpeedFactor * 0.3
+                                + accelFactor * 0.1);
                 baseVL = 3.0 + (severity * 3.0);
-            } else if (
-                speedY >= -1.0 &&
-                speedY <= 4.0 &&
-                Math.abs(speedY) > 0.005 &&
-                speedXZSq > 25.0
-            ) {
+            } else if (speedY >= -1.0
+                    && speedY <= 4.0
+                    && Math.abs(speedY) > 0.005
+                    && speedXZSq > 25.0) {
                 checkType = "horizontal";
-                double hSpeedFactor = Math.max(
-                    0.0,
-                    Math.min(1.0, (speedXZ - 5.0) / 5.0)
-                );
-                double severity = (pitchFactor * 0.3 +
-                    angleFactor * 0.3 +
-                    hSpeedFactor * 0.4);
+                double hSpeedFactor = Math.max(0.0, Math.min(1.0, (speedXZ - 5.0) / 5.0));
+                double severity = (pitchFactor * 0.3 + angleFactor * 0.3 + hSpeedFactor * 0.4);
                 baseVL = 3.0 + (severity * 3.0);
             }
 
             if (!checkType.isEmpty()) {
                 int consecutive = 0;
-                if (
-                    checkType.equals(data.lastScaffoldViolationType) &&
-                    (tick - data.lastScaffoldViolationTime) < 40
-                ) {
+                if (checkType.equals(data.lastScaffoldViolationType)
+                        && (tick - data.lastScaffoldViolationTime) < 40) {
                     consecutive = data.scaffoldConsecutiveViolations + 1;
                 }
                 data.scaffoldConsecutiveViolations = consecutive;
                 data.lastScaffoldViolationType = checkType;
                 data.lastScaffoldViolationTime = tick;
 
-                double consecutiveMultiplier =
-                    1.0 + (Math.min(consecutive, 5) * 0.2);
+                double consecutiveMultiplier = 1.0 + (Math.min(consecutive, 5) * 0.2);
                 double finalVL = baseVL * consecutiveMultiplier;
 
                 manager.flag(
-                    data,
-                    this,
-                    String.format(
-                        "type: %s, angle: %.1f, speed: %.2f, accelY: %.2f",
-                        checkType,
-                        angleDiff,
-                        speedXZ,
-                        avgAccelY
-                    ),
-                    finalVL
-                );
+                        data,
+                        this,
+                        String.format(
+                                "type: %s, angle: %.1f, speed: %.2f, accelY: %.2f",
+                                checkType, angleDiff, speedXZ, avgAccelY),
+                        finalVL);
                 flagged = true;
             }
         }

@@ -10,8 +10,7 @@ import net.minecraft.util.Vec3;
 public class ACPlayerData {
 
     private final EntityPlayer player;
-    public final Map<String, CheckData> checkDataMap =
-        new ConcurrentHashMap<>();
+    public final Map<String, CheckData> checkDataMap = new ConcurrentHashMap<>();
     public final List<PositionSample> positionHistory = new ArrayList<>();
     public Vec3 velocity;
     public Vec3 lastVelocity;
@@ -57,9 +56,7 @@ public class ACPlayerData {
     public void updatePosition(double x, double y, double z) {
         long now = System.currentTimeMillis();
         if (!positionHistory.isEmpty()) {
-            PositionSample lastSample = positionHistory.get(
-                positionHistory.size() - 1
-            );
+            PositionSample lastSample = positionHistory.get(positionHistory.size() - 1);
             long timeDelta = now - lastSample.timestamp;
             if (timeDelta > 0) {
                 this.lastVelocity = this.velocity;
@@ -67,11 +64,11 @@ public class ACPlayerData {
                 double dy = y - lastSample.pos.yCoord;
                 double dz = z - lastSample.pos.zCoord;
                 // Convert to per-second velocity
-                this.velocity = new Vec3(
-                    dx / (timeDelta / 1000.0),
-                    dy / (timeDelta / 1000.0),
-                    dz / (timeDelta / 1000.0)
-                );
+                this.velocity =
+                        new Vec3(
+                                dx / (timeDelta / 1000.0),
+                                dy / (timeDelta / 1000.0),
+                                dz / (timeDelta / 1000.0));
             }
         }
         positionHistory.add(new PositionSample(new Vec3(x, y, z), now));
@@ -88,10 +85,7 @@ public class ACPlayerData {
         if (player.getHeldItem() == null) {
             return false;
         }
-        return (
-            player.getHeldItem().getItem() instanceof
-                net.minecraft.item.ItemBlock
-        );
+        return (player.getHeldItem().getItem() instanceof net.minecraft.item.ItemBlock);
     }
 
     public static class PositionSample {

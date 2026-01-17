@@ -14,10 +14,7 @@ public class WorldLoadHandler {
     private final NickUtils nickUtils;
 
     public WorldLoadHandler(
-        NumberDenicker numberDenicker,
-        PregameStats pregameStats,
-        NickUtils nickUtils
-    ) {
+            NumberDenicker numberDenicker, PregameStats pregameStats, NickUtils nickUtils) {
         this.numberDenicker = numberDenicker;
         this.pregameStats = pregameStats;
         this.nickUtils = nickUtils;

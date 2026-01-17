@@ -12,9 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Implementation of StatsProvider using the Hypixel Public API v2.
- */
+/** Implementation of StatsProvider using the Hypixel Public API v2. */
 public class NativeHypixelApi implements StatsProvider {
 
     private final MojangApi mojangApi;
@@ -27,9 +25,7 @@ public class NativeHypixelApi implements StatsProvider {
         this.config = config;
     }
 
-    /**
-     * Fetches raw player data from the Hypixel API using a UUID.
-     */
+    /** Fetches raw player data from the Hypixel API using a UUID. */
     @Override
     public String fetchPlayerData(String uuid) {
         HttpURLConnection connection = null;
@@ -52,7 +48,8 @@ public class NativeHypixelApi implements StatsProvider {
             int responseCode = connection.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                try (BufferedReader in =
+                        new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     StringBuilder response = new StringBuilder();
                     String inputLine;
                     while ((inputLine = in.readLine()) != null) {
@@ -65,7 +62,8 @@ public class NativeHypixelApi implements StatsProvider {
                 return null;
             }
         } catch (Exception e) {
-            System.err.println("[Mellow] Exception occurred while requesting Hypixel API: " + e.getMessage());
+            System.err.println(
+                    "[Mellow] Exception occurred while requesting Hypixel API: " + e.getMessage());
             return null;
         } finally {
             if (connection != null) {
@@ -74,9 +72,7 @@ public class NativeHypixelApi implements StatsProvider {
         }
     }
 
-    /**
-     * Handles non-200 HTTP response codes and logs specific error details.
-     */
+    /** Handles non-200 HTTP response codes and logs specific error details. */
     private void handleErrorResponse(int code, HttpURLConnection conn) {
         switch (code) {
             case 403:
@@ -84,7 +80,10 @@ public class NativeHypixelApi implements StatsProvider {
                 break;
             case 429:
                 String reset = conn.getHeaderField("RateLimit-Reset");
-                System.err.println("[Mellow] Rate limit exceeded. Retry after " + (reset != null ? reset : "??") + " seconds.");
+                System.err.println(
+                        "[Mellow] Rate limit exceeded. Retry after "
+                                + (reset != null ? reset : "??")
+                                + " seconds.");
                 break;
             case 422:
                 System.err.println("[Mellow] Parameter error: Malformed UUID.");
@@ -94,9 +93,7 @@ public class NativeHypixelApi implements StatsProvider {
         }
     }
 
-    /**
-     * Retrieves and processes Bedwars statistics for a specific player name.
-     */
+    /** Retrieves and processes Bedwars statistics for a specific player name. */
     @Override
     public BedwarsPlayer fetchPlayerStats(String playerName) {
         String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
@@ -111,9 +108,7 @@ public class NativeHypixelApi implements StatsProvider {
         return parseNativeHypixelData(jsonResponse);
     }
 
-    /**
-     * Parses the JSON response from Hypixel into a BedwarsPlayer object.
-     */
+    /** Parses the JSON response from Hypixel into a BedwarsPlayer object. */
     private BedwarsPlayer parseNativeHypixelData(String json) {
         try {
             // Use the instance-based parse method for compatibility
@@ -131,7 +126,8 @@ public class NativeHypixelApi implements StatsProvider {
 
             JsonObject player = root.getAsJsonObject("player");
 
-            String displayName = player.has("displayname") ? player.get("displayname").getAsString() : "Unknown";
+            String displayName =
+                    player.has("displayname") ? player.get("displayname").getAsString() : "Unknown";
 
             String stars = "0";
             if (player.has("achievements")) {
@@ -141,8 +137,10 @@ public class NativeHypixelApi implements StatsProvider {
                 }
             }
 
-            JsonObject stats = player.has("stats") ? player.getAsJsonObject("stats") : new JsonObject();
-            JsonObject bw = stats.has("Bedwars") ? stats.getAsJsonObject("Bedwars") : new JsonObject();
+            JsonObject stats =
+                    player.has("stats") ? player.getAsJsonObject("stats") : new JsonObject();
+            JsonObject bw =
+                    stats.has("Bedwars") ? stats.getAsJsonObject("Bedwars") : new JsonObject();
 
             int finalKills = getInt(bw, "final_kills_bedwars");
             int finalDeaths = getInt(bw, "final_deaths_bedwars");
@@ -166,17 +164,14 @@ public class NativeHypixelApi implements StatsProvider {
                     losses,
                     bedsBroken,
                     bedsLost,
-                    finalKills
-            );
+                    finalKills);
         } catch (Exception e) {
             System.err.println("[Mellow] JSON parsing failed: " + e.getMessage());
             return null;
         }
     }
 
-    /**
-     * Safely retrieves an integer value from a JsonObject with a fallback to 0.
-     */
+    /** Safely retrieves an integer value from a JsonObject with a fallback to 0. */
     private int getInt(JsonObject obj, String key) {
         return (obj.has(key) && !obj.get(key).isJsonNull()) ? obj.get(key).getAsInt() : 0;
     }

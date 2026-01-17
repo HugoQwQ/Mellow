@@ -11,90 +11,82 @@ import java.util.List;
 
 public class BedwarsUpgradesTrapsHUD extends TextHud {
 
-    @Switch(
-        name = "Short Names",
-        description = "Use short names (Sharp, Prot, FF, Haste, etc.)"
-    )
+    @Switch(name = "Short Names", description = "Use short names (Sharp, Prot, FF, Haste, etc.)")
     public boolean shortNames = false;
 
     @Switch(
-        name = "Roman Numerals",
-        description = "Use Roman numerals (I, II, III, IV) instead of numbers"
-    )
+            name = "Roman Numerals",
+            description = "Use Roman numerals (I, II, III, IV) instead of numbers")
     public boolean romanNumerals = true;
 
     @Dropdown(
-        name = "Heading Color",
-        description = "Color for section headings (Upgrades/Traps)",
-        options = {
-            "Black",
-            "Dark Blue",
-            "Dark Green",
-            "Dark Aqua",
-            "Dark Red",
-            "Dark Purple",
-            "Gold",
-            "Gray",
-            "Dark Gray",
-            "Blue",
-            "Green",
-            "Aqua",
-            "Red",
-            "Light Purple",
-            "Yellow",
-            "White",
-        }
-    )
+            name = "Heading Color",
+            description = "Color for section headings (Upgrades/Traps)",
+            options = {
+                "Black",
+                "Dark Blue",
+                "Dark Green",
+                "Dark Aqua",
+                "Dark Red",
+                "Dark Purple",
+                "Gold",
+                "Gray",
+                "Dark Gray",
+                "Blue",
+                "Green",
+                "Aqua",
+                "Red",
+                "Light Purple",
+                "Yellow",
+                "White",
+            })
     public int headingColorIndex = 5; // Index for dark purple
 
     @Dropdown(
-        name = "Text Color",
-        description = "Color for upgrade and trap names",
-        options = {
-            "Black",
-            "Dark Blue",
-            "Dark Green",
-            "Dark Aqua",
-            "Dark Red",
-            "Dark Purple",
-            "Gold",
-            "Gray",
-            "Dark Gray",
-            "Blue",
-            "Green",
-            "Aqua",
-            "Red",
-            "Light Purple",
-            "Yellow",
-            "White",
-        }
-    )
+            name = "Text Color",
+            description = "Color for upgrade and trap names",
+            options = {
+                "Black",
+                "Dark Blue",
+                "Dark Green",
+                "Dark Aqua",
+                "Dark Red",
+                "Dark Purple",
+                "Gold",
+                "Gray",
+                "Dark Gray",
+                "Blue",
+                "Green",
+                "Aqua",
+                "Red",
+                "Light Purple",
+                "Yellow",
+                "White",
+            })
     public int textColorIndex = 15; // Index for White (matches original white &f)
 
     public BedwarsUpgradesTrapsHUD() {
         super(
-            true, // enabled by default
-            5, // x
-            65, // y - placed below emerald and diamond counters
-            1, // normal size
-            false, // no background it's ugly
-            false, // no rounded corners it's also ugly
-            0, // NO rounded corners
-            0, // no x padding why would i want it
-            0, // no y padding for the same reason
-            new OneColor(0, 0, 0, 0), // no background color
-            false, // no border
-            0, // NO border
-            new OneColor(0, 0, 0, 0) // no border color
-        );
+                true, // enabled by default
+                5, // x
+                65, // y - placed below emerald and diamond counters
+                1, // normal size
+                false, // no background it's ugly
+                false, // no rounded corners it's also ugly
+                0, // NO rounded corners
+                0, // no x padding why would i want it
+                0, // no y padding for the same reason
+                new OneColor(0, 0, 0, 0), // no background color
+                false, // no border
+                0, // NO border
+                new OneColor(0, 0, 0, 0) // no border color
+                );
         textType = 1;
     }
 
     @Override
     public boolean shouldShow() {
-        return (
-            super.shouldShow() && HypixelFeatures.getInstance().isInBedwars()
-        );
+        return (super.shouldShow() && HypixelFeatures.getInstance().isInBedwars());
     }
 
     @Override
@@ -110,25 +102,23 @@ public class BedwarsUpgradesTrapsHUD extends TextHud {
             lines.add("§fBlindness Trap");
         } else {
             lines.clear();
-            MinecraftColor headingColor = MinecraftColor.fromIndex(
-                headingColorIndex
-            );
+            MinecraftColor headingColor = MinecraftColor.fromIndex(headingColorIndex);
             MinecraftColor textColor = MinecraftColor.fromIndex(textColorIndex);
 
             lines.addAll(
-                BedwarsUpgradesTrapsManager.getInstance().getDisplayLinesWithFormatting(
-                    shortNames,
-                    romanNumerals,
-                    headingColor.getRed(),
-                    headingColor.getGreen(),
-                    headingColor.getBlue(),
-                    255, // alpha is always 255 for Minecraft colors
-                    textColor.getRed(),
-                    textColor.getGreen(),
-                    textColor.getBlue(),
-                    255 // alpha is always 255 for Minecraft colors
-                )
-            );
+                    BedwarsUpgradesTrapsManager.getInstance()
+                            .getDisplayLinesWithFormatting(
+                                    shortNames,
+                                    romanNumerals,
+                                    headingColor.getRed(),
+                                    headingColor.getGreen(),
+                                    headingColor.getBlue(),
+                                    255, // alpha is always 255 for Minecraft colors
+                                    textColor.getRed(),
+                                    textColor.getGreen(),
+                                    textColor.getBlue(),
+                                    255 // alpha is always 255 for Minecraft colors
+                                    ));
         }
     }
 }

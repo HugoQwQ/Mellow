@@ -12,9 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class SeraphApi {
@@ -25,8 +22,7 @@ public class SeraphApi {
         this.mojangApi = mojangApi;
     }
 
-    public List<SeraphTag> fetchSeraphTags(String uuid, String seraphApiKey)
-        throws IOException {
+    public List<SeraphTag> fetchSeraphTags(String uuid, String seraphApiKey) throws IOException {
         try {
             // If the UUID is invalid for any reason, throw an exception
             if (uuid == null || uuid.equals("ERROR") || uuid.isEmpty()) {
@@ -47,18 +43,15 @@ public class SeraphApi {
 
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream())
-                );
+                BufferedReader in =
+                        new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String response = in.lines().collect(Collectors.joining());
                 in.close();
                 return parseTags(response);
             } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
                 return new ArrayList<>(); // Player has no tags
             } else {
-                throw new IOException(
-                    "Seraph API request failed with code: " + responseCode
-                );
+                throw new IOException("Seraph API request failed with code: " + responseCode);
             }
         } catch (IOException e) {
             // If request fails, return empty list
@@ -68,9 +61,7 @@ public class SeraphApi {
 
     private List<SeraphTag> parseTags(String response) {
         try {
-            JsonObject json = new JsonParser()
-                .parse(response)
-                .getAsJsonObject();
+            JsonObject json = new JsonParser().parse(response).getAsJsonObject();
             if (json.has("tags")) {
                 JsonArray tagsArray = json.getAsJsonArray("tags");
                 if (tagsArray.size() > 0) {
@@ -78,43 +69,23 @@ public class SeraphApi {
                     for (JsonElement tagElement : tagsArray) {
                         JsonObject tagObj = tagElement.getAsJsonObject();
 
-                        String icon = tagObj.has("icon")
-                            ? tagObj.get("icon").getAsString()
-                            : "";
-                        String tooltip = tagObj.has("tooltip")
-                            ? tagObj.get("tooltip").getAsString()
-                            : "";
-                        int color = tagObj.has("color")
-                            ? tagObj.get("color").getAsInt()
-                            : 0;
-                        String tagName = tagObj.has("tag_name")
-                            ? tagObj.get("tag_name").getAsString()
-                            : "";
-                        String text = tagObj.has("text")
-                            ? tagObj.get("text").getAsString()
-                            : null;
-                        int textColor = tagObj.has("textColor")
-                            ? tagObj.get("textColor").getAsInt()
-                            : 0;
+                        String icon = tagObj.has("icon") ? tagObj.get("icon").getAsString() : "";
+                        String tooltip =
+                                tagObj.has("tooltip") ? tagObj.get("tooltip").getAsString() : "";
+                        int color = tagObj.has("color") ? tagObj.get("color").getAsInt() : 0;
+                        String tagName =
+                                tagObj.has("tag_name") ? tagObj.get("tag_name").getAsString() : "";
+                        String text = tagObj.has("text") ? tagObj.get("text").getAsString() : null;
+                        int textColor =
+                                tagObj.has("textColor") ? tagObj.get("textColor").getAsInt() : 0;
 
                         // Skip seraph.verified and seraph.advertisement tags
-                        if (
-                            "seraph.verified".equals(tagName) ||
-                            "seraph.advertisement".equals(tagName)
-                        ) {
+                        if ("seraph.verified".equals(tagName)
+                                || "seraph.advertisement".equals(tagName)) {
                             continue;
                         }
 
-                        tags.add(
-                            new SeraphTag(
-                                icon,
-                                tooltip,
-                                color,
-                                tagName,
-                                text,
-                                textColor
-                            )
-                        );
+                        tags.add(new SeraphTag(icon, tooltip, color, tagName, text, textColor));
                     }
                     return tags;
                 }

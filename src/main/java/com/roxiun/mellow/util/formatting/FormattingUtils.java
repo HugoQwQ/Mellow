@@ -9,10 +9,8 @@ import java.util.stream.Collectors;
 
 public class FormattingUtils {
 
-    private static final TreeMap<Integer, String> starBrackets =
-        new TreeMap<>();
-    private static final TreeMap<Integer, String[]> starColors =
-        new TreeMap<>();
+    private static final TreeMap<Integer, String> starBrackets = new TreeMap<>();
+    private static final TreeMap<Integer, String[]> starColors = new TreeMap<>();
 
     static {
         starBrackets.put(0, "§7[STARS]\u272b");
@@ -26,91 +24,28 @@ public class FormattingUtils {
         starBrackets.put(800, "§9[STARS]\u272b");
         starBrackets.put(900, "§5[STARS]\u272b");
 
-        starColors.put(
-            1000,
-            new String[] { "§6", "§e", "§a", "§b", "§d", "✫" }
-        );
-        starColors.put(
-            1100,
-            new String[] { "§f", "§f", "§f", "§f", "§f", "✫" }
-        );
-        starColors.put(
-            1200,
-            new String[] { "§e", "§e", "§e", "§e", "§6", "✫" }
-        );
-        starColors.put(
-            1300,
-            new String[] { "§b", "§b", "§b", "§b", "§3", "✫" }
-        );
-        starColors.put(
-            1400,
-            new String[] { "§a", "§a", "§a", "§a", "§2", "✫" }
-        );
-        starColors.put(
-            1500,
-            new String[] { "§3", "§3", "§3", "§3", "§9", "✫" }
-        );
-        starColors.put(
-            1600,
-            new String[] { "§c", "§c", "§c", "§c", "§4", "✫" }
-        );
-        starColors.put(
-            1700,
-            new String[] { "§d", "§d", "§d", "§d", "§5", "✫" }
-        );
-        starColors.put(
-            1800,
-            new String[] { "§9", "§9", "§9", "§9", "§1", "✫" }
-        );
-        starColors.put(
-            1900,
-            new String[] { "§5", "§5", "§5", "§5", "§8", "✫" }
-        );
+        starColors.put(1000, new String[] {"§6", "§e", "§a", "§b", "§d", "✫"});
+        starColors.put(1100, new String[] {"§f", "§f", "§f", "§f", "§f", "✫"});
+        starColors.put(1200, new String[] {"§e", "§e", "§e", "§e", "§6", "✫"});
+        starColors.put(1300, new String[] {"§b", "§b", "§b", "§b", "§3", "✫"});
+        starColors.put(1400, new String[] {"§a", "§a", "§a", "§a", "§2", "✫"});
+        starColors.put(1500, new String[] {"§3", "§3", "§3", "§3", "§9", "✫"});
+        starColors.put(1600, new String[] {"§c", "§c", "§c", "§c", "§4", "✫"});
+        starColors.put(1700, new String[] {"§d", "§d", "§d", "§d", "§5", "✫"});
+        starColors.put(1800, new String[] {"§9", "§9", "§9", "§9", "§1", "✫"});
+        starColors.put(1900, new String[] {"§5", "§5", "§5", "§5", "§8", "✫"});
 
-        starColors.put(
-            2000,
-            new String[] { "§7", "§f", "§f", "§7", "", "\u269d" }
-        );
-        starColors.put(
-            2100,
-            new String[] { "§f", "§e", "§e", "§6", "", "\u269d" }
-        );
-        starColors.put(
-            2200,
-            new String[] { "§6", "§f", "§b", "§3", "", "\u269d" }
-        );
-        starColors.put(
-            2300,
-            new String[] { "§5", "§d", "§d", "§6", "§e", "\u269d" }
-        );
-        starColors.put(
-            2400,
-            new String[] { "§b", "§f", "§f", "§7", "", "\u269d" }
-        );
-        starColors.put(
-            2500,
-            new String[] { "§f", "§a", "§a", "§2", "", "\u269d" }
-        );
-        starColors.put(
-            2600,
-            new String[] { "§4", "§c", "§c", "§d", "", "\u269d" }
-        );
-        starColors.put(
-            2700,
-            new String[] { "§e", "§f", "§f", "§8", "", "\u269d" }
-        );
-        starColors.put(
-            2800,
-            new String[] { "§a", "§2", "§2", "§6", "", "\u269d" }
-        );
-        starColors.put(
-            2900,
-            new String[] { "§b", "§3", "§3", "§9", "", "\u269d" }
-        );
-        starColors.put(
-            3000,
-            new String[] { "§e", "§6", "§6", "§c", "", "\u269d" }
-        );
+        starColors.put(2000, new String[] {"§7", "§f", "§f", "§7", "", "\u269d"});
+        starColors.put(2100, new String[] {"§f", "§e", "§e", "§6", "", "\u269d"});
+        starColors.put(2200, new String[] {"§6", "§f", "§b", "§3", "", "\u269d"});
+        starColors.put(2300, new String[] {"§5", "§d", "§d", "§6", "§e", "\u269d"});
+        starColors.put(2400, new String[] {"§b", "§f", "§f", "§7", "", "\u269d"});
+        starColors.put(2500, new String[] {"§f", "§a", "§a", "§2", "", "\u269d"});
+        starColors.put(2600, new String[] {"§4", "§c", "§c", "§d", "", "\u269d"});
+        starColors.put(2700, new String[] {"§e", "§f", "§f", "§8", "", "\u269d"});
+        starColors.put(2800, new String[] {"§a", "§2", "§2", "§6", "", "\u269d"});
+        starColors.put(2900, new String[] {"§b", "§3", "§3", "§9", "", "\u269d"});
+        starColors.put(3000, new String[] {"§e", "§6", "§6", "§c", "", "\u269d"});
     }
 
     public static String formatWinstreak(String text) {
@@ -127,50 +62,50 @@ public class FormattingUtils {
     }
 
     public static String formatUrchinTags(List<UrchinTag> tags) {
-        return tags
-            .stream()
-            .map(tag -> {
-                String type = tag.getType();
-                String formattedType;
+        return tags.stream()
+                .map(
+                        tag -> {
+                            String type = tag.getType();
+                            String formattedType;
 
-                // Use exact string matches to avoid substring replacement issues
-                switch (type.toLowerCase()) {
-                    case "sniper":
-                        formattedType = "§4§lSniper";
-                        break;
-                    case "blatant_cheater":
-                        formattedType = "§4§lBlatant Cheater";
-                        break;
-                    case "closet_cheater":
-                        formattedType = "§e§lCloset Cheater";
-                        break;
-                    case "confirmed_cheater":
-                        formattedType = "§4§lConfirmed Cheater";
-                        break;
-                    case "possible_sniper":
-                        formattedType = "§e§lPossible Sniper";
-                        break;
-                    case "legit_sniper":
-                        formattedType = "§e§lLegit Sniper";
-                        break;
-                    case "caution":
-                        formattedType = "§e§lCaution";
-                        break;
-                    case "account":
-                        formattedType = "§e§lAccount";
-                        break;
-                    case "info":
-                        formattedType = "§f§lInfo";
-                        break;
-                    default:
-                        // For unknown types, use the original type as-is
-                        formattedType = type;
-                        break;
-                }
+                            // Use exact string matches to avoid substring replacement issues
+                            switch (type.toLowerCase()) {
+                                case "sniper":
+                                    formattedType = "§4§lSniper";
+                                    break;
+                                case "blatant_cheater":
+                                    formattedType = "§4§lBlatant Cheater";
+                                    break;
+                                case "closet_cheater":
+                                    formattedType = "§e§lCloset Cheater";
+                                    break;
+                                case "confirmed_cheater":
+                                    formattedType = "§4§lConfirmed Cheater";
+                                    break;
+                                case "possible_sniper":
+                                    formattedType = "§e§lPossible Sniper";
+                                    break;
+                                case "legit_sniper":
+                                    formattedType = "§e§lLegit Sniper";
+                                    break;
+                                case "caution":
+                                    formattedType = "§e§lCaution";
+                                    break;
+                                case "account":
+                                    formattedType = "§e§lAccount";
+                                    break;
+                                case "info":
+                                    formattedType = "§f§lInfo";
+                                    break;
+                                default:
+                                    // For unknown types, use the original type as-is
+                                    formattedType = type;
+                                    break;
+                            }
 
-                return formattedType + " §7(" + tag.getReason() + ")";
-            })
-            .collect(Collectors.joining(", "));
+                            return formattedType + " §7(" + tag.getReason() + ")";
+                        })
+                .collect(Collectors.joining(", "));
     }
 
     public static String formatUrchinTagIcon(UrchinTag tag) {
@@ -197,57 +132,50 @@ public class FormattingUtils {
 
     public static String formatSeraphTags(List<SeraphTag> tags) {
         return String.join(
-            "\n§c",
-            tags
-                .stream()
-                .map(tag -> {
-                    // Don't skip unmapped tags - show them using tag name and tooltip
-                    if (
-                        tag.getTagName() != null &&
-                        !tag.getTagName().isEmpty() &&
-                        !"seraph.verified".equals(tag.getTagName()) &&
-                        !"seraph.advertisement".equals(tag.getTagName())
-                    ) {
-                        // Format mapped tags nicely, or show unmapped ones with nice formatting
-                        String formattedTag = formatSeraphTag(tag.getTagName());
-                        if (formattedTag != null && !formattedTag.isEmpty()) {
-                            return (
-                                formattedTag + " §7(" + tag.getTooltip() + ")"
-                            );
-                        } else {
-                            // For unmapped tags, create a nicely formatted display name
-                            String baseName = tag
-                                .getTagName()
-                                .replace("seraph.", "");
-                            String displayName = capitalizeWords(baseName);
-                            return (
-                                "§7" +
-                                displayName +
-                                " §7(" +
-                                tag.getTooltip() +
-                                ")"
-                            );
-                        }
-                    } else if (
-                        tag.getTagName() == null || tag.getTagName().isEmpty()
-                    ) {
-                        // If tag has no tag_name but has tooltip, show it with generic label
-                        if (
-                            tag.getTooltip() != null &&
-                            !tag.getTooltip().isEmpty()
-                        ) {
-                            return "§7Other §7(" + tag.getTooltip() + ")";
-                        } else {
-                            return null;
-                        }
-                    } else {
-                        // This is seraph.verified - skip it
-                        return null;
-                    }
-                })
-                .filter(tag -> tag != null && !tag.trim().isEmpty())
-                .toArray(String[]::new)
-        );
+                "\n§c",
+                tags.stream()
+                        .map(
+                                tag -> {
+                                    // Don't skip unmapped tags - show them using tag name and
+                                    // tooltip
+                                    if (tag.getTagName() != null
+                                            && !tag.getTagName().isEmpty()
+                                            && !"seraph.verified".equals(tag.getTagName())
+                                            && !"seraph.advertisement".equals(tag.getTagName())) {
+                                        // Format mapped tags nicely, or show unmapped ones with
+                                        // nice formatting
+                                        String formattedTag = formatSeraphTag(tag.getTagName());
+                                        if (formattedTag != null && !formattedTag.isEmpty()) {
+                                            return (formattedTag + " §7(" + tag.getTooltip() + ")");
+                                        } else {
+                                            // For unmapped tags, create a nicely formatted display
+                                            // name
+                                            String baseName =
+                                                    tag.getTagName().replace("seraph.", "");
+                                            String displayName = capitalizeWords(baseName);
+                                            return ("§7"
+                                                    + displayName
+                                                    + " §7("
+                                                    + tag.getTooltip()
+                                                    + ")");
+                                        }
+                                    } else if (tag.getTagName() == null
+                                            || tag.getTagName().isEmpty()) {
+                                        // If tag has no tag_name but has tooltip, show it with
+                                        // generic label
+                                        if (tag.getTooltip() != null
+                                                && !tag.getTooltip().isEmpty()) {
+                                            return "§7Other §7(" + tag.getTooltip() + ")";
+                                        } else {
+                                            return null;
+                                        }
+                                    } else {
+                                        // This is seraph.verified - skip it
+                                        return null;
+                                    }
+                                })
+                        .filter(tag -> tag != null && !tag.trim().isEmpty())
+                        .toArray(String[]::new));
     }
 
     public static String formatSeraphTag(String tagName) {
@@ -324,10 +252,7 @@ public class FormattingUtils {
         try {
             int stars = Integer.parseInt(text);
             if (stars < 1000) {
-                return starBrackets
-                    .floorEntry(stars)
-                    .getValue()
-                    .replace("[STARS]", text);
+                return starBrackets.floorEntry(stars).getValue().replace("[STARS]", text);
             }
 
             Map.Entry<Integer, String[]> entry = starColors.floorEntry(stars);
@@ -340,58 +265,20 @@ public class FormattingUtils {
                 }
 
                 if (stars < 2000) {
-                    return (
-                        colors[0] +
-                        digits[0] +
-                        colors[1] +
-                        digits[1] +
-                        colors[2] +
-                        digits[2] +
-                        colors[3] +
-                        digits[3] +
-                        colors[4] +
-                        colors[5]
-                    );
+                    return (colors[0] + digits[0] + colors[1] + digits[1] + colors[2] + digits[2]
+                            + colors[3] + digits[3] + colors[4] + colors[5]);
                 } else if (stars < 3000) {
                     if (entry.getKey() == 2300) {
                         // Special case for 2300
-                        return (
-                            colors[0] +
-                            digits[0] +
-                            colors[1] +
-                            digits[1] +
-                            colors[2] +
-                            digits[2] +
-                            colors[3] +
-                            digits[3] +
-                            colors[4] +
-                            colors[5]
-                        );
+                        return (colors[0] + digits[0] + colors[1] + digits[1] + colors[2]
+                                + digits[2] + colors[3] + digits[3] + colors[4] + colors[5]);
                     }
-                    return (
-                        colors[0] +
-                        digits[0] +
-                        colors[1] +
-                        digits[1] +
-                        colors[2] +
-                        digits[2] +
-                        colors[3] +
-                        digits[3] +
-                        colors[5]
-                    );
+                    return (colors[0] + digits[0] + colors[1] + digits[1] + colors[2] + digits[2]
+                            + colors[3] + digits[3] + colors[5]);
                 } else {
                     // 3000+
-                    return (
-                        colors[0] +
-                        digits[0] +
-                        colors[1] +
-                        digits[1] +
-                        colors[2] +
-                        digits[2] +
-                        colors[3] +
-                        digits[3] +
-                        colors[5]
-                    );
+                    return (colors[0] + digits[0] + colors[1] + digits[1] + colors[2] + digits[2]
+                            + colors[3] + digits[3] + colors[5]);
                 }
             }
         } catch (NumberFormatException e) {
@@ -401,26 +288,20 @@ public class FormattingUtils {
     }
 
     public static String formatRank(String rank) {
-        return rank
-            .replace("[VIP", "§a[VIP")
-            .replace("[MVP+", "§b[MVP+")
-            .replace("[MVP++", "§6[MVP++");
+        return rank.replace("[VIP", "§a[VIP")
+                .replace("[MVP+", "§b[MVP+")
+                .replace("[MVP++", "§6[MVP++");
     }
 
     public static String formatNickedPlayerName(String playerName) {
-        net.minecraft.client.Minecraft mc =
-            net.minecraft.client.Minecraft.getMinecraft();
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
         if (mc.theWorld == null) {
             return playerName;
         }
 
-        net.minecraft.scoreboard.ScorePlayerTeam playerTeam = mc.theWorld
-            .getScoreboard()
-            .getPlayersTeam(playerName);
-        String[] tabData =
-            com.roxiun.mellow.util.player.PlayerUtils.getTabDisplayName2(
-                playerName
-            );
+        net.minecraft.scoreboard.ScorePlayerTeam playerTeam =
+                mc.theWorld.getScoreboard().getPlayersTeam(playerName);
+        String[] tabData = com.roxiun.mellow.util.player.PlayerUtils.getTabDisplayName2(playerName);
         String nickedPlayerDisplay;
 
         if (playerTeam != null && playerTeam.getColorPrefix().length() >= 2) {
@@ -443,9 +324,8 @@ public class FormattingUtils {
         for (int i = 0; i < words.length; i++) {
             if (i > 0) result.append(" ");
             if (words[i].length() > 0) {
-                result
-                    .append(Character.toUpperCase(words[i].charAt(0)))
-                    .append(words[i].substring(1).toLowerCase());
+                result.append(Character.toUpperCase(words[i].charAt(0)))
+                        .append(words[i].substring(1).toLowerCase());
             }
         }
         return result.toString();

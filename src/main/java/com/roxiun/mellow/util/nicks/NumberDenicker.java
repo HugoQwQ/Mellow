@@ -26,18 +26,13 @@ public class NumberDenicker {
     private boolean gameStarted = false;
     private final Map<String, PotentialNick> nickToPotentials = new HashMap<>();
 
-    private static final Pattern FINAL_KILL_PATTERN = Pattern.compile(
-        "^(\\w+) was ([\\w-]+)'s final #([\\d,]+)\\. FINAL KILL!$"
-    );
-    private static final Pattern BED_DESTRUCTION_PATTERN = Pattern.compile(
-        "^(?:BED DESTRUCTION > )?(\\w+) (?:Bed|bed) was bed #([\\d,]+) destroyed by ([\\w-]+)!$"
-    );
+    private static final Pattern FINAL_KILL_PATTERN =
+            Pattern.compile("^(\\w+) was ([\\w-]+)'s final #([\\d,]+)\\. FINAL KILL!$");
+    private static final Pattern BED_DESTRUCTION_PATTERN =
+            Pattern.compile(
+                    "^(?:BED DESTRUCTION > )?(\\w+) (?:Bed|bed) was bed #([\\d,]+) destroyed by ([\\w-]+)!$");
 
-    public NumberDenicker(
-        MellowOneConfig config,
-        NickUtils nickUtils,
-        AuroraApi auroraApi
-    ) {
+    public NumberDenicker(MellowOneConfig config, NickUtils nickUtils, AuroraApi auroraApi) {
         this.config = config;
         this.auroraApi = auroraApi;
         this.nickUtils = nickUtils;
@@ -71,25 +66,19 @@ public class NumberDenicker {
             try {
                 int finalNumber = Integer.parseInt(finalNumberStr);
                 if (finalNumber >= config.minFinalsForDenick) {
-                    PotentialNick player = nickToPotentials.computeIfAbsent(
-                        nickName,
-                        k -> new PotentialNick()
-                    );
-                    if (
-                        isPlayerInGame(nickName) &&
-                        nickUtils.isNicked(nickName) &&
-                        (!player.finalsChecked ||
-                            player.fuzzy_finals_potentials == null)
-                    ) {
-                        mc.addScheduledTask(() ->
-                            ChatUtils.sendMessage(
-                                "§aAttempting to denick " +
-                                    nickName +
-                                    " with " +
-                                    finalNumberStr +
-                                    " finals"
-                            )
-                        );
+                    PotentialNick player =
+                            nickToPotentials.computeIfAbsent(nickName, k -> new PotentialNick());
+                    if (isPlayerInGame(nickName)
+                            && nickUtils.isNicked(nickName)
+                            && (!player.finalsChecked || player.fuzzy_finals_potentials == null)) {
+                        mc.addScheduledTask(
+                                () ->
+                                        ChatUtils.sendMessage(
+                                                "§aAttempting to denick "
+                                                        + nickName
+                                                        + " with "
+                                                        + finalNumberStr
+                                                        + " finals"));
                         processNumbers("finals", nickName, finalNumberStr);
                     }
                 }
@@ -103,24 +92,19 @@ public class NumberDenicker {
         if (bedMatcher.find()) {
             String nickName = bedMatcher.group(3);
             String bedNumber = bedMatcher.group(2).replace(",", "");
-            PotentialNick player = nickToPotentials.computeIfAbsent(
-                nickName,
-                k -> new PotentialNick()
-            );
-            if (
-                isPlayerInGame(nickName) &&
-                nickUtils.isNicked(nickName) &&
-                (!player.bedsChecked || player.fuzzy_beds_potentials == null)
-            ) {
-                mc.addScheduledTask(() ->
-                    ChatUtils.sendMessage(
-                        "§aAttempting to denick " +
-                            nickName +
-                            " with " +
-                            bedNumber +
-                            " beds"
-                    )
-                );
+            PotentialNick player =
+                    nickToPotentials.computeIfAbsent(nickName, k -> new PotentialNick());
+            if (isPlayerInGame(nickName)
+                    && nickUtils.isNicked(nickName)
+                    && (!player.bedsChecked || player.fuzzy_beds_potentials == null)) {
+                mc.addScheduledTask(
+                        () ->
+                                ChatUtils.sendMessage(
+                                        "§aAttempting to denick "
+                                                + nickName
+                                                + " with "
+                                                + bedNumber
+                                                + " beds"));
                 processNumbers("beds", nickName, bedNumber);
             }
         }
@@ -130,179 +114,164 @@ public class NumberDenicker {
         PotentialNick player = nickToPotentials.get(nickName);
         if (player == null) return;
 
-        new Thread(() -> {
-            try {
-                int[] rangeValues = { 0, 50, 100, 200, 500, 1000 };
-                int[] maxValues = { 5, 10, 20 };
+        new Thread(
+                        () -> {
+                            try {
+                                int[] rangeValues = {0, 50, 100, 200, 500, 1000};
+                                int[] maxValues = {5, 10, 20};
 
-                int rangeIndex = type.equals("finals")
-                    ? config.finalsRange
-                    : config.bedsRange;
-                int maxIndex = config.maxResults;
+                                int rangeIndex =
+                                        type.equals("finals")
+                                                ? config.finalsRange
+                                                : config.bedsRange;
+                                int maxIndex = config.maxResults;
 
-                if (
-                    rangeIndex < 0 || rangeIndex >= rangeValues.length
-                ) rangeIndex = 1; // Default to 200
-                if (maxIndex < 0 || maxIndex >= maxValues.length) maxIndex = 0; // Default to 5
+                                if (rangeIndex < 0 || rangeIndex >= rangeValues.length)
+                                    rangeIndex = 1; // Default to 200
+                                if (maxIndex < 0 || maxIndex >= maxValues.length)
+                                    maxIndex = 0; // Default to 5
 
-                int range = rangeValues[rangeIndex];
-                int max = maxValues[maxIndex];
+                                int range = rangeValues[rangeIndex];
+                                int max = maxValues[maxIndex];
 
-                AuroraApi.AuroraResponse response = auroraApi.queryStats(
-                    type,
-                    number,
-                    range,
-                    max,
-                    config.auroraApiKey
-                );
+                                AuroraApi.AuroraResponse response =
+                                        auroraApi.queryStats(
+                                                type, number, range, max, config.auroraApiKey);
 
-                if (response != null && response.success) {
-                    // Fuzzy Matching Logic
-                    List<String> fuzzy_matches = response.data
-                        .stream()
-                        .filter(p -> p.distance <= range)
-                        .map(p -> p.name)
-                        .collect(Collectors.toList());
+                                if (response != null && response.success) {
+                                    // Fuzzy Matching Logic
+                                    List<String> fuzzy_matches =
+                                            response.data.stream()
+                                                    .filter(p -> p.distance <= range)
+                                                    .map(p -> p.name)
+                                                    .collect(Collectors.toList());
 
-                    String fuzzy_players_log = response.data
-                        .stream()
-                        .filter(p -> p.distance <= range)
-                        .map(
-                            p ->
-                                "§a" +
-                                p.name +
-                                " §7(distance: " +
-                                p.distance +
-                                ")"
-                        )
-                        .collect(Collectors.joining(", "));
+                                    String fuzzy_players_log =
+                                            response.data.stream()
+                                                    .filter(p -> p.distance <= range)
+                                                    .map(
+                                                            p ->
+                                                                    "§a"
+                                                                            + p.name
+                                                                            + " §7(distance: "
+                                                                            + p.distance
+                                                                            + ")")
+                                                    .collect(Collectors.joining(", "));
 
-                    if (config.numberDenickerFuzzy) {
-                        mc.addScheduledTask(() ->
-                            ChatUtils.sendMessage(
-                                "§aFound potential " +
-                                    type +
-                                    " players: " +
-                                    fuzzy_players_log
-                            )
-                        );
-                    }
+                                    if (config.numberDenickerFuzzy) {
+                                        mc.addScheduledTask(
+                                                () ->
+                                                        ChatUtils.sendMessage(
+                                                                "§aFound potential "
+                                                                        + type
+                                                                        + " players: "
+                                                                        + fuzzy_players_log));
+                                    }
 
-                    if (type.equals("finals")) {
-                        player.fuzzy_finals_potentials = fuzzy_matches;
-                    } else if (type.equals("beds")) {
-                        player.fuzzy_beds_potentials = fuzzy_matches;
-                    }
+                                    if (type.equals("finals")) {
+                                        player.fuzzy_finals_potentials = fuzzy_matches;
+                                    } else if (type.equals("beds")) {
+                                        player.fuzzy_beds_potentials = fuzzy_matches;
+                                    }
 
-                    if (
-                        player.fuzzy_finals_potentials != null &&
-                        player.fuzzy_beds_potentials != null
-                    ) {
-                        List<String> intersection = new ArrayList<>(
-                            player.fuzzy_finals_potentials
-                        );
-                        intersection.retainAll(player.fuzzy_beds_potentials);
+                                    if (player.fuzzy_finals_potentials != null
+                                            && player.fuzzy_beds_potentials != null) {
+                                        List<String> intersection =
+                                                new ArrayList<>(player.fuzzy_finals_potentials);
+                                        intersection.retainAll(player.fuzzy_beds_potentials);
 
-                        if (intersection.isEmpty()) {
-                            mc.addScheduledTask(() ->
-                                ChatUtils.sendMessage(
-                                    "§cNo fuzzy match found for " + nickName
-                                )
-                            );
-                        } else {
-                            mc.addScheduledTask(() ->
-                                ChatUtils.sendMessage(
-                                    "§aFound fuzzy matches for " +
-                                        nickName +
-                                        ": " +
-                                        String.join(", ", intersection)
-                                )
-                            );
-                        }
-                    }
+                                        if (intersection.isEmpty()) {
+                                            mc.addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendMessage(
+                                                                    "§cNo fuzzy match found for "
+                                                                            + nickName));
+                                        } else {
+                                            mc.addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendMessage(
+                                                                    "§aFound fuzzy matches for "
+                                                                            + nickName
+                                                                            + ": "
+                                                                            + String.join(
+                                                                                    ", ",
+                                                                                    intersection)));
+                                        }
+                                    }
 
-                    // Exact Matching Logic
-                    List<String> matches = response.data
-                        .stream()
-                        .filter(p -> p.distance <= 0)
-                        .map(p -> p.name)
-                        .collect(Collectors.toList());
+                                    // Exact Matching Logic
+                                    List<String> matches =
+                                            response.data.stream()
+                                                    .filter(p -> p.distance <= 0)
+                                                    .map(p -> p.name)
+                                                    .collect(Collectors.toList());
 
-                    if (matches.isEmpty()) {
-                        if (type.equals("finals")) player.finalsChecked = true;
-                        if (type.equals("beds")) player.bedsChecked = true;
-                        player.setPotentials(new ArrayList<>());
-                        return;
-                    }
+                                    if (matches.isEmpty()) {
+                                        if (type.equals("finals")) player.finalsChecked = true;
+                                        if (type.equals("beds")) player.bedsChecked = true;
+                                        player.setPotentials(new ArrayList<>());
+                                        return;
+                                    }
 
-                    if (
-                        player.potentials.isEmpty() &&
-                        (!player.bedsChecked && !player.finalsChecked)
-                    ) {
-                        player.setPotentials(matches);
-                    } else {
-                        player.potentials.retainAll(matches);
-                    }
+                                    if (player.potentials.isEmpty()
+                                            && (!player.bedsChecked && !player.finalsChecked)) {
+                                        player.setPotentials(matches);
+                                    } else {
+                                        player.potentials.retainAll(matches);
+                                    }
 
-                    if (type.equals("finals")) player.finalsChecked = true;
-                    if (type.equals("beds")) player.bedsChecked = true;
+                                    if (type.equals("finals")) player.finalsChecked = true;
+                                    if (type.equals("beds")) player.bedsChecked = true;
 
-                    if (player.finalsChecked && player.bedsChecked) {
-                        if (!player.potentials.isEmpty()) {
-                            String realName = player.potentials.get(0);
-                            mc.addScheduledTask(() -> {
-                                sendAlert(nickName, realName);
-                                setNickDisplayName(nickName, realName + "?");
-                            });
-                        } else {
-                            mc.addScheduledTask(() ->
-                                ChatUtils.sendMessage(
-                                    "§cNo definitive name found for " + nickName
-                                )
-                            );
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                mc.addScheduledTask(() ->
-                    ChatUtils.sendMessage(
-                        "§cError fetching data from Aurora API."
-                    )
-                );
-            }
-        })
-            .start();
+                                    if (player.finalsChecked && player.bedsChecked) {
+                                        if (!player.potentials.isEmpty()) {
+                                            String realName = player.potentials.get(0);
+                                            mc.addScheduledTask(
+                                                    () -> {
+                                                        sendAlert(nickName, realName);
+                                                        setNickDisplayName(
+                                                                nickName, realName + "?");
+                                                    });
+                                        } else {
+                                            mc.addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendMessage(
+                                                                    "§cNo definitive name found for "
+                                                                            + nickName));
+                                        }
+                                    }
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                mc.addScheduledTask(
+                                        () ->
+                                                ChatUtils.sendMessage(
+                                                        "§cError fetching data from Aurora API."));
+                            }
+                        })
+                .start();
     }
 
     private void sendAlert(String playerName, String realName) {
-        String alertMsg =
-            "§6" + realName + "§7 might be nicked as " + playerName + "§7.";
+        String alertMsg = "§6" + realName + "§7 might be nicked as " + playerName + "§7.";
         ChatUtils.sendMessage(alertMsg);
         mc.thePlayer.playSound("note.pling", 1.0f, 1.0f);
     }
 
     private boolean isBedwarsStartMessage(String message) {
-        return (
-            message.equals("Protect your bed and destroy the enemy beds.") ||
-            (message.equals("You will respawn because you still have a bed!") &&
-                !(message.contains(":")) &&
-                !(message.contains("SHOUT")))
-        );
+        return (message.equals("Protect your bed and destroy the enemy beds.")
+                || (message.equals("You will respawn because you still have a bed!")
+                        && !(message.contains(":"))
+                        && !(message.contains("SHOUT"))));
     }
 
     private boolean isPlayerInGame(String name) {
-        return mc
-            .getNetHandler()
-            .getPlayerInfoMap()
-            .stream()
-            .anyMatch(info -> info.getGameProfile().getName().equals(name));
+        return mc.getNetHandler().getPlayerInfoMap().stream()
+                .anyMatch(info -> info.getGameProfile().getName().equals(name));
     }
 
     private void setNickDisplayName(String nickName, String realName) {
-        for (NetworkPlayerInfo playerInfo : mc
-            .getNetHandler()
-            .getPlayerInfoMap()) {
+        for (NetworkPlayerInfo playerInfo : mc.getNetHandler().getPlayerInfoMap()) {
             if (playerInfo.getGameProfile().getName().equals(nickName)) {
                 playerInfo.setDisplayName(new ChatComponentText(realName));
                 break;

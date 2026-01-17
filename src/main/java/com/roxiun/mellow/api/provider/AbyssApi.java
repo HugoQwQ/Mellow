@@ -17,14 +17,11 @@ public class AbyssApi implements StatsProvider {
     @Override
     public String fetchPlayerData(String uuid) {
         return HypixelApiUtils.fetchPlayerData(
-            "http://api.abyssoverlay.com/player?uuid=" + uuid,
-            "node-ao/2.0.3"
-        );
+                "http://api.abyssoverlay.com/player?uuid=" + uuid, "node-ao/2.0.3");
     }
 
     @Override
-    public BedwarsPlayer fetchPlayerStats(String playerName)
-        throws IOException {
+    public BedwarsPlayer fetchPlayerStats(String playerName) throws IOException {
         String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
         if (uuid == null) {
             uuid = mojangApi.fetchUUID(playerName);

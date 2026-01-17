@@ -22,25 +22,19 @@ public class NoSlowCheck extends Check {
 
     @Override
     public void onPlayerTick(
-        AnticheatManager manager,
-        TickEvent.PlayerTickEvent event,
-        ACPlayerData data
-    ) {
+            AnticheatManager manager, TickEvent.PlayerTickEvent event, ACPlayerData data) {
         if (!Mellow.config.noSlowCheckEnabled) return;
         EntityPlayer player = data.getPlayer();
-        if (
-            player == null ||
-            event.phase == TickEvent.Phase.END ||
-            player == Minecraft.getMinecraft().thePlayer
-        ) {
+        if (player == null
+                || event.phase == TickEvent.Phase.END
+                || player == Minecraft.getMinecraft().thePlayer) {
             return;
         }
 
         boolean isUsingSlowdownItem = isUsingSlowdownItem(player);
         boolean isSprinting = player.isSprinting();
 
-        boolean isCurrentlyNoSlow =
-            isUsingSlowdownItem && isSprinting && !player.isRiding();
+        boolean isCurrentlyNoSlow = isUsingSlowdownItem && isSprinting && !player.isRiding();
 
         if (isCurrentlyNoSlow && !noSlowActive) {
             noSlowStartTime = System.currentTimeMillis();
@@ -54,12 +48,7 @@ public class NoSlowCheck extends Check {
             long noSlowDuration = System.currentTimeMillis() - noSlowStartTime;
             if (noSlowDuration > 200) {
                 // 200ms threshold from reference
-                manager.flag(
-                    data,
-                    this,
-                    "duration: " + noSlowDuration + "ms",
-                    1.0
-                );
+                manager.flag(data, this, "duration: " + noSlowDuration + "ms", 1.0);
                 noSlowActive = false;
                 noSlowStartTime = 0;
             }
@@ -67,11 +56,9 @@ public class NoSlowCheck extends Check {
     }
 
     private boolean isUsingSlowdownItem(EntityPlayer player) {
-        if (
-            player.isBlocking() &&
-            player.getHeldItem() != null &&
-            player.getHeldItem().getItem() instanceof ItemSword
-        ) {
+        if (player.isBlocking()
+                && player.getHeldItem() != null
+                && player.getHeldItem().getItem() instanceof ItemSword) {
             return true;
         }
         if (player.isUsingItem() && player.getHeldItem() != null) {

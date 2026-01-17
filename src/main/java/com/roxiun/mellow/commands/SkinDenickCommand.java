@@ -24,19 +24,14 @@ public class SkinDenickCommand extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length != 1) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cUsage: " + getCommandUsage(sender)
-            );
+            ChatUtils.sendCommandMessage(sender, "§cUsage: " + getCommandUsage(sender));
             return;
         }
 
         String playerName = args[0];
         NetworkPlayerInfo playerInfo = null;
 
-        for (NetworkPlayerInfo info : Minecraft.getMinecraft()
-            .getNetHandler()
-            .getPlayerInfoMap()) {
+        for (NetworkPlayerInfo info : Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap()) {
             if (info.getGameProfile().getName().equalsIgnoreCase(playerName)) {
                 playerInfo = info;
                 break;
@@ -44,30 +39,21 @@ public class SkinDenickCommand extends CommandBase {
         }
 
         if (playerInfo == null) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cPlayer not found: " + playerName
-            );
+            ChatUtils.sendCommandMessage(sender, "§cPlayer not found: " + playerName);
             return;
         }
 
         String realName = SkinUtils.getRealName(playerInfo);
 
         if (realName != null) {
-            String nickedPlayerDisplay = FormattingUtils.formatNickedPlayerName(
-                playerName
-            );
-            ChatUtils.sendCommandMessage(
-                sender,
-                nickedPlayerDisplay + " §d> §a" + realName
-            );
+            String nickedPlayerDisplay = FormattingUtils.formatNickedPlayerName(playerName);
+            ChatUtils.sendCommandMessage(sender, nickedPlayerDisplay + " §d> §a" + realName);
         } else {
             ChatUtils.sendCommandMessage(
-                sender,
-                "§cCould not retrieve the real name for " +
-                    playerName +
-                    ". They might be using a default skin."
-            );
+                    sender,
+                    "§cCould not retrieve the real name for "
+                            + playerName
+                            + ". They might be using a default skin.");
         }
     }
 
@@ -78,20 +64,13 @@ public class SkinDenickCommand extends CommandBase {
 
     @Override
     public List<String> addTabCompletionOptions(
-        ICommandSender sender,
-        String[] args,
-        net.minecraft.util.BlockPos pos
-    ) {
+            ICommandSender sender, String[] args, net.minecraft.util.BlockPos pos) {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(
-                args,
-                Minecraft.getMinecraft()
-                    .getNetHandler()
-                    .getPlayerInfoMap()
-                    .stream()
-                    .map(info -> info.getGameProfile().getName())
-                    .toArray(String[]::new)
-            );
+                    args,
+                    Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().stream()
+                            .map(info -> info.getGameProfile().getName())
+                            .toArray(String[]::new));
         }
         return null;
     }

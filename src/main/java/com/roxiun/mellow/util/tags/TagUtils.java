@@ -28,32 +28,20 @@ public class TagUtils {
     }
 
     public String buildTags(
-        String name,
-        String uuid,
-        int stars,
-        double fkdr,
-        int ws,
-        int finals,
-        int fdeaths
-    ) {
+            String name, String uuid, int stars, double fkdr, int ws, int finals, int fdeaths) {
         String totaltags = "";
 
         if (uuid != null && !uuid.isEmpty()) {
             String formattedUUID = uuid;
             if (!formattedUUID.contains("-")) {
-                formattedUUID = formattedUUID.replaceFirst(
-                    "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})",
-                    "$1-$2-$3-$4-$5"
-                );
+                formattedUUID =
+                        formattedUUID.replaceFirst(
+                                "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})",
+                                "$1-$2-$3-$4-$5");
             }
             try {
-                if (
-                    blacklistManager.isBlacklisted(
-                        UUID.fromString(formattedUUID)
-                    )
-                ) {
-                    totaltags =
-                        totaltags + EnumChatFormatting.DARK_RED + "BL §r";
+                if (blacklistManager.isBlacklisted(UUID.fromString(formattedUUID))) {
+                    totaltags = totaltags + EnumChatFormatting.DARK_RED + "BL §r";
                 }
             } catch (IllegalArgumentException e) {
                 // Invalid UUID format, ignore.
@@ -82,19 +70,15 @@ public class TagUtils {
             "unwilling",
             "predicative",
         };
-        boolean suswordcheck = Arrays.stream(suswords).anyMatch(keyword ->
-            name.toLowerCase().contains(keyword.toLowerCase())
-        );
-        if (
-            suswordcheck ||
-            Pattern.compile("\\d.*\\d.*\\d.*\\d").matcher(name).find()
-        ) totaltags = totaltags + EnumChatFormatting.YELLOW + "N §r";
+        boolean suswordcheck =
+                Arrays.stream(suswords)
+                        .anyMatch(keyword -> name.toLowerCase().contains(keyword.toLowerCase()));
+        if (suswordcheck || Pattern.compile("\\d.*\\d.*\\d.*\\d").matcher(name).find())
+            totaltags = totaltags + EnumChatFormatting.YELLOW + "N §r";
 
-        if (stars <= 6 && ws >= 1) totaltags =
-            totaltags + EnumChatFormatting.GREEN + "W §r";
+        if (stars <= 6 && ws >= 1) totaltags = totaltags + EnumChatFormatting.GREEN + "W §r";
 
-        if (stars <= 6 && fkdr >= 4) totaltags =
-            totaltags + EnumChatFormatting.DARK_RED + "F §r";
+        if (stars <= 6 && fkdr >= 4) totaltags = totaltags + EnumChatFormatting.DARK_RED + "F §r";
 
         String[] defaultSkinIDS = {
             "a3bd16079f764cd541e072e888fe43885e711f98658323db0f9a6045da91ee7a ",
@@ -109,21 +93,17 @@ public class TagUtils {
             "fece7017b1bb13926d1158864b283b8b930271f80a90482f174cca6a17e88236",
         };
         try {
-            String urlString =
-                "https://sessionserver.mojang.com/session/minecraft/profile/" +
-                uuid;
+            String urlString = "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid;
 
             URL url = new URL(urlString);
-            HttpURLConnection connection =
-                (HttpURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
             int responseCode = connection.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream())
-                );
+                BufferedReader in =
+                        new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
                 String inputLine;
 
@@ -137,11 +117,10 @@ public class TagUtils {
                 String value = parts[1].split("\"")[0];
                 byte[] decodedBytes = Base64.getDecoder().decode(value);
                 String valueJson = new String(decodedBytes);
-                boolean skincheck = Arrays.stream(defaultSkinIDS).anyMatch(id ->
-                    valueJson.toLowerCase().contains(id.toLowerCase())
-                );
-                if (skincheck) totaltags =
-                    totaltags + EnumChatFormatting.DARK_AQUA + "SK §r";
+                boolean skincheck =
+                        Arrays.stream(defaultSkinIDS)
+                                .anyMatch(id -> valueJson.toLowerCase().contains(id.toLowerCase()));
+                if (skincheck) totaltags = totaltags + EnumChatFormatting.DARK_AQUA + "SK §r";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -151,15 +130,9 @@ public class TagUtils {
         String playerData = statsProvider.fetchPlayerData(uuid);
         Pattern timestampPattern;
         if (statsProvider instanceof NadeshikoApi) {
-            timestampPattern = Pattern.compile(
-                "\"first_login\":(\\d+),",
-                Pattern.CASE_INSENSITIVE
-            );
+            timestampPattern = Pattern.compile("\"first_login\":(\\d+),", Pattern.CASE_INSENSITIVE);
         } else {
-            timestampPattern = Pattern.compile(
-                "\"firstLogin\":(\\d+),",
-                Pattern.CASE_INSENSITIVE
-            );
+            timestampPattern = Pattern.compile("\"firstLogin\":(\\d+),", Pattern.CASE_INSENSITIVE);
         }
         Matcher timestampMatcher = timestampPattern.matcher(playerData);
         if (timestampMatcher.find()) {
@@ -181,9 +154,7 @@ public class TagUtils {
             loginCalendar.set(Calendar.SECOND, 0);
             loginCalendar.set(Calendar.MILLISECOND, 0);
 
-            long diff =
-                currentCalendar.getTimeInMillis() -
-                loginCalendar.getTimeInMillis();
+            long diff = currentCalendar.getTimeInMillis() - loginCalendar.getTimeInMillis();
             long oneDayMillis = 24 * 60 * 60 * 1000;
 
             if (Math.abs(diff) <= oneDayMillis) {
@@ -191,8 +162,7 @@ public class TagUtils {
             }
         }
 
-        if (finals == 0 && fdeaths == 0) totaltags =
-            totaltags + EnumChatFormatting.RED + "0F §r";
+        if (finals == 0 && fdeaths == 0) totaltags = totaltags + EnumChatFormatting.RED + "0F §r";
 
         return totaltags;
     }

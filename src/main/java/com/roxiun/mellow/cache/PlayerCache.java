@@ -29,14 +29,13 @@ public class PlayerCache {
     private final MellowOneConfig config;
 
     public PlayerCache(
-        MojangApi mojangApi,
-        StatsProvider statsProvider,
-        UrchinApi urchinApi,
-        SeraphApi seraphApi,
-        String urchinApiKey,
-        String seraphApiKey,
-        MellowOneConfig config
-    ) {
+            MojangApi mojangApi,
+            StatsProvider statsProvider,
+            UrchinApi urchinApi,
+            SeraphApi seraphApi,
+            String urchinApiKey,
+            String seraphApiKey,
+            MellowOneConfig config) {
         this.mojangApi = mojangApi;
         this.statsProvider = statsProvider;
         this.urchinApi = urchinApi;
@@ -59,9 +58,7 @@ public class PlayerCache {
 
     private PlayerProfile fetchAndCachePlayer(String playerName) {
         try {
-            BedwarsPlayer bedwarsPlayer = statsProvider.fetchPlayerStats(
-                playerName
-            );
+            BedwarsPlayer bedwarsPlayer = statsProvider.fetchPlayerStats(playerName);
             if (bedwarsPlayer == null) {
                 return null;
             }
@@ -74,19 +71,15 @@ public class PlayerCache {
             List<UrchinTag> urchinTags = null;
             if (config.urchin) {
                 try {
-                    urchinTags = urchinApi.fetchUrchinTags(
-                        uuid,
-                        playerName,
-                        urchinApiKey
-                    );
+                    urchinTags = urchinApi.fetchUrchinTags(uuid, playerName, urchinApiKey);
                 } catch (IOException e) {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendMessage(
-                            "§cFailed to fetch Urchin tags for " +
-                                playerName +
-                                "."
-                        )
-                    );
+                    Minecraft.getMinecraft()
+                            .addScheduledTask(
+                                    () ->
+                                            ChatUtils.sendMessage(
+                                                    "§cFailed to fetch Urchin tags for "
+                                                            + playerName
+                                                            + "."));
                 }
             }
 
@@ -95,23 +88,18 @@ public class PlayerCache {
                 try {
                     seraphTags = seraphApi.fetchSeraphTags(uuid, seraphApiKey);
                 } catch (IOException e) {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendMessage(
-                            "§cFailed to fetch Seraph tags for " +
-                                playerName +
-                                "."
-                        )
-                    );
+                    Minecraft.getMinecraft()
+                            .addScheduledTask(
+                                    () ->
+                                            ChatUtils.sendMessage(
+                                                    "§cFailed to fetch Seraph tags for "
+                                                            + playerName
+                                                            + "."));
                 }
             }
 
-            PlayerProfile newProfile = new PlayerProfile(
-                uuid,
-                playerName,
-                bedwarsPlayer,
-                urchinTags,
-                seraphTags
-            );
+            PlayerProfile newProfile =
+                    new PlayerProfile(uuid, playerName, bedwarsPlayer, urchinTags, seraphTags);
             cache.put(playerName.toLowerCase(), newProfile);
             return newProfile;
         } catch (Exception e) {

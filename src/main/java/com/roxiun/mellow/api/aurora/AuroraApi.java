@@ -13,36 +13,20 @@ public class AuroraApi {
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
-    private static final String BASE_URL =
-        "https://bordic.xyz/api/v2/resources/lookup/";
+    private static final String BASE_URL = "https://bordic.xyz/api/v2/resources/lookup/";
 
-    public AuroraResponse queryStats(
-        String type,
-        String value,
-        int range,
-        int max,
-        String apiKey
-    ) throws IOException {
+    public AuroraResponse queryStats(String type, String value, int range, int max, String apiKey)
+            throws IOException {
         if (apiKey == null || apiKey.isEmpty()) {
             return null;
         }
 
         String url =
-            BASE_URL +
-            type +
-            "?key=" +
-            apiKey +
-            "&value=" +
-            value +
-            "&range=" +
-            range +
-            "&max=" +
-            max;
+                BASE_URL + type + "?key=" + apiKey + "&value=" + value + "&range=" + range + "&max="
+                        + max;
 
-        Request request = new Request.Builder()
-            .url(url)
-            .header("User-Agent", "Mellow/4.1.0")
-            .build();
+        Request request =
+                new Request.Builder().url(url).header("User-Agent", "Mellow/4.1.0").build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {

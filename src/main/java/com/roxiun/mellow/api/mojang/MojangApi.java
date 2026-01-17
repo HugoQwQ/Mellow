@@ -13,18 +13,14 @@ public class MojangApi {
         HttpURLConnection connection = null;
         try {
             String urlString =
-                "https://api.minecraftservices.com/minecraft/profile/lookup/name/" +
-                username;
-            connection = (HttpURLConnection) new URL(
-                urlString
-            ).openConnection();
+                    "https://api.minecraftservices.com/minecraft/profile/lookup/name/" + username;
+            connection = (HttpURLConnection) new URL(urlString).openConnection();
             connection.setRequestMethod("GET");
 
             int responseCode = connection.getResponseCode();
             if (responseCode == 200) {
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream())
-                );
+                BufferedReader in =
+                        new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = in.readLine()) != null) response.append(line);
@@ -40,26 +36,18 @@ public class MojangApi {
                 HttpURLConnection minetoolsConnection = null;
                 try {
                     urlString = "https://api.minetools.eu/uuid/" + username;
-                    minetoolsConnection = (HttpURLConnection) new URL(
-                        urlString
-                    ).openConnection();
+                    minetoolsConnection = (HttpURLConnection) new URL(urlString).openConnection();
                     minetoolsConnection.setRequestMethod("GET");
 
-                    BufferedReader in = new BufferedReader(
-                        new InputStreamReader(
-                            minetoolsConnection.getInputStream()
-                        )
-                    );
+                    BufferedReader in =
+                            new BufferedReader(
+                                    new InputStreamReader(minetoolsConnection.getInputStream()));
                     StringBuilder response = new StringBuilder();
                     String line;
-                    while ((line = in.readLine()) != null) response.append(
-                        line
-                    );
+                    while ((line = in.readLine()) != null) response.append(line);
                     in.close();
 
-                    if (
-                        response.toString().contains("\"id\": null")
-                    ) return "ERROR";
+                    if (response.toString().contains("\"id\": null")) return "ERROR";
                     String[] parts = response.toString().split("\"id\":\"");
                     if (parts.length > 1) {
                         return parts[1].split("\"")[0];
@@ -72,7 +60,8 @@ public class MojangApi {
                     }
                 }
             }
-        } catch (Exception ignored) {} finally {
+        } catch (Exception ignored) {
+        } finally {
             if (connection != null) {
                 connection.disconnect();
             }
@@ -95,9 +84,7 @@ public class MojangApi {
     }
 
     public String getUUIDFromName(String playerName) {
-        for (NetworkPlayerInfo info : Minecraft.getMinecraft()
-            .getNetHandler()
-            .getPlayerInfoMap()) {
+        for (NetworkPlayerInfo info : Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap()) {
             if (info.getGameProfile().getName().equalsIgnoreCase(playerName)) {
                 return String.valueOf(info.getGameProfile().getId());
             }

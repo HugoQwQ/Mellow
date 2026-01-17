@@ -28,8 +28,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class AnticheatManager {
 
     private final Mellow mellow;
-    private final Map<UUID, ACPlayerData> playerDataMap =
-        new ConcurrentHashMap<>();
+    private final Map<UUID, ACPlayerData> playerDataMap = new ConcurrentHashMap<>();
     private List<Check> checks;
 
     public AnticheatManager(Mellow mellow) {
@@ -93,53 +92,39 @@ public class AnticheatManager {
         EntityPlayer player = data.getPlayer();
         if (player == null) return;
 
-        ACPlayerData.CheckData checkData = data.checkDataMap.computeIfAbsent(
-            check.getName(),
-            k -> new ACPlayerData.CheckData()
-        );
+        ACPlayerData.CheckData checkData =
+                data.checkDataMap.computeIfAbsent(
+                        check.getName(), k -> new ACPlayerData.CheckData());
         checkData.violations += vl;
 
         int threshold = Mellow.config.anticheatVl;
         long cooldown = Mellow.config.anticheatCooldown * 1000L;
 
         if (checkData.violations >= threshold) {
-            long timeSinceLastAlert =
-                System.currentTimeMillis() - checkData.lastAlertTime;
+            long timeSinceLastAlert = System.currentTimeMillis() - checkData.lastAlertTime;
             if (timeSinceLastAlert >= cooldown) {
                 // Main message component
-                IChatComponent mainMessage = new ChatComponentText(
-                    String.format(
-                        "§8[§cAC§8] §7%s §ffailed §c%s §7(%s) §c[VL: %.1f]",
-                        FormattingUtils.formatNickedPlayerName(
-                            player.getName()
-                        ),
-                        check.getName(),
-                        info,
-                        checkData.violations
-                    )
-                );
+                IChatComponent mainMessage =
+                        new ChatComponentText(
+                                String.format(
+                                        "§8[§cAC§8] §7%s §ffailed §c%s §7(%s) §c[VL: %.1f]",
+                                        FormattingUtils.formatNickedPlayerName(player.getName()),
+                                        check.getName(),
+                                        info,
+                                        checkData.violations));
 
                 // Add WDR button if on Hypixel
                 if (HypixelUtils.INSTANCE.isHypixel()) {
-                    IChatComponent reportButton = new ChatComponentText(
-                        " §8[§cWDR§8]"
-                    );
+                    IChatComponent reportButton = new ChatComponentText(" §8[§cWDR§8]");
                     ChatStyle style = new ChatStyle();
                     style.setChatClickEvent(
-                        new ClickEvent(
-                            ClickEvent.Action.RUN_COMMAND,
-                            "/wdr " +
-                                player.getName().replaceAll("§.", "").trim()
-                        )
-                    );
+                            new ClickEvent(
+                                    ClickEvent.Action.RUN_COMMAND,
+                                    "/wdr " + player.getName().replaceAll("§.", "").trim()));
                     style.setChatHoverEvent(
-                        new HoverEvent(
-                            HoverEvent.Action.SHOW_TEXT,
-                            new ChatComponentText(
-                                "Click to report " + player.getName()
-                            )
-                        )
-                    );
+                            new HoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    new ChatComponentText("Click to report " + player.getName())));
                     reportButton.setChatStyle(style);
                     mainMessage.appendSibling(reportButton);
                 }

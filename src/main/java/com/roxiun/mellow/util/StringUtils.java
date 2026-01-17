@@ -18,11 +18,7 @@ public class StringUtils {
         return count;
     }
 
-    public static String extractValue(
-        String text,
-        String startDelimiter,
-        String endDelimiter
-    ) {
+    public static String extractValue(String text, String startDelimiter, String endDelimiter) {
         int startIndex = text.indexOf(startDelimiter);
         if (startIndex == -1) return "N/A"; // Not found
         startIndex += startDelimiter.length();

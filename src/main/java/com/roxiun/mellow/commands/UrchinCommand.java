@@ -21,11 +21,7 @@ public class UrchinCommand extends CommandBase {
     private final MojangApi mojangApi;
     private final MellowOneConfig config;
 
-    public UrchinCommand(
-        UrchinApi urchinApi,
-        MojangApi mojangApi,
-        MellowOneConfig config
-    ) {
+    public UrchinCommand(UrchinApi urchinApi, MojangApi mojangApi, MellowOneConfig config) {
         this.urchinApi = urchinApi;
         this.mojangApi = mojangApi;
         this.config = config;
@@ -44,81 +40,71 @@ public class UrchinCommand extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length != 1) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cInvalid usage! Use /urchin <username>"
-            );
+            ChatUtils.sendCommandMessage(sender, "§cInvalid usage! Use /urchin <username>");
             return;
         }
 
         String username = args[0];
-        new Thread(() -> {
-            try {
-                String uuid = mojangApi.fetchUUID(username);
-                if (uuid == null || uuid.isEmpty()) {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendCommandMessage(
-                            sender,
-                            "§cCould not find UUID for: §r" + username
-                        )
-                    );
-                    return;
-                }
+        new Thread(
+                        () -> {
+                            try {
+                                String uuid = mojangApi.fetchUUID(username);
+                                if (uuid == null || uuid.isEmpty()) {
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender,
+                                                                    "§cCould not find UUID for: §r"
+                                                                            + username));
+                                    return;
+                                }
 
-                List<UrchinTag> tags = urchinApi.fetchUrchinTags(
-                    uuid,
-                    username,
-                    config.urchinKey
-                );
+                                List<UrchinTag> tags =
+                                        urchinApi.fetchUrchinTags(uuid, username, config.urchinKey);
 
-                if (tags == null || tags.isEmpty()) {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendCommandMessage(
-                            sender,
-                            "§aNo Urchin tags found for: §r" + username
-                        )
-                    );
-                } else {
-                    String formattedTags = FormattingUtils.formatUrchinTags(
-                        tags
-                    );
-                    String urchinMessage =
-                        "§c" + username + " is tagged for: " + formattedTags;
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendCommandMessage(sender, urchinMessage)
-                    );
-                }
-            } catch (IOException e) {
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§cAn error occurred while fetching Urchin tags for " +
-                            username +
-                            "."
-                    )
-                );
-            }
-        })
-            .start();
+                                if (tags == null || tags.isEmpty()) {
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender,
+                                                                    "§aNo Urchin tags found for: §r"
+                                                                            + username));
+                                } else {
+                                    String formattedTags = FormattingUtils.formatUrchinTags(tags);
+                                    String urchinMessage =
+                                            "§c" + username + " is tagged for: " + formattedTags;
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender, urchinMessage));
+                                }
+                            } catch (IOException e) {
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () ->
+                                                        ChatUtils.sendCommandMessage(
+                                                                sender,
+                                                                "§cAn error occurred while fetching Urchin tags for "
+                                                                        + username
+                                                                        + "."));
+                            }
+                        })
+                .start();
     }
 
     @Override
     public List<String> addTabCompletionOptions(
-        ICommandSender sender,
-        String[] args,
-        BlockPos pos
-    ) {
+            ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(
-                args,
-                Minecraft.getMinecraft()
-                    .getNetHandler()
-                    .getPlayerInfoMap()
-                    .stream()
-                    .map(NetworkPlayerInfo::getGameProfile)
-                    .map(GameProfile::getName)
-                    .toArray(String[]::new)
-            );
+                    args,
+                    Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().stream()
+                            .map(NetworkPlayerInfo::getGameProfile)
+                            .map(GameProfile::getName)
+                            .toArray(String[]::new));
         }
         return null;
     }

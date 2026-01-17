@@ -22,5 +22,6 @@ public abstract class Check {
         return description;
     }
 
-    public void onPlayerTick(AnticheatManager manager, TickEvent.PlayerTickEvent event, ACPlayerData data) {}
+    public void onPlayerTick(
+            AnticheatManager manager, TickEvent.PlayerTickEvent event, ACPlayerData data) {}
 }

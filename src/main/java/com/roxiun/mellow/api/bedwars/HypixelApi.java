@@ -21,22 +21,16 @@ public class HypixelApi {
     }
 
     public String fetchBedwarsStats(
-        String playerName,
-        int minFkdr,
-        boolean tags,
-        boolean tabstats,
-        Map<String, List<String>> playerSuffixes
-    ) {
+            String playerName,
+            int minFkdr,
+            boolean tags,
+            boolean tabstats,
+            Map<String, List<String>> playerSuffixes) {
         try {
-            BedwarsPlayer player = mellow
-                .getStatsProvider()
-                .fetchPlayerStats(playerName);
+            BedwarsPlayer player = mellow.getStatsProvider().fetchPlayerStats(playerName);
 
             if (player == null) {
-                return (
-                    "§cFailed to get stats for " +
-                    PlayerUtils.getTabDisplayName(playerName)
-                );
+                return ("§cFailed to get stats for " + PlayerUtils.getTabDisplayName(playerName));
             }
 
             if (player.getFkdr() < minFkdr) {
@@ -51,20 +45,13 @@ public class HypixelApi {
         } catch (Exception e) {
             // It's good practice to log the exception.
             // e.g., mellow.getLogger().error("Failed to fetch/process stats for " + playerName, e);
-            return (
-                EnumChatFormatting.RED + "Failed to get stats for " + playerName
-            );
+            return (EnumChatFormatting.RED + "Failed to get stats for " + playerName);
         }
     }
 
-    /**
-     * Populates the playerSuffixes map with stats for the tab list.
-     */
+    /** Populates the playerSuffixes map with stats for the tab list. */
     private void populateTabStats(
-        String playerName,
-        BedwarsPlayer player,
-        Map<String, List<String>> playerSuffixes
-    ) {
+            String playerName, BedwarsPlayer player, Map<String, List<String>> playerSuffixes) {
         List<String> suffixes = new ArrayList<>();
         suffixes.add(player.getStars());
         suffixes.add(player.getFkdrColor() + player.getFormattedFkdr());
@@ -76,9 +63,7 @@ public class HypixelApi {
         playerSuffixes.put(playerName, suffixes);
     }
 
-    /**
-     * Determines the chat color for a given winstreak for tab stats.
-     */
+    /** Determines the chat color for a given winstreak for tab stats. */
     private String getWinstreakColor(int winstreak) {
         if (winstreak >= 20) {
             return "§d";
@@ -91,43 +76,26 @@ public class HypixelApi {
         }
     }
 
-    /**
-     * Formats the full player stats string for chat display.
-     */
-    private String formatPlayerStats(
-        String playerName,
-        BedwarsPlayer player,
-        boolean withTags
-    ) throws IOException {
+    /** Formats the full player stats string for chat display. */
+    private String formatPlayerStats(String playerName, BedwarsPlayer player, boolean withTags)
+            throws IOException {
         String displayName = PlayerUtils.getTabDisplayName(playerName);
         String stars = player.getStars();
         String fkdr = player.getFkdrColor() + player.getFormattedFkdr();
 
         String winstreak = "";
         if (player.getWinstreak() > 0) {
-            winstreak = FormattingUtils.formatWinstreak(
-                String.valueOf(player.getWinstreak())
-            );
+            winstreak = FormattingUtils.formatWinstreak(String.valueOf(player.getWinstreak()));
         }
 
-        String base = String.format(
-            "%s §r%s§r§7 |§r FKDR: %s",
-            displayName,
-            stars,
-            fkdr
-        );
+        String base = String.format("%s §r%s§r§7 |§r FKDR: %s", displayName, stars, fkdr);
 
         if (withTags) {
             String tagsValue = buildTagsValue(playerName, player);
             if (winstreak.isEmpty()) {
                 return String.format("%s §r§7|§r [ %s ]", base, tagsValue);
             } else {
-                return String.format(
-                    "%s §r§7|§r WS: %s§r [ %s ]",
-                    base,
-                    winstreak,
-                    tagsValue
-                );
+                return String.format("%s §r§7|§r WS: %s§r [ %s ]", base, winstreak, tagsValue);
             }
         } else {
             if (winstreak.isEmpty()) {
@@ -138,23 +106,20 @@ public class HypixelApi {
         }
     }
 
-    /**
-     * Builds the combined tags string for a player.
-     */
-    private String buildTagsValue(String playerName, BedwarsPlayer player)
-        throws IOException {
+    /** Builds the combined tags string for a player. */
+    private String buildTagsValue(String playerName, BedwarsPlayer player) throws IOException {
         String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
         int stars = parseStars(player.getStars());
 
-        String tagsValue = tagUtils.buildTags(
-            playerName,
-            uuid,
-            stars,
-            player.getFkdr(),
-            player.getWinstreak(),
-            player.getFinalKills(),
-            player.getFinalDeaths()
-        );
+        String tagsValue =
+                tagUtils.buildTags(
+                        playerName,
+                        uuid,
+                        stars,
+                        player.getFkdr(),
+                        player.getWinstreak(),
+                        player.getFinalKills(),
+                        player.getFinalDeaths());
 
         if (tagsValue.endsWith(" ")) {
             return tagsValue.substring(0, tagsValue.length() - 1);
@@ -163,16 +128,17 @@ public class HypixelApi {
     }
 
     /**
-     * Parses the integer star level from its formatted string representation.
-     * e.g., "§7[§b123✫§7]" -> 123
+     * Parses the integer star level from its formatted string representation. e.g., "§7[§b123✫§7]"
+     * -> 123
      */
     private int parseStars(String starString) {
         try {
-            String cleaned = starString
-                .replaceAll("§.", "") // Remove color codes
-                .replace("[", "")
-                .replace("]", "")
-                .replace("✫", "");
+            String cleaned =
+                    starString
+                            .replaceAll("§.", "") // Remove color codes
+                            .replace("[", "")
+                            .replace("]", "")
+                            .replace("✫", "");
             return Integer.parseInt(cleaned.trim());
         } catch (NumberFormatException e) {
             // Log this error if a logger is available.

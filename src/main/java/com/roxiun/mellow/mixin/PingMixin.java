@@ -16,28 +16,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class PingMixin {
 
     private static final PolsuApi polsuApi = new PolsuApi();
-    private static final ExecutorService EXECUTOR =
-        Executors.newFixedThreadPool(3);
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(3);
 
-    @Shadow
-    private int responseTime;
+    @Shadow private int responseTime;
 
     @Inject(method = "getResponseTime", at = @At("HEAD"), cancellable = true)
     private void onGetResponseTime(CallbackInfoReturnable<Integer> cir) {
         int original = this.responseTime;
 
-        String playerName =
-            ((NetworkPlayerInfo) (Object) this).getGameProfile().getName();
+        String playerName = ((NetworkPlayerInfo) (Object) this).getGameProfile().getName();
         if (Mellow.nickUtils.isNicked(playerName)) {
             cir.setReturnValue(original);
             return;
         }
 
         // pingProvider: 0 = None, 1 = Polsu, 2 = Urchin
-        if (
-            Mellow.config.pingProvider == 0 ||
-            !HypixelUtils.INSTANCE.isHypixel()
-        ) {
+        if (Mellow.config.pingProvider == 0 || !HypixelUtils.INSTANCE.isHypixel()) {
             cir.setReturnValue(original);
             return;
         }
@@ -47,9 +41,7 @@ public class PingMixin {
             return;
         }
 
-        String uuid = ((NetworkPlayerInfo) (Object) this).getGameProfile()
-            .getId()
-            .toString();
+        String uuid = ((NetworkPlayerInfo) (Object) this).getGameProfile().getId().toString();
 
         if (Mellow.config.pingProvider == 1) {
             // Polsu
@@ -63,13 +55,14 @@ public class PingMixin {
 
             if (!polsuApi.tryStartFetch(uuid)) return;
 
-            EXECUTOR.submit(() -> {
-                try {
-                    polsuApi.fetchPingBlocking(uuid);
-                } finally {
-                    polsuApi.finishFetch(uuid);
-                }
-            });
+            EXECUTOR.submit(
+                    () -> {
+                        try {
+                            polsuApi.fetchPingBlocking(uuid);
+                        } finally {
+                            polsuApi.finishFetch(uuid);
+                        }
+                    });
         } else if (Mellow.config.pingProvider == 2) {
             // Urchin
             int cached = Mellow.urchinApi.getCachedPing(uuid);
@@ -82,13 +75,14 @@ public class PingMixin {
 
             if (!Mellow.urchinApi.tryStartFetch(uuid)) return;
 
-            EXECUTOR.submit(() -> {
-                try {
-                    Mellow.urchinApi.fetchPingBlocking(uuid);
-                } finally {
-                    Mellow.urchinApi.finishFetch(uuid);
-                }
-            });
+            EXECUTOR.submit(
+                    () -> {
+                        try {
+                            Mellow.urchinApi.fetchPingBlocking(uuid);
+                        } finally {
+                            Mellow.urchinApi.finishFetch(uuid);
+                        }
+                    });
         }
     }
 }

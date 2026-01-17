@@ -1,6 +1,5 @@
 package com.roxiun.mellow.events;
 
-import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
 import com.roxiun.mellow.api.duels.PlanckeApi;
 import com.roxiun.mellow.api.hypixel.HypixelFeatures;
 import com.roxiun.mellow.cache.PlayerCache;
@@ -9,11 +8,9 @@ import com.roxiun.mellow.task.StatsChecker;
 import com.roxiun.mellow.util.ChatUtils;
 import com.roxiun.mellow.util.StringUtils;
 import com.roxiun.mellow.util.bedwars.BedwarsUpgradesTrapsManager;
-import com.roxiun.mellow.util.formatting.FormattingUtils;
 import com.roxiun.mellow.util.nicks.NickUtils;
 import com.roxiun.mellow.util.nicks.NumberDenicker;
 import com.roxiun.mellow.util.player.PregameStats;
-import com.roxiun.mellow.util.skins.SkinUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,14 +34,13 @@ public class ChatHandler {
     private final PlayerCache playerCache;
 
     public ChatHandler(
-        MellowOneConfig config,
-        NickUtils nickUtils,
-        NumberDenicker numberDenicker,
-        PregameStats pregameStats,
-        PlanckeApi planckeApi,
-        StatsChecker statsChecker,
-        PlayerCache playerCache
-    ) {
+            MellowOneConfig config,
+            NickUtils nickUtils,
+            NumberDenicker numberDenicker,
+            PregameStats pregameStats,
+            PlanckeApi planckeApi,
+            StatsChecker statsChecker,
+            PlayerCache playerCache) {
         this.config = config;
         this.nickUtils = nickUtils;
         this.numberDenicker = numberDenicker;
@@ -64,23 +60,23 @@ public class ChatHandler {
         processBedwarsUpgradesAndTraps(event);
 
         // Check for Bedwars game start messages
-        if (
-            message.contains("Protect your bed and destroy the enemy beds.") &&
-            !(message.contains(":")) &&
-            !(message.contains("SHOUT"))
-        ) {
+        if (message.contains("Protect your bed and destroy the enemy beds.")
+                && !(message.contains(":"))
+                && !(message.contains("SHOUT"))) {
             // Start Bedwars game after a delay to allow scoreboard to update
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000); // Wait 1 second like in the JS version
-                    startBedwarsGame();
-                    // Reset upgrades and traps when game starts
-                    BedwarsUpgradesTrapsManager.getInstance().resetUpgradesAndTraps();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            })
-                .start();
+            new Thread(
+                            () -> {
+                                try {
+                                    Thread.sleep(1000); // Wait 1 second like in the JS version
+                                    startBedwarsGame();
+                                    // Reset upgrades and traps when game starts
+                                    BedwarsUpgradesTrapsManager.getInstance()
+                                            .resetUpgradesAndTraps();
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                }
+                            })
+                    .start();
 
             if (config.autoWho) {
                 mc.thePlayer.sendChatMessage("/who");
@@ -88,25 +84,23 @@ public class ChatHandler {
         }
 
         // Check for bed respawn messages which also indicate game is running
-        if (
-            message.contains(
-                "You will respawn because you still have a bed!"
-            ) &&
-            !(message.contains(":")) &&
-            !(message.contains("SHOUT"))
-        ) {
+        if (message.contains("You will respawn because you still have a bed!")
+                && !(message.contains(":"))
+                && !(message.contains("SHOUT"))) {
             // Start Bedwars game after a delay to allow scoreboard to update
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000); // Wait 1 second like in the JS version
-                    startBedwarsGame();
-                    // Reset upgrades and traps when game starts
-                    BedwarsUpgradesTrapsManager.getInstance().resetUpgradesAndTraps();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            })
-                .start();
+            new Thread(
+                            () -> {
+                                try {
+                                    Thread.sleep(1000); // Wait 1 second like in the JS version
+                                    startBedwarsGame();
+                                    // Reset upgrades and traps when game starts
+                                    BedwarsUpgradesTrapsManager.getInstance()
+                                            .resetUpgradesAndTraps();
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                }
+                            })
+                    .start();
             if (config.autoWho) {
                 mc.thePlayer.sendChatMessage("/who");
             }
@@ -115,33 +109,27 @@ public class ChatHandler {
         if (message.startsWith("ONLINE:")) {
             String playersString = message.substring("ONLINE:".length()).trim();
             String[] players = playersString.split(",\\s*");
-            List<String> onlinePlayers = new ArrayList<>(
-                Arrays.asList(players)
-            );
+            List<String> onlinePlayers = new ArrayList<>(Arrays.asList(players));
             nickUtils.updateNickedPlayers(onlinePlayers);
             statsChecker.checkPlayerStats(onlinePlayers);
         }
 
         if (message.startsWith(" ") && message.contains("Opponent:")) {
             String username = StringUtils.parseUsername(message);
-            new Thread(() -> {
-                try {
-                    String stats = planckeApi.checkDuels(username);
-                    ChatUtils.sendMessage(stats);
-                } catch (IOException e) {
-                    ChatUtils.sendMessage(
-                        "§cFailed to get stats for " + username
-                    );
-                }
-            })
-                .start();
+            new Thread(
+                            () -> {
+                                try {
+                                    String stats = planckeApi.checkDuels(username);
+                                    ChatUtils.sendMessage(stats);
+                                } catch (IOException e) {
+                                    ChatUtils.sendMessage("§cFailed to get stats for " + username);
+                                }
+                            })
+                    .start();
         }
 
         // Check for pregame start message to reset upgrades and traps
-        if (
-            message.startsWith("The game starts in ") &&
-            message.contains(" seconds!")
-        ) {
+        if (message.startsWith("The game starts in ") && message.contains(" seconds!")) {
             BedwarsUpgradesTrapsManager.getInstance().resetUpgradesAndTraps();
         }
     }
@@ -151,21 +139,15 @@ public class ChatHandler {
 
         // Check for purchase messages
         if (message.toLowerCase().contains("purchased")) {
-            BedwarsUpgradesTrapsManager.getInstance().processPurchaseMessage(
-                message
-            );
+            BedwarsUpgradesTrapsManager.getInstance().processPurchaseMessage(message);
         }
 
         // Check for trap triggered and removed messages
-        if (
-            message.toLowerCase().contains("trap was set off!") ||
-            message.toLowerCase().contains("reveal trap set off") ||
-            (message.toLowerCase().contains("removed") &&
-                message.toLowerCase().contains("trap from the queue"))
-        ) {
-            BedwarsUpgradesTrapsManager.getInstance().processTrapTriggeredMessage(
-                message
-            );
+        if (message.toLowerCase().contains("trap was set off!")
+                || message.toLowerCase().contains("reveal trap set off")
+                || (message.toLowerCase().contains("removed")
+                        && message.toLowerCase().contains("trap from the queue"))) {
+            BedwarsUpgradesTrapsManager.getInstance().processTrapTriggeredMessage(message);
         }
     }
 
@@ -197,13 +179,13 @@ public class ChatHandler {
             ScoreObjective objective = scoreboard.getObjectiveInDisplaySlot(1); // Sidebar objective
             if (objective != null) {
                 // Check teams (which are often the actual scoreboard lines)
-                java.util.Collection<
-                    net.minecraft.scoreboard.ScorePlayerTeam
-                > teams = scoreboard.getTeams();
+                java.util.Collection<net.minecraft.scoreboard.ScorePlayerTeam> teams =
+                        scoreboard.getTeams();
                 for (net.minecraft.scoreboard.ScorePlayerTeam team : teams) {
                     String displayName = team.getTeamName();
                     if (displayName != null) {
-                        String cleanName = displayName.replaceAll("§.", ""); // Remove formatting codes
+                        String cleanName =
+                                displayName.replaceAll("§.", ""); // Remove formatting codes
                         // Check for "Pink" to determine if it's doubles mode (like the JS version)
                         if (cleanName.contains("Pink")) {
                             return "doubles";
@@ -212,13 +194,12 @@ public class ChatHandler {
                 }
 
                 // Also check scores as fallback
-                java.util.Collection<Score> scores = scoreboard.getSortedScores(
-                    objective
-                );
+                java.util.Collection<Score> scores = scoreboard.getSortedScores(objective);
                 for (Score score : scores) {
                     String scoreName = score.getPlayerName();
                     if (scoreName != null) {
-                        String cleanLine = scoreName.replaceAll("§.", ""); // Remove formatting codes
+                        String cleanLine =
+                                scoreName.replaceAll("§.", ""); // Remove formatting codes
                         // Check for "Pink" to determine if it's doubles mode (like the JS version)
                         if (cleanLine.contains("Pink")) {
                             return "doubles";

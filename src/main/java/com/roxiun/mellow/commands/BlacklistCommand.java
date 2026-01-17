@@ -21,10 +21,7 @@ public class BlacklistCommand extends CommandBase {
     private final BlacklistManager blacklistManager;
     private final MojangApi mojangApi;
 
-    public BlacklistCommand(
-        BlacklistManager blacklistManager,
-        MojangApi mojangApi
-    ) {
+    public BlacklistCommand(BlacklistManager blacklistManager, MojangApi mojangApi) {
         this.blacklistManager = blacklistManager;
         this.mojangApi = mojangApi;
     }
@@ -47,23 +44,16 @@ public class BlacklistCommand extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length < 1) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cInvalid usage! Use " + getCommandUsage(sender)
-            );
+            ChatUtils.sendCommandMessage(sender, "§cInvalid usage! Use " + getCommandUsage(sender));
             return;
         }
 
         String subCommand = args[0];
 
         if ("list".equalsIgnoreCase(subCommand)) {
-            Map<UUID, BlacklistedPlayer> blacklist =
-                blacklistManager.getBlacklist();
+            Map<UUID, BlacklistedPlayer> blacklist = blacklistManager.getBlacklist();
             if (blacklist.isEmpty()) {
-                ChatUtils.sendCommandMessage(
-                    sender,
-                    "§aThe blacklist is empty."
-                );
+                ChatUtils.sendCommandMessage(sender, "§aThe blacklist is empty.");
                 return;
             }
 
@@ -78,27 +68,19 @@ public class BlacklistCommand extends CommandBase {
                         page = 1;
                     }
                 } catch (NumberFormatException e) {
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§cInvalid page number. Using page 1."
-                    );
+                    ChatUtils.sendCommandMessage(sender, "§cInvalid page number. Using page 1.");
                 }
             }
 
             // Convert the map values to a list for pagination
-            List<BlacklistedPlayer> players = new java.util.ArrayList<>(
-                blacklist.values()
-            );
+            List<BlacklistedPlayer> players = new java.util.ArrayList<>(blacklist.values());
             int totalPlayers = players.size();
             int totalPages = (int) Math.ceil((double) totalPlayers / pageSize);
 
             if (page > totalPages) {
                 page = totalPages;
                 if (totalPages == 0) {
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§aThe blacklist is empty."
-                    );
+                    ChatUtils.sendCommandMessage(sender, "§aThe blacklist is empty.");
                     return;
                 }
             }
@@ -107,25 +89,19 @@ public class BlacklistCommand extends CommandBase {
             int endIndex = Math.min(startIndex + pageSize, totalPlayers);
 
             ChatUtils.sendCommandMessage(
-                sender,
-                "§aBlacklisted players (Page " + page + "/" + totalPages + "):"
-            );
+                    sender, "§aBlacklisted players (Page " + page + "/" + totalPages + "):");
             for (int i = startIndex; i < endIndex; i++) {
                 BlacklistedPlayer player = players.get(i);
                 sender.addChatMessage(
-                    new ChatComponentText(
-                        "§r- " + player.getName() + ": " + player.getReason()
-                    )
-                );
+                        new ChatComponentText(
+                                "§r- " + player.getName() + ": " + player.getReason()));
             }
 
             // Show navigation help if there are multiple pages
             if (totalPages > 1) {
-                String navigationMessage =
-                    "§7Use §f/blacklist list <page>§7 to navigate";
+                String navigationMessage = "§7Use §f/blacklist list <page>§7 to navigate";
                 if (page < totalPages) {
-                    navigationMessage +=
-                        " (Next: §f/blacklist list " + (page + 1) + "§7)";
+                    navigationMessage += " (Next: §f/blacklist list " + (page + 1) + "§7)";
                 }
                 ChatUtils.sendCommandMessage(sender, navigationMessage);
             }
@@ -133,10 +109,7 @@ public class BlacklistCommand extends CommandBase {
         } else if ("import".equalsIgnoreCase(subCommand)) {
             // Handle sync command: /blacklist import <filename>
             if (args.length < 2) {
-                ChatUtils.sendCommandMessage(
-                    sender,
-                    "§cUsage: /blacklist import <filename>"
-                );
+                ChatUtils.sendCommandMessage(sender, "§cUsage: /blacklist import <filename>");
                 return;
             }
 
@@ -149,160 +122,153 @@ public class BlacklistCommand extends CommandBase {
                 syncFile = new File(filename);
             } else {
                 // Relative to the config/mellow directory
-                File configDir = new File(
-                    Minecraft.getMinecraft().mcDataDir,
-                    "config/mellow"
-                );
+                File configDir = new File(Minecraft.getMinecraft().mcDataDir, "config/mellow");
                 syncFile = new File(configDir, filename);
             }
 
-            new Thread(() -> {
-                Minecraft.getMinecraft().addScheduledTask(() -> {
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§eImporting blacklist with file: " +
-                            syncFile.getAbsolutePath()
-                    );
-                });
+            new Thread(
+                            () -> {
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () -> {
+                                                    ChatUtils.sendCommandMessage(
+                                                            sender,
+                                                            "§eImporting blacklist with file: "
+                                                                    + syncFile.getAbsolutePath());
+                                                });
 
-                try {
-                    int newEntries = blacklistManager.syncWithExternalFile(
-                        syncFile
-                    );
-                    String message;
-                    if (newEntries > 0) {
-                        message =
-                            "§aSuccessfully imported! Added " +
-                            newEntries +
-                            " new entries from " +
-                            filename;
-                    } else if (syncFile.exists()) {
-                        message =
-                            "§eImport completed! No new entries found in " +
-                            filename;
-                    } else {
-                        message =
-                            "§cFile not found: " + syncFile.getAbsolutePath();
-                        Minecraft.getMinecraft().addScheduledTask(() ->
-                            ChatUtils.sendCommandMessage(sender, message)
-                        );
-                        return;
-                    }
+                                try {
+                                    int newEntries =
+                                            blacklistManager.syncWithExternalFile(syncFile);
+                                    String message;
+                                    if (newEntries > 0) {
+                                        message =
+                                                "§aSuccessfully imported! Added "
+                                                        + newEntries
+                                                        + " new entries from "
+                                                        + filename;
+                                    } else if (syncFile.exists()) {
+                                        message =
+                                                "§eImport completed! No new entries found in "
+                                                        + filename;
+                                    } else {
+                                        message = "§cFile not found: " + syncFile.getAbsolutePath();
+                                        Minecraft.getMinecraft()
+                                                .addScheduledTask(
+                                                        () ->
+                                                                ChatUtils.sendCommandMessage(
+                                                                        sender, message));
+                                        return;
+                                    }
 
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendCommandMessage(sender, message)
-                    );
-                } catch (Exception e) {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendCommandMessage(
-                            sender,
-                            "§cError importing file: " + e.getMessage()
-                        )
-                    );
-                }
-            })
-                .start();
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender, message));
+                                } catch (Exception e) {
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender,
+                                                                    "§cError importing file: "
+                                                                            + e.getMessage()));
+                                }
+                            })
+                    .start();
             return;
         }
 
         if (args.length < 2) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cInvalid usage! Use " + getCommandUsage(sender)
-            );
+            ChatUtils.sendCommandMessage(sender, "§cInvalid usage! Use " + getCommandUsage(sender));
             return;
         }
 
         String playerName = args[1];
 
-        new Thread(() -> {
-            String uuidString = mojangApi.getUUIDFromName(playerName);
-            if (uuidString == null) {
-                uuidString = mojangApi.fetchUUID(playerName);
-            }
+        new Thread(
+                        () -> {
+                            String uuidString = mojangApi.getUUIDFromName(playerName);
+                            if (uuidString == null) {
+                                uuidString = mojangApi.fetchUUID(playerName);
+                            }
 
-            if (uuidString == null || uuidString.equals("ERROR")) {
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§cCould not find player: " + playerName
-                    )
-                );
-                return;
-            }
+                            if (uuidString == null || uuidString.equals("ERROR")) {
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () ->
+                                                        ChatUtils.sendCommandMessage(
+                                                                sender,
+                                                                "§cCould not find player: "
+                                                                        + playerName));
+                                return;
+                            }
 
-            UUID uuid = UUIDUtils.fromString(uuidString);
+                            UUID uuid = UUIDUtils.fromString(uuidString);
 
-            if ("add".equalsIgnoreCase(subCommand)) {
-                String reason = "";
-                if (args.length < 3) {
-                    reason = "(none)";
-                } else {
-                    reason = String.join(
-                        " ",
-                        Arrays.copyOfRange(args, 2, args.length)
-                    );
-                }
+                            if ("add".equalsIgnoreCase(subCommand)) {
+                                String reason = "";
+                                if (args.length < 3) {
+                                    reason = "(none)";
+                                } else {
+                                    reason =
+                                            String.join(
+                                                    " ", Arrays.copyOfRange(args, 2, args.length));
+                                }
 
-                boolean playerAdded = blacklistManager.addPlayer(
-                    uuid,
-                    playerName,
-                    reason
-                );
-                if (playerAdded) {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendCommandMessage(
-                            sender,
-                            "§aAdded " + playerName + " to the blacklist."
-                        )
-                    );
-                } else {
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendCommandMessage(
-                            sender,
-                            "§c" +
-                                playerName +
-                                " is already on the blacklist for reason: " +
-                                blacklistManager
-                                    .getBlacklistedPlayer(uuid)
-                                    .getReason()
-                        )
-                    );
-                }
-            } else if ("remove".equalsIgnoreCase(subCommand)) {
-                blacklistManager.removePlayer(uuid);
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§aRemoved " + playerName + " from the blacklist."
-                    )
-                );
-            } else {
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§cInvalid subcommand! Use 'add', 'remove', or 'list'."
-                    )
-                );
-            }
-        })
-            .start();
+                                boolean playerAdded =
+                                        blacklistManager.addPlayer(uuid, playerName, reason);
+                                if (playerAdded) {
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender,
+                                                                    "§aAdded "
+                                                                            + playerName
+                                                                            + " to the blacklist."));
+                                } else {
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender,
+                                                                    "§c"
+                                                                            + playerName
+                                                                            + " is already on the blacklist for reason: "
+                                                                            + blacklistManager
+                                                                                    .getBlacklistedPlayer(
+                                                                                            uuid)
+                                                                                    .getReason()));
+                                }
+                            } else if ("remove".equalsIgnoreCase(subCommand)) {
+                                blacklistManager.removePlayer(uuid);
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () ->
+                                                        ChatUtils.sendCommandMessage(
+                                                                sender,
+                                                                "§aRemoved "
+                                                                        + playerName
+                                                                        + " from the blacklist."));
+                            } else {
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () ->
+                                                        ChatUtils.sendCommandMessage(
+                                                                sender,
+                                                                "§cInvalid subcommand! Use 'add', 'remove', or 'list'."));
+                            }
+                        })
+                .start();
     }
 
     @Override
     public List<String> addTabCompletionOptions(
-        ICommandSender sender,
-        String[] args,
-        BlockPos pos
-    ) {
+            ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(
-                args,
-                "add",
-                "remove",
-                "list",
-                "import"
-            );
+            return getListOfStringsMatchingLastWord(args, "add", "remove", "list", "import");
         }
 
         if (args.length == 2 && "list".equalsIgnoreCase(args[0])) {
@@ -311,18 +277,12 @@ public class BlacklistCommand extends CommandBase {
             for (int i = 1; i <= 10; i++) {
                 numbers.add(String.valueOf(i));
             }
-            return getListOfStringsMatchingLastWord(
-                args,
-                numbers.toArray(new String[0])
-            );
+            return getListOfStringsMatchingLastWord(args, numbers.toArray(new String[0]));
         }
 
         // For add/remove commands, provide player name completion
-        if (
-            args.length == 2 &&
-            ("add".equalsIgnoreCase(args[0]) ||
-                "remove".equalsIgnoreCase(args[0]))
-        ) {
+        if (args.length == 2
+                && ("add".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0]))) {
             return null; // Let the game handle player name completion
         }
 

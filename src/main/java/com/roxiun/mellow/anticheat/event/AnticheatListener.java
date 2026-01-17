@@ -43,16 +43,12 @@ public class AnticheatListener {
                 data.currentTick = this.currentTick;
 
                 // Update positions
-                data.lastPosition = new Vec3(
-                    event.player.prevPosX,
-                    event.player.prevPosY,
-                    event.player.prevPosZ
-                );
-                data.updatePosition(
-                    event.player.posX,
-                    event.player.posY,
-                    event.player.posZ
-                );
+                data.lastPosition =
+                        new Vec3(
+                                event.player.prevPosX,
+                                event.player.prevPosY,
+                                event.player.prevPosZ);
+                data.updatePosition(event.player.posX, event.player.posY, event.player.posZ);
 
                 // Update swing progress
                 data.lastSwingProgress = data.swingProgress;
@@ -80,11 +76,7 @@ public class AnticheatListener {
                 data.wasSwinging = event.player.isSwingInProgress;
 
                 // Update item use / block place state
-                if (
-                    data.isUsingItem &&
-                    !data.wasUsingItem &&
-                    data.isHoldingBlock()
-                ) {
+                if (data.isUsingItem && !data.wasUsingItem && data.isHoldingBlock()) {
                     data.lastBlockPlaceTime = System.currentTimeMillis();
                 }
                 data.wasUsingItem = data.isUsingItem;
@@ -95,13 +87,10 @@ public class AnticheatListener {
                 } else if (!data.isCrouching && data.wasCrouching) {
                     data.lastCrouchEndTick = data.currentTick;
                     if (data.lastCrouchStartTick > 0) {
-                        int crouchDuration = (int) (data.currentTick -
-                            data.lastCrouchStartTick);
+                        int crouchDuration = (int) (data.currentTick - data.lastCrouchStartTick);
                         data.crouchDurations.add(0, crouchDuration);
                         if (data.crouchDurations.size() > 10) {
-                            data.crouchDurations.remove(
-                                data.crouchDurations.size() - 1
-                            );
+                            data.crouchDurations.remove(data.crouchDurations.size() - 1);
                         }
                     }
                 }

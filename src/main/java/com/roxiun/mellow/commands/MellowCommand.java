@@ -28,65 +28,40 @@ public class MellowCommand extends CommandBase {
         sender.addChatMessage(new ChatComponentText("§r§5§l ⋆˙⟡ mellow ✧˚ §r"));
         sender.addChatMessage(new ChatComponentText("§r§d     by roxiun"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§7original made by§d melissalmao,§r§7 fontaine by§d xanning"
-            )
-        );
+                new ChatComponentText(
+                        "§r§7original made by§d melissalmao,§r§7 fontaine by§d xanning"));
         sender.addChatMessage(new ChatComponentText(""));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§dzifro §7for name & upgrades hud, §r§djqsie §7for original emerald counter "
-            )
-        );
+                new ChatComponentText(
+                        "§r§dzifro §7for name & upgrades hud, §r§djqsie §7for original emerald counter "));
         sender.addChatMessage(new ChatComponentText(""));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§7Settings can be found in the OneConfig menu"
-            )
-        );
+                new ChatComponentText("§r§7Settings can be found in the OneConfig menu"));
         sender.addChatMessage(new ChatComponentText(""));
 
         sender.addChatMessage(new ChatComponentText(""));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/bw <username>:§d Manually check bedwars stats of a player.§r"
-            )
-        );
+                new ChatComponentText(
+                        "§r§5/bw <username>:§d Manually check bedwars stats of a player.§r"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/blacklist <add | remove | list | import>:§d Add/remove/sync a player to your local blacklist.§r"
-            )
-        );
+                new ChatComponentText(
+                        "§r§5/blacklist <add | remove | list | import>:§d Add/remove/sync a player to your local blacklist.§r"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/urchin <username>:§d View a player's urchin tags.§r"
-            )
-        );
+                new ChatComponentText("§r§5/urchin <username>:§d View a player's urchin tags.§r"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/seraph <username>:§d View a player's seraph tags.§r"
-            )
-        );
+                new ChatComponentText("§r§5/seraph <username>:§d View a player's seraph tags.§r"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/denick <finals | beds> <number>:§d Manually denick a player based on finals or beds.§r"
-            )
-        );
+                new ChatComponentText(
+                        "§r§5/denick <finals | beds> <number>:§d Manually denick a player based on finals or beds.§r"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/skindenick <username>:§d Manually denick a player based on their skin.§r"
-            )
-        );
+                new ChatComponentText(
+                        "§r§5/skindenick <username>:§d Manually denick a player based on their skin.§r"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/cleartabcache:§d Clear stats cache of players if you're having issues.§r"
-            )
-        );
+                new ChatComponentText(
+                        "§r§5/cleartabcache:§d Clear stats cache of players if you're having issues.§r"));
         sender.addChatMessage(
-            new ChatComponentText(
-                "§r§5/who:§d Check and print the stats of the players in your lobby.§r"
-            )
-        );
+                new ChatComponentText(
+                        "§r§5/who:§d Check and print the stats of the players in your lobby.§r"));
         sender.addChatMessage(new ChatComponentText(""));
     }
 

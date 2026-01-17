@@ -16,10 +16,7 @@ public class AutoBlockCheck extends Check {
 
     @Override
     public void onPlayerTick(
-        AnticheatManager manager,
-        TickEvent.PlayerTickEvent event,
-        ACPlayerData data
-    ) {
+            AnticheatManager manager, TickEvent.PlayerTickEvent event, ACPlayerData data) {
         if (!Mellow.config.autoBlockCheckEnabled) return;
         EntityPlayer player = data.getPlayer();
         if (player == null || player == Minecraft.getMinecraft().thePlayer) {
@@ -32,22 +29,15 @@ public class AutoBlockCheck extends Check {
         boolean isSwinging = data.swingProgress > 0;
 
         // Add swing to history if swinging and hasn't been detected recently
-        if (
-            isSwinging &&
-            (data.lastSwingDetected == 0 ||
-                currentTime - data.lastSwingDetected > 100)
-        ) {
+        if (isSwinging
+                && (data.lastSwingDetected == 0 || currentTime - data.lastSwingDetected > 100)) {
             boolean hasBeenBlockingLongEnough =
-                data.isBlocking &&
-                data.lastBlockStartTime > 0 &&
-                (currentTime - data.lastBlockStartTime >= 150);
+                    data.isBlocking
+                            && data.lastBlockStartTime > 0
+                            && (currentTime - data.lastBlockStartTime >= 150);
 
             data.swingHistory.add(
-                new ACPlayerData.SwingData(
-                    currentTime,
-                    hasBeenBlockingLongEnough
-                )
-            );
+                    new ACPlayerData.SwingData(currentTime, hasBeenBlockingLongEnough));
             data.lastSwingDetected = currentTime;
 
             // Keep only last 20 swings
@@ -69,14 +59,11 @@ public class AutoBlockCheck extends Check {
         }
 
         // Get recent swings that have a blocking state after the swing
-        java.util.List<ACPlayerData.SwingData> recentSwings =
-            new java.util.ArrayList<>();
+        java.util.List<ACPlayerData.SwingData> recentSwings = new java.util.ArrayList<>();
         for (ACPlayerData.SwingData swing : data.swingHistory) {
-            if (
-                currentTime - swing.time < 1000 &&
-                swing.wasBlockingAfter != null &&
-                isHoldingSword
-            ) {
+            if (currentTime - swing.time < 1000
+                    && swing.wasBlockingAfter != null
+                    && isHoldingSword) {
                 recentSwings.add(swing);
             }
         }
@@ -98,22 +85,16 @@ public class AutoBlockCheck extends Check {
             }
 
             manager.flag(
-                data,
-                this,
-                "item: " + heldItemName + ", autoblks: " + autoBlockCount,
-                1.0
-            );
+                    data, this, "item: " + heldItemName + ", autoblks: " + autoBlockCount, 1.0);
         }
     }
 
     private boolean isHoldingSword(EntityPlayer player) {
         if (player.getHeldItem() == null) return false;
 
-        int itemId = net.minecraft.item.Item.getIdFromItem(
-            player.getHeldItem().getItem()
-        );
+        int itemId = net.minecraft.item.Item.getIdFromItem(player.getHeldItem().getItem());
         // Sword IDs: 267 (iron), 268 (wood), 272 (stone), 276 (diamond), 283 (gold)
-        int[] swordIds = { 267, 268, 272, 276, 283 };
+        int[] swordIds = {267, 268, 272, 276, 283};
 
         for (int swordId : swordIds) {
             if (itemId == swordId) {

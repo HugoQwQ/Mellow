@@ -35,20 +35,13 @@ public class DenickCommand extends CommandBase {
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length != 2) {
             ChatUtils.sendCommandMessage(
-                sender,
-                "§cInvalid usage. Use: " + getCommandUsage(sender)
-            );
+                    sender, "§cInvalid usage. Use: " + getCommandUsage(sender));
             return;
         }
 
         String type = args[0];
-        if (
-            !type.equalsIgnoreCase("finals") && !type.equalsIgnoreCase("beds")
-        ) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cInvalid type. Use 'finals' or 'beds'."
-            );
+        if (!type.equalsIgnoreCase("finals") && !type.equalsIgnoreCase("beds")) {
+            ChatUtils.sendCommandMessage(sender, "§cInvalid type. Use 'finals' or 'beds'.");
             return;
         }
 
@@ -56,91 +49,84 @@ public class DenickCommand extends CommandBase {
         try {
             Integer.parseInt(numberStr.replace(",", ""));
         } catch (NumberFormatException e) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cInvalid number: " + numberStr
-            );
+            ChatUtils.sendCommandMessage(sender, "§cInvalid number: " + numberStr);
             return;
         }
 
         ChatUtils.sendCommandMessage(sender, "§aSearching for players...");
 
-        new Thread(() -> {
-            try {
-                int[] rangeValues = { 100, 200, 500, 1000 };
-                int[] maxValues = { 5, 10, 20 };
+        new Thread(
+                        () -> {
+                            try {
+                                int[] rangeValues = {100, 200, 500, 1000};
+                                int[] maxValues = {5, 10, 20};
 
-                int rangeIndex = type.equals("finals")
-                    ? config.finalsRange
-                    : config.bedsRange;
-                int maxIndex = config.maxResults;
+                                int rangeIndex =
+                                        type.equals("finals")
+                                                ? config.finalsRange
+                                                : config.bedsRange;
+                                int maxIndex = config.maxResults;
 
-                if (
-                    rangeIndex < 0 || rangeIndex >= rangeValues.length
-                ) rangeIndex = 1; // Default to 200
-                if (maxIndex < 0 || maxIndex >= maxValues.length) maxIndex = 0; // Default to 5
+                                if (rangeIndex < 0 || rangeIndex >= rangeValues.length)
+                                    rangeIndex = 1; // Default to 200
+                                if (maxIndex < 0 || maxIndex >= maxValues.length)
+                                    maxIndex = 0; // Default to 5
 
-                int range = rangeValues[rangeIndex];
-                int max = maxValues[maxIndex];
+                                int range = rangeValues[rangeIndex];
+                                int max = maxValues[maxIndex];
 
-                AuroraApi.AuroraResponse response = auroraApi.queryStats(
-                    type,
-                    numberStr,
-                    range,
-                    max,
-                    config.auroraApiKey
-                );
+                                AuroraApi.AuroraResponse response =
+                                        auroraApi.queryStats(
+                                                type, numberStr, range, max, config.auroraApiKey);
 
-                Minecraft.getMinecraft().addScheduledTask(() -> {
-                    if (response != null && response.success) {
-                        if (response.data.isEmpty()) {
-                            ChatUtils.sendCommandMessage(
-                                sender,
-                                "§cNo players found."
-                            );
-                        } else {
-                            String players = response.data
-                                .stream()
-                                .map(
-                                    p ->
-                                        "§a" +
-                                        p.name +
-                                        " §7(distance: " +
-                                        p.distance +
-                                        ")"
-                                )
-                                .collect(Collectors.joining(", "));
-                            ChatUtils.sendCommandMessage(
-                                sender,
-                                "§aFound players: " + players
-                            );
-                        }
-                    } else {
-                        ChatUtils.sendCommandMessage(
-                            sender,
-                            "§cError fetching data from Aurora API."
-                        );
-                    }
-                });
-            } catch (IOException e) {
-                Minecraft.getMinecraft().addScheduledTask(() -> {
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§cAn error occurred while fetching data."
-                    );
-                });
-                e.printStackTrace();
-            }
-        })
-            .start();
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () -> {
+                                                    if (response != null && response.success) {
+                                                        if (response.data.isEmpty()) {
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender, "§cNo players found.");
+                                                        } else {
+                                                            String players =
+                                                                    response.data.stream()
+                                                                            .map(
+                                                                                    p ->
+                                                                                            "§a"
+                                                                                                    + p.name
+                                                                                                    + " §7(distance: "
+                                                                                                    + p.distance
+                                                                                                    + ")")
+                                                                            .collect(
+                                                                                    Collectors
+                                                                                            .joining(
+                                                                                                    ", "));
+                                                            ChatUtils.sendCommandMessage(
+                                                                    sender,
+                                                                    "§aFound players: " + players);
+                                                        }
+                                                    } else {
+                                                        ChatUtils.sendCommandMessage(
+                                                                sender,
+                                                                "§cError fetching data from Aurora API.");
+                                                    }
+                                                });
+                            } catch (IOException e) {
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () -> {
+                                                    ChatUtils.sendCommandMessage(
+                                                            sender,
+                                                            "§cAn error occurred while fetching data.");
+                                                });
+                                e.printStackTrace();
+                            }
+                        })
+                .start();
     }
 
     @Override
     public List<String> addTabCompletionOptions(
-        ICommandSender sender,
-        String[] args,
-        BlockPos pos
-    ) {
+            ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args, "finals", "beds");
         }

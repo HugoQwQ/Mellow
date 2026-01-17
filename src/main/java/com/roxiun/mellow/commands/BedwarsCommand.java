@@ -38,109 +38,101 @@ public class BedwarsCommand extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length != 1) {
-            ChatUtils.sendCommandMessage(
-                sender,
-                "§cInvalid usage! Use /bw <username>"
-            );
+            ChatUtils.sendCommandMessage(sender, "§cInvalid usage! Use /bw <username>");
             return;
         }
 
         String username = args[0];
 
-        ChatUtils.sendCommandMessage(
-            sender,
-            "§r§7Fetching stats for " + username + "..."
-        );
-        new Thread(() -> {
-            PlayerProfile profile = playerCache.getProfile(username);
+        ChatUtils.sendCommandMessage(sender, "§r§7Fetching stats for " + username + "...");
+        new Thread(
+                        () -> {
+                            PlayerProfile profile = playerCache.getProfile(username);
 
-            if (profile == null || profile.getBedwarsPlayer() == null) {
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    ChatUtils.sendCommandMessage(
-                        sender,
-                        "§cFailed to fetch stats for: §r" + username
-                    )
-                );
-                return;
-            }
+                            if (profile == null || profile.getBedwarsPlayer() == null) {
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () ->
+                                                        ChatUtils.sendCommandMessage(
+                                                                sender,
+                                                                "§cFailed to fetch stats for: §r"
+                                                                        + username));
+                                return;
+                            }
 
-            BedwarsPlayer player = profile.getBedwarsPlayer();
-            List<String> statsLines = Arrays.asList(
-                player.getName() + " §r" + player.getStars(),
-                "§rFKDR: " + player.getFkdrColor() + player.getFormattedFkdr(),
-                "§rWLR: " + player.getFormattedWLRWithColor(),
-                "§rBBLR: " + player.getFormattedBBLRWithColor(),
-                "§rWins: " + player.getFormattedWinsWithColor(),
-                "§rBeds: " + player.getFormattedBedsWithColor(),
-                "§rFinals: " + player.getFormattedFinalsWithColor()
-            );
+                            BedwarsPlayer player = profile.getBedwarsPlayer();
+                            List<String> statsLines =
+                                    Arrays.asList(
+                                            player.getName() + " §r" + player.getStars(),
+                                            "§rFKDR: "
+                                                    + player.getFkdrColor()
+                                                    + player.getFormattedFkdr(),
+                                            "§rWLR: " + player.getFormattedWLRWithColor(),
+                                            "§rBBLR: " + player.getFormattedBBLRWithColor(),
+                                            "§rWins: " + player.getFormattedWinsWithColor(),
+                                            "§rBeds: " + player.getFormattedBedsWithColor(),
+                                            "§rFinals: " + player.getFormattedFinalsWithColor());
 
-            Minecraft.getMinecraft().addScheduledTask(() ->
-                ChatUtils.sendMultilineCommandMessage(sender, statsLines)
-            );
+                            Minecraft.getMinecraft()
+                                    .addScheduledTask(
+                                            () ->
+                                                    ChatUtils.sendMultilineCommandMessage(
+                                                            sender, statsLines));
 
-            if (config.urchin && profile.isUrchinTagged()) {
-                String tags = FormattingUtils.formatUrchinTags(
-                    profile.getUrchinTags()
-                );
-                String urchinMessage = "§5§lUrchin§r§5: " + tags;
-                Minecraft.getMinecraft().addScheduledTask(() ->
-                    ChatUtils.sendMultilineCommandMessage(sender, urchinMessage)
-                );
-            }
+                            if (config.urchin && profile.isUrchinTagged()) {
+                                String tags =
+                                        FormattingUtils.formatUrchinTags(profile.getUrchinTags());
+                                String urchinMessage = "§5§lUrchin§r§5: " + tags;
+                                Minecraft.getMinecraft()
+                                        .addScheduledTask(
+                                                () ->
+                                                        ChatUtils.sendMultilineCommandMessage(
+                                                                sender, urchinMessage));
+                            }
 
-            if (config.seraph && profile.isSeraphTagged()) {
-                String formattedTags = FormattingUtils.formatSeraphTags(
-                    profile.getSeraphTags()
-                );
-                // Split the formatted tags by the newline separator and send as separate messages
-                String[] tagMessages = formattedTags.split("\n§c");
-                if (
-                    tagMessages.length > 0 && !tagMessages[0].trim().isEmpty()
-                ) {
-                    // Send the first tag with the main message
-                    String firstMessage = "§3§lSeraph§r§3: " + tagMessages[0];
-                    Minecraft.getMinecraft().addScheduledTask(() ->
-                        ChatUtils.sendMultilineCommandMessage(
-                            sender,
-                            firstMessage
-                        )
-                    );
-                    // Send additional tags as separate messages
-                    for (int i = 1; i < tagMessages.length; i++) {
-                        if (!tagMessages[i].trim().isEmpty()) {
-                            String additionalMessage = "§c" + tagMessages[i];
-                            Minecraft.getMinecraft().addScheduledTask(() ->
-                                ChatUtils.sendMultilineCommandMessage(
-                                    sender,
-                                    additionalMessage
-                                )
-                            );
-                        }
-                    }
-                }
-            }
-        })
-            .start();
+                            if (config.seraph && profile.isSeraphTagged()) {
+                                String formattedTags =
+                                        FormattingUtils.formatSeraphTags(profile.getSeraphTags());
+                                // Split the formatted tags by the newline separator and send as
+                                // separate messages
+                                String[] tagMessages = formattedTags.split("\n§c");
+                                if (tagMessages.length > 0 && !tagMessages[0].trim().isEmpty()) {
+                                    // Send the first tag with the main message
+                                    String firstMessage = "§3§lSeraph§r§3: " + tagMessages[0];
+                                    Minecraft.getMinecraft()
+                                            .addScheduledTask(
+                                                    () ->
+                                                            ChatUtils.sendMultilineCommandMessage(
+                                                                    sender, firstMessage));
+                                    // Send additional tags as separate messages
+                                    for (int i = 1; i < tagMessages.length; i++) {
+                                        if (!tagMessages[i].trim().isEmpty()) {
+                                            String additionalMessage = "§c" + tagMessages[i];
+                                            Minecraft.getMinecraft()
+                                                    .addScheduledTask(
+                                                            () ->
+                                                                    ChatUtils
+                                                                            .sendMultilineCommandMessage(
+                                                                                    sender,
+                                                                                    additionalMessage));
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                .start();
     }
 
     @Override
     public List<String> addTabCompletionOptions(
-        ICommandSender sender,
-        String[] args,
-        BlockPos pos
-    ) {
+            ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(
-                args,
-                Minecraft.getMinecraft()
-                    .getNetHandler()
-                    .getPlayerInfoMap()
-                    .stream()
-                    .map(NetworkPlayerInfo::getGameProfile)
-                    .map(GameProfile::getName)
-                    .toArray(String[]::new)
-            );
+                    args,
+                    Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().stream()
+                            .map(NetworkPlayerInfo::getGameProfile)
+                            .map(GameProfile::getName)
+                            .toArray(String[]::new));
         }
         return null;
     }

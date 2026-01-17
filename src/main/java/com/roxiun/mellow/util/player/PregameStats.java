@@ -33,18 +33,13 @@ public class PregameStats {
     private final Set<String> alreadyLookedUp = ConcurrentHashMap.newKeySet();
 
     // patterns
-    private static final Pattern BEDWARS_JOIN_PATTERN = Pattern.compile(
-        "^(\\w+) has joined \\((\\d+)/(\\d+)\\)!$"
-    );
-    private static final Pattern BEDWARS_CHAT_PATTERN = Pattern.compile(
-        "^(?:\\[.*?\\]\\s*)*(\\w{3,16})(?::| ») (.*)$"
-    );
+    private static final Pattern BEDWARS_JOIN_PATTERN =
+            Pattern.compile("^(\\w+) has joined \\((\\d+)/(\\d+)\\)!$");
+    private static final Pattern BEDWARS_CHAT_PATTERN =
+            Pattern.compile("^(?:\\[.*?\\]\\s*)*(\\w{3,16})(?::| ») (.*)$");
 
     public PregameStats(
-        PlayerCache playerCache,
-        MellowOneConfig config,
-        BlacklistManager blacklistManager
-    ) {
+            PlayerCache playerCache, MellowOneConfig config, BlacklistManager blacklistManager) {
         this.playerCache = playerCache;
         this.config = config;
         this.blacklistManager = blacklistManager;
@@ -66,7 +61,8 @@ public class PregameStats {
         }
 
         String raw = event.message.getUnformattedText();
-        String message = raw.replaceAll("§.", "").trim(); // idk why the hell it doesn't work w/o this
+        String message =
+                raw.replaceAll("§.", "").trim(); // idk why the hell it doesn't work w/o this
 
         Matcher joinMatch = BEDWARS_JOIN_PATTERN.matcher(message);
         if (joinMatch.find()) {
@@ -74,10 +70,8 @@ public class PregameStats {
             return;
         }
 
-        if (
-            message.contains("Protect your bed and destroy the enemy beds.") &&
-            !message.contains(":")
-        ) {
+        if (message.contains("Protect your bed and destroy the enemy beds.")
+                && !message.contains(":")) {
             inPregameLobby = false;
             return;
         }
@@ -92,10 +86,7 @@ public class PregameStats {
         if (username.equalsIgnoreCase(mc.thePlayer.getName())) return;
         if (!alreadyLookedUp.add(username.toLowerCase())) return;
 
-        new Thread(
-            () -> handlePlayer(username),
-            "Mellow-PregameThread"
-        ).start();
+        new Thread(() -> handlePlayer(username), "Mellow-PregameThread").start();
     }
 
     private void handlePlayer(String username) {
@@ -103,73 +94,59 @@ public class PregameStats {
 
         if (profile == null || profile.getBedwarsPlayer() == null) {
             if (config.pregameStats) {
-                mc.addScheduledTask(() ->
-                    ChatUtils.sendMessage(
-                        "§cFailed to fetch stats for: §r" +
-                            username +
-                            " (possibly nicked)"
-                    )
-                );
+                mc.addScheduledTask(
+                        () ->
+                                ChatUtils.sendMessage(
+                                        "§cFailed to fetch stats for: §r"
+                                                + username
+                                                + " (possibly nicked)"));
             }
             return;
         }
 
         UUID uuid = UUIDUtils.fromString(profile.getUuid());
         if (blacklistManager.isBlacklisted(uuid)) {
-            String reason = blacklistManager
-                .getBlacklistedPlayer(uuid)
-                .getReason();
-            mc.addScheduledTask(() -> {
-                ChatUtils.sendMessage(
-                    "§c" + username + " is on your blacklist: " + reason
-                );
-                // Play pling sound when blacklisted player talks
-                mc.thePlayer.playSound("note.pling", 1.0F, 1.0F);
-            });
+            String reason = blacklistManager.getBlacklistedPlayer(uuid).getReason();
+            mc.addScheduledTask(
+                    () -> {
+                        ChatUtils.sendMessage("§c" + username + " is on your blacklist: " + reason);
+                        // Play pling sound when blacklisted player talks
+                        mc.thePlayer.playSound("note.pling", 1.0F, 1.0F);
+                    });
         }
 
         if (config.pregameStats) {
             BedwarsPlayer player = profile.getBedwarsPlayer();
             String stats =
-                player.getName() +
-                " §r" +
-                player.getStars() +
-                " §7|§r FKDR: " +
-                player.getFkdrColor() +
-                player.getFormattedFkdr();
+                    player.getName()
+                            + " §r"
+                            + player.getStars()
+                            + " §7|§r FKDR: "
+                            + player.getFkdrColor()
+                            + player.getFormattedFkdr();
             mc.addScheduledTask(() -> ChatUtils.sendMessage(stats));
         }
 
         if (config.urchin && profile.isUrchinTagged()) {
-            String tags = FormattingUtils.formatUrchinTags(
-                profile.getUrchinTags()
-            );
-            String urchinMessage =
-                "§c" + username + " is tagged on §5Urchin§c for: " + tags;
+            String tags = FormattingUtils.formatUrchinTags(profile.getUrchinTags());
+            String urchinMessage = "§c" + username + " is tagged on §5Urchin§c for: " + tags;
             mc.addScheduledTask(() -> ChatUtils.sendMessage(urchinMessage));
         }
 
         if (config.seraph && profile.isSeraphTagged()) {
-            String formattedTags = FormattingUtils.formatSeraphTags(
-                profile.getSeraphTags()
-            );
+            String formattedTags = FormattingUtils.formatSeraphTags(profile.getSeraphTags());
             // Split the formatted tags by the newline separator and send as separate messages
             String[] tagMessages = formattedTags.split("\n§c");
             if (tagMessages.length > 0 && !tagMessages[0].trim().isEmpty()) {
                 // Send the first tag with the main message
                 String firstMessage =
-                    "§c" +
-                    username +
-                    " is tagged on §3Seraph§c for: " +
-                    tagMessages[0];
+                        "§c" + username + " is tagged on §3Seraph§c for: " + tagMessages[0];
                 mc.addScheduledTask(() -> ChatUtils.sendMessage(firstMessage));
                 // Send additional tags as separate messages
                 for (int i = 1; i < tagMessages.length; i++) {
                     if (!tagMessages[i].trim().isEmpty()) {
                         String additionalMessage = "§c" + tagMessages[i];
-                        mc.addScheduledTask(() ->
-                            ChatUtils.sendMessage(additionalMessage)
-                        );
+                        mc.addScheduledTask(() -> ChatUtils.sendMessage(additionalMessage));
                     }
                 }
             }
@@ -183,9 +160,7 @@ public class PregameStats {
         ScoreObjective obj = board.getObjectiveInDisplaySlot(1);
         if (obj == null) return false;
 
-        String name = EnumChatFormatting.getTextWithoutFormattingCodes(
-            obj.getDisplayName()
-        );
+        String name = EnumChatFormatting.getTextWithoutFormattingCodes(obj.getDisplayName());
         return name.contains("BED WARS");
     }
 }

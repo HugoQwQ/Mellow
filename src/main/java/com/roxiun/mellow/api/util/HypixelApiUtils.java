@@ -27,9 +27,8 @@ public class HypixelApiUtils {
             int responseCode = connection.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream())
-                );
+                BufferedReader in =
+                        new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
                 String inputLine;
 
@@ -39,9 +38,9 @@ public class HypixelApiUtils {
                 in.close();
 
                 if (urlString.contains("nadeshiko")) {
-                    Pattern pattern = Pattern.compile(
-                        "playerData = JSON.parse\\(decodeURIComponent\\(\"(.*?)\"\\)\\)"
-                    );
+                    Pattern pattern =
+                            Pattern.compile(
+                                    "playerData = JSON.parse\\(decodeURIComponent\\(\"(.*?)\"\\)\\)");
                     Matcher matcher = pattern.matcher(response.toString());
 
                     if (matcher.find()) {
@@ -71,62 +70,57 @@ public class HypixelApiUtils {
             rootObject = rootObject.getAsJsonObject("player");
         }
 
-        String name = rootObject.has("displayname")
-            ? rootObject.get("displayname").getAsString()
-            : "[]";
+        String name =
+                rootObject.has("displayname") ? rootObject.get("displayname").getAsString() : "[]";
         if (provider.equals("Nadeshiko")) {
-            name = rootObject
-                .getAsJsonObject("profile")
-                .get("tagged_name")
-                .getAsString();
+            name = rootObject.getAsJsonObject("profile").get("tagged_name").getAsString();
         }
 
         JsonObject achievements = rootObject.getAsJsonObject("achievements");
-        String stars = achievements.has("bedwars_level")
-            ? achievements.get("bedwars_level").getAsString()
-            : "0";
+        String stars =
+                achievements.has("bedwars_level")
+                        ? achievements.get("bedwars_level").getAsString()
+                        : "0";
 
-        JsonObject bedwarsStats = rootObject
-            .getAsJsonObject("stats")
-            .getAsJsonObject("Bedwars");
-        int finalKills = bedwarsStats.has("final_kills_bedwars")
-            ? bedwarsStats.get("final_kills_bedwars").getAsInt()
-            : 0;
-        int finalDeaths = bedwarsStats.has("final_deaths_bedwars")
-            ? bedwarsStats.get("final_deaths_bedwars").getAsInt()
-            : 0;
-        double fkdr = (finalDeaths == 0)
-            ? finalKills
-            : (double) finalKills / finalDeaths;
-        int winstreak = bedwarsStats.has("winstreak")
-            ? bedwarsStats.get("winstreak").getAsInt()
-            : 0;
-        int wins = bedwarsStats.has("wins_bedwars")
-            ? bedwarsStats.get("wins_bedwars").getAsInt()
-            : 0;
-        int losses = bedwarsStats.has("losses_bedwars")
-            ? bedwarsStats.get("losses_bedwars").getAsInt()
-            : 0;
-        int bedsBroken = bedwarsStats.has("beds_broken_bedwars")
-            ? bedwarsStats.get("beds_broken_bedwars").getAsInt()
-            : 0;
-        int bedsLost = bedwarsStats.has("beds_lost_bedwars")
-            ? bedwarsStats.get("beds_lost_bedwars").getAsInt()
-            : 0;
+        JsonObject bedwarsStats = rootObject.getAsJsonObject("stats").getAsJsonObject("Bedwars");
+        int finalKills =
+                bedwarsStats.has("final_kills_bedwars")
+                        ? bedwarsStats.get("final_kills_bedwars").getAsInt()
+                        : 0;
+        int finalDeaths =
+                bedwarsStats.has("final_deaths_bedwars")
+                        ? bedwarsStats.get("final_deaths_bedwars").getAsInt()
+                        : 0;
+        double fkdr = (finalDeaths == 0) ? finalKills : (double) finalKills / finalDeaths;
+        int winstreak =
+                bedwarsStats.has("winstreak") ? bedwarsStats.get("winstreak").getAsInt() : 0;
+        int wins =
+                bedwarsStats.has("wins_bedwars") ? bedwarsStats.get("wins_bedwars").getAsInt() : 0;
+        int losses =
+                bedwarsStats.has("losses_bedwars")
+                        ? bedwarsStats.get("losses_bedwars").getAsInt()
+                        : 0;
+        int bedsBroken =
+                bedwarsStats.has("beds_broken_bedwars")
+                        ? bedwarsStats.get("beds_broken_bedwars").getAsInt()
+                        : 0;
+        int bedsLost =
+                bedwarsStats.has("beds_lost_bedwars")
+                        ? bedwarsStats.get("beds_lost_bedwars").getAsInt()
+                        : 0;
         int finals = finalKills; // Calculate finals as finalKills + finalDeaths
 
         return new BedwarsPlayer(
-            name,
-            FormattingUtils.formatStars(stars),
-            fkdr,
-            winstreak,
-            finalKills,
-            finalDeaths,
-            wins,
-            losses,
-            bedsBroken,
-            bedsLost,
-            finals
-        );
+                name,
+                FormattingUtils.formatStars(stars),
+                fkdr,
+                winstreak,
+                finalKills,
+                finalDeaths,
+                wins,
+                losses,
+                bedsBroken,
+                bedsLost,
+                finals);
     }
 }
