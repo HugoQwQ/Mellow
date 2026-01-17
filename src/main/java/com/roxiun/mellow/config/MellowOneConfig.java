@@ -332,10 +332,36 @@ public class MellowOneConfig extends Config {
 
     @Dropdown(
         name = "Stats Provider",
-        options = { "Nadeshiko", "Abyss" },
+        options = { "Nadeshiko", "Abyss", "Native Hypixel" },
         subcategory = "Stats"
     )
     public int statsProvider = 0;
+
+    @Info(
+        text = "Native Hypixel requires an API key obtained from Hypixel by running /api new in-game",
+        type = InfoType.INFO,
+        size = OptionSize.DUAL,
+        subcategory = "Stats"
+    )
+    public static boolean ignoredHypixelApiInfo;
+
+    @Button(
+        name = "How to get Hypixel API Key",
+        text = "Guide",
+        subcategory = "Stats"
+    )
+    Runnable hypixelApiGuideButton = () -> {
+        NetworkUtils.browseLink("https://api.hypixel.net/#section/Authentication/ApiKey");
+    };
+
+    @Text(
+        name = "Hypixel API Key",
+        placeholder = "Enter your Hypixel API key",
+        subcategory = "Stats",
+        secure = true,
+        multiline = false
+    )
+    public String hypixelApiKey = "";
 
     @Switch(name = "Print Blacklist Tags in /who", subcategory = "General")
     public boolean printBlacklistTags = true;

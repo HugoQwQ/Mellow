@@ -8,6 +8,7 @@ import com.roxiun.mellow.api.hypixel.HypixelFeatures;
 import com.roxiun.mellow.api.mojang.MojangApi;
 import com.roxiun.mellow.api.provider.AbyssApi;
 import com.roxiun.mellow.api.provider.NadeshikoApi;
+import com.roxiun.mellow.api.provider.NativeHypixelApi;
 import com.roxiun.mellow.api.provider.StatsProvider;
 import com.roxiun.mellow.api.seraph.SeraphApi;
 import com.roxiun.mellow.api.urchin.UrchinApi;
@@ -66,6 +67,7 @@ public class Mellow {
         statsProviders = new HashMap<>();
         statsProviders.put("Nadeshiko", new NadeshikoApi(mojangApi));
         statsProviders.put("Abyss", new AbyssApi(mojangApi));
+        statsProviders.put("Native Hypixel", new NativeHypixelApi(mojangApi, config));
 
         urchinApi = new UrchinApi(mojangApi);
         seraphApi = new SeraphApi(mojangApi);
@@ -154,6 +156,8 @@ public class Mellow {
     public StatsProvider getStatsProvider() {
         if (config != null && config.statsProvider == 1) {
             return statsProviders.get("Abyss");
+        } else if (config != null && config.statsProvider == 2) {
+            return statsProviders.get("Native Hypixel");
         } else {
             return statsProviders.get("Nadeshiko");
         }
