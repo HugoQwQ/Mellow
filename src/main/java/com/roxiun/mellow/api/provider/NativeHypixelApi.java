@@ -78,7 +78,7 @@ public class NativeHypixelApi implements StatsProvider {
     /**
      * Handles non-200 HTTP response codes and logs specific error details.
      */
-    private void handleErrorResponse(int code, HttpURLConnection conn) throws IOException {
+    private void handleErrorResponse(int code, HttpURLConnection conn) {
         switch (code) {
             case 403:
                 System.err.println("[Mellow] Authentication failed: Invalid API Key.");
@@ -99,7 +99,7 @@ public class NativeHypixelApi implements StatsProvider {
      * Retrieves and processes Bedwars statistics for a specific player name.
      */
     @Override
-    public BedwarsPlayer fetchPlayerStats(String playerName) throws IOException {
+    public BedwarsPlayer fetchPlayerStats(String playerName) {
         String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
         if (uuid == null) {
             uuid = mojangApi.fetchUUID(playerName);

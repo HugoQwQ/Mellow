@@ -75,8 +75,6 @@ loom {
 // having to add them separately.
 val shade: Configuration by
         configurations.creating { configurations.implementation.get().extendsFrom(this) }
-val modShade: Configuration by
-        configurations.creating { configurations.modImplementation.get().extendsFrom(this) }
 
 // Configures the output directory for when building from the `src/resources` directory.
 sourceSets { main { output.setResourcesDir(java.classesDirectory) } }
