@@ -13,40 +13,39 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Implementation of StatsProvider using the Hypixel Public API v2.
+ */
 public class NativeHypixelApi implements StatsProvider {
 
     private final MojangApi mojangApi;
     private final MellowOneConfig config;
+    // Instantiate parser for compatibility with older Gson versions
+    private final JsonParser parser = new JsonParser();
 
     public NativeHypixelApi(MojangApi mojangApi, MellowOneConfig config) {
         this.mojangApi = mojangApi;
         this.config = config;
     }
 
+    /**
+     * Fetches raw player data from the Hypixel API using a UUID.
+     */
     @Override
     public String fetchPlayerData(String uuid) {
         HttpURLConnection connection = null;
         try {
-            // Check if API key is configured
-            if (
-                config.hypixelApiKey == null ||
-                config.hypixelApiKey.trim().isEmpty()
-            ) {
-                System.err.println(
-                    "[Mellow] Native Hypixel API key is not configured. Please add your API key in the mod settings."
-                );
+            if (config.hypixelApiKey == null || config.hypixelApiKey.trim().isEmpty()) {
+                System.err.println("[Mellow] Hypixel API Key is not configured.");
                 return null;
             }
 
-            String urlString =
-                "https://api.hypixel.net/player?uuid=" + uuid;
+            String urlString = "https://api.hypixel.net/v2/player?uuid=" + uuid;
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty(
-                "API-Key",
-                config.hypixelApiKey.trim()
-            );
+
+            connection.setRequestProperty("API-Key", config.hypixelApiKey.trim());
             connection.setRequestProperty("Accept", "application/json");
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
@@ -54,41 +53,20 @@ public class NativeHypixelApi implements StatsProvider {
             int responseCode = connection.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream())
-                );
-                StringBuilder response = new StringBuilder();
-                String inputLine;
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String inputLine;
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    return response.toString();
                 }
-                in.close();
-
-                return response.toString();
-            } else if (responseCode == 403) {
-                System.err.println(
-                    "[Mellow] Invalid Hypixel API key. Please check your API key in the mod settings."
-                );
-                return null;
-            } else if (responseCode == 429) {
-                System.err.println(
-                    "[Mellow] Hypixel API rate limit exceeded. Please wait before trying again."
-                );
-                return null;
             } else {
-                System.err.println(
-                    "[Mellow] Hypixel API request failed with code: " +
-                    responseCode
-                );
+                handleErrorResponse(responseCode, connection);
                 return null;
             }
         } catch (Exception e) {
-            System.err.println(
-                "[Mellow] Error fetching data from Hypixel API: " +
-                e.getMessage()
-            );
-            e.printStackTrace();
+            System.err.println("[Mellow] Exception occurred while requesting Hypixel API: " + e.getMessage());
             return null;
         } finally {
             if (connection != null) {
@@ -97,126 +75,110 @@ public class NativeHypixelApi implements StatsProvider {
         }
     }
 
+    /**
+     * Handles non-200 HTTP response codes and logs specific error details.
+     */
+    private void handleErrorResponse(int code, HttpURLConnection conn) throws IOException {
+        switch (code) {
+            case 403:
+                System.err.println("[Mellow] Authentication failed: Invalid API Key.");
+                break;
+            case 429:
+                String reset = conn.getHeaderField("RateLimit-Reset");
+                System.err.println("[Mellow] Rate limit exceeded. Retry after " + (reset != null ? reset : "??") + " seconds.");
+                break;
+            case 422:
+                System.err.println("[Mellow] Parameter error: Malformed UUID.");
+                break;
+            default:
+                System.err.println("[Mellow] Server returned error code: " + code);
+        }
+    }
+
+    /**
+     * Retrieves and processes Bedwars statistics for a specific player name.
+     */
     @Override
-    public BedwarsPlayer fetchPlayerStats(String playerName)
-        throws IOException {
+    public BedwarsPlayer fetchPlayerStats(String playerName) throws IOException {
         String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
         if (uuid == null) {
             uuid = mojangApi.fetchUUID(playerName);
-            if (uuid.equals("ERROR")) {
-                return null;
-            }
+            if (uuid == null || uuid.equals("ERROR")) return null;
         }
 
         String jsonResponse = fetchPlayerData(uuid);
-        if (jsonResponse == null || jsonResponse.isEmpty()) {
-            return null;
-        }
+        if (jsonResponse == null || jsonResponse.isEmpty()) return null;
 
         return parseNativeHypixelData(jsonResponse);
     }
 
+    /**
+     * Parses the JSON response from Hypixel into a BedwarsPlayer object.
+     */
     private BedwarsPlayer parseNativeHypixelData(String json) {
         try {
-            JsonObject rootObject = new JsonParser()
-                .parse(json)
-                .getAsJsonObject();
+            // Use the instance-based parse method for compatibility
+            JsonObject root = parser.parse(json).getAsJsonObject();
 
-            // Check if the request was successful
-            if (
-                !rootObject.has("success") ||
-                !rootObject.get("success").getAsBoolean()
-            ) {
-                System.err.println(
-                    "[Mellow] Hypixel API returned unsuccessful response"
-                );
+            if (!root.get("success").getAsBoolean()) {
+                System.err.println("[Mellow] API response success flag is false.");
                 return null;
             }
 
-            // Check if player data exists
-            if (!rootObject.has("player") || rootObject.get("player").isJsonNull()) {
-                System.err.println("[Mellow] Player not found in Hypixel database");
+            if (root.get("player").isJsonNull()) {
+                System.err.println("[Mellow] Player has never joined the Hypixel network.");
                 return null;
             }
 
-            JsonObject player = rootObject.getAsJsonObject("player");
+            JsonObject player = root.getAsJsonObject("player");
 
-            // Get player display name
-            String displayName = player.has("displayname")
-                ? player.get("displayname").getAsString()
-                : "Unknown";
+            String displayName = player.has("displayname") ? player.get("displayname").getAsString() : "Unknown";
 
-            // Get achievements for star level
-            int starLevel = 0;
+            String stars = "0";
             if (player.has("achievements")) {
-                JsonObject achievements = player.getAsJsonObject(
-                    "achievements"
-                );
-                if (achievements.has("bedwars_level")) {
-                    starLevel = achievements.get("bedwars_level").getAsInt();
+                JsonObject ach = player.getAsJsonObject("achievements");
+                if (ach.has("bedwars_level")) {
+                    stars = ach.get("bedwars_level").getAsString();
                 }
             }
 
-            // Get Bedwars stats
-            JsonObject stats = player.has("stats")
-                ? player.getAsJsonObject("stats")
-                : new JsonObject();
-            JsonObject bedwarsStats = stats.has("Bedwars")
-                ? stats.getAsJsonObject("Bedwars")
-                : new JsonObject();
+            JsonObject stats = player.has("stats") ? player.getAsJsonObject("stats") : new JsonObject();
+            JsonObject bw = stats.has("Bedwars") ? stats.getAsJsonObject("Bedwars") : new JsonObject();
 
-            // Extract stats with defaults
-            int finalKills = bedwarsStats.has("final_kills_bedwars")
-                ? bedwarsStats.get("final_kills_bedwars").getAsInt()
-                : 0;
-            int finalDeaths = bedwarsStats.has("final_deaths_bedwars")
-                ? bedwarsStats.get("final_deaths_bedwars").getAsInt()
-                : 0;
-            double fkdr = (finalDeaths == 0)
-                ? finalKills
-                : (double) finalKills / finalDeaths;
+            int finalKills = getInt(bw, "final_kills_bedwars");
+            int finalDeaths = getInt(bw, "final_deaths_bedwars");
+            int wins = getInt(bw, "wins_bedwars");
+            int losses = getInt(bw, "losses_bedwars");
+            int winstreak = getInt(bw, "winstreak");
+            int bedsBroken = getInt(bw, "beds_broken_bedwars");
+            int bedsLost = getInt(bw, "beds_lost_bedwars");
 
-            int winstreak = bedwarsStats.has("winstreak")
-                ? bedwarsStats.get("winstreak").getAsInt()
-                : 0;
-            int wins = bedwarsStats.has("wins_bedwars")
-                ? bedwarsStats.get("wins_bedwars").getAsInt()
-                : 0;
-            int losses = bedwarsStats.has("losses_bedwars")
-                ? bedwarsStats.get("losses_bedwars").getAsInt()
-                : 0;
-            int bedsBroken = bedwarsStats.has("beds_broken_bedwars")
-                ? bedwarsStats.get("beds_broken_bedwars").getAsInt()
-                : 0;
-            int bedsLost = bedwarsStats.has("beds_lost_bedwars")
-                ? bedwarsStats.get("beds_lost_bedwars").getAsInt()
-                : 0;
-
-            // Format star level
-            String formattedStars = FormattingUtils.formatStars(
-                String.valueOf(starLevel)
-            );
+            double fkdr = (finalDeaths == 0) ? finalKills : (double) finalKills / finalDeaths;
+            String formattedStars = FormattingUtils.formatStars(stars);
 
             return new BedwarsPlayer(
-                displayName,
-                formattedStars,
-                fkdr,
-                winstreak,
-                finalKills,
-                finalDeaths,
-                wins,
-                losses,
-                bedsBroken,
-                bedsLost,
-                finalKills
+                    displayName,
+                    formattedStars,
+                    fkdr,
+                    winstreak,
+                    finalKills,
+                    finalDeaths,
+                    wins,
+                    losses,
+                    bedsBroken,
+                    bedsLost,
+                    finalKills
             );
         } catch (Exception e) {
-            System.err.println(
-                "[Mellow] Error parsing Hypixel API response: " +
-                e.getMessage()
-            );
-            e.printStackTrace();
+            System.err.println("[Mellow] JSON parsing failed: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Safely retrieves an integer value from a JsonObject with a fallback to 0.
+     */
+    private int getInt(JsonObject obj, String key) {
+        return (obj.has(key) && !obj.get(key).isJsonNull()) ? obj.get(key).getAsInt() : 0;
     }
 }
