@@ -44,4 +44,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run Spotless
-        run: ./gradlew :spotlessCheck --no-daemon
+        run: ./gradlew spotlessCheck --no-daemon
