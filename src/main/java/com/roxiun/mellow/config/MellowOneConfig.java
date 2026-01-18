@@ -27,6 +27,24 @@ public class MellowOneConfig extends Config {
     @Switch(name = "Show Tab Stats", subcategory = "General")
     public boolean tabStats = true;
 
+    // Danger Scanner Configs
+    @Switch(name = "Enable Danger Scanner", category = "Danger Scanner")
+    public boolean dangerScannerEnabled = false;
+
+    @Dropdown(
+            name = "Chat Reporting Function",
+            category = "Danger Scanner",
+            options = {"Client Side Only", "Party Chat", "All Chat"})
+    public int dangerChatReport = 0;
+
+    @Number(
+            name = "Report Delay (ms)",
+            category = "Danger Scanner",
+            min = 100,
+            max = 2000,
+            step = 100)
+    public int dangerReportDelay = 500;
+
     @Switch(name = "Show Tags", subcategory = "General")
     public boolean tags = false;
 

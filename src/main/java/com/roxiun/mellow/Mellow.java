@@ -3,6 +3,7 @@ package com.roxiun.mellow;
 import com.roxiun.mellow.anticheat.AnticheatManager;
 import com.roxiun.mellow.api.aurora.AuroraApi;
 import com.roxiun.mellow.api.bedwars.HypixelApi;
+import com.roxiun.mellow.api.danger.DangerScanningService;
 import com.roxiun.mellow.api.duels.PlanckeApi;
 import com.roxiun.mellow.api.hypixel.HypixelFeatures;
 import com.roxiun.mellow.api.mojang.MojangApi;
@@ -92,11 +93,19 @@ public class Mellow {
         HypixelApi hypixelApi = new HypixelApi(this, tagUtils);
         NumberDenicker numberDenicker = new NumberDenicker(config, nickUtils, auroraApi);
         PregameStats pregameStats = new PregameStats(playerCache, config, blacklistManager);
+        DangerScanningService dangerScanningService =
+                new DangerScanningService(playerCache, config);
 
         // Tasks
         StatsChecker statsChecker =
                 new StatsChecker(
-                        playerCache, nickUtils, config, tabStats, tagUtils, blacklistManager);
+                        playerCache,
+                        nickUtils,
+                        config,
+                        tabStats,
+                        tagUtils,
+                        blacklistManager,
+                        dangerScanningService);
 
         // Event Handlers
         MinecraftForge.EVENT_BUS.register(

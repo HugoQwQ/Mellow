@@ -1,6 +1,7 @@
 package com.roxiun.mellow.task;
 
 import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
+import com.roxiun.mellow.api.danger.DangerScanningService;
 import com.roxiun.mellow.cache.PlayerCache;
 import com.roxiun.mellow.config.MellowOneConfig;
 import com.roxiun.mellow.data.PlayerProfile;
@@ -26,6 +27,7 @@ public class StatsChecker {
     private final Map<String, TabStats> tabStats;
     private final TagUtils tagUtils;
     private final BlacklistManager blacklistManager;
+    private final DangerScanningService dangerScanningService;
     private final Minecraft mc = Minecraft.getMinecraft();
 
     public StatsChecker(
@@ -34,13 +36,15 @@ public class StatsChecker {
             MellowOneConfig config,
             Map<String, TabStats> tabStats,
             TagUtils tagUtils,
-            BlacklistManager blacklistManager) {
+            BlacklistManager blacklistManager,
+            DangerScanningService dangerScanningService) {
         this.playerCache = playerCache;
         this.nickUtils = nickUtils;
         this.config = config;
         this.tabStats = tabStats;
         this.tagUtils = tagUtils;
         this.blacklistManager = blacklistManager;
+        this.dangerScanningService = dangerScanningService;
     }
 
     public void checkPlayerStats(List<String> onlinePlayers) {
@@ -142,7 +146,23 @@ public class StatsChecker {
         }
 
         executor.shutdown();
-        // The notification for completion can be added back if desired
+
+        new Thread(
+                        () -> {
+                            try {
+                                // Wait for all stats to be fetched
+                                if (executor.awaitTermination(
+                                        30, java.util.concurrent.TimeUnit.SECONDS)) {
+                                    // Run danger scanner after all stats are processed
+                                    if (config.dangerScannerEnabled) {
+                                        dangerScanningService.scanAndReport();
+                                    }
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        })
+                .start();
     }
 
     private String formatChatStats(PlayerProfile profile) {

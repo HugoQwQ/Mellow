@@ -5,6 +5,8 @@ import com.google.gson.JsonParser;
 import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
 import com.roxiun.mellow.util.ChatUtils;
 import com.roxiun.mellow.util.formatting.FormattingUtils;
+import net.minecraftforge.fml.common.FMLLog;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -57,7 +59,8 @@ public class HypixelApiUtils {
                 return null;
             }
         } catch (Exception e) {
-            ChatUtils.sendMessage("§cException occurred while requesting Hypixel API: " + e.getMessage());
+            ChatUtils.sendMessage(
+                    "§cException occurred while requesting Hypixel API: " + e.getMessage());
             return null;
         } finally {
             if (connection != null) {
@@ -73,14 +76,8 @@ public class HypixelApiUtils {
                 ChatUtils.sendMessage("§cAuthentication failed: Invalid API Key.");
                 break;
             case 429:
-                String reset = conn.getHeaderField("RateLimit-Reset");
-                ChatUtils.sendMessage(
-                        "§cRate limit exceeded. Retry after "
-                                + (reset != null ? reset : "??")
-                                + " seconds.");
                 break;
             case 422:
-                ChatUtils.sendMessage("§cParameter error: Malformed UUID.");
                 break;
             default:
                 ChatUtils.sendMessage("§cServer returned error code: " + code);
@@ -148,11 +145,6 @@ public class HypixelApiUtils {
                 return null;
             }
 
-            if (root.get("player").isJsonNull()) {
-                ChatUtils.sendMessage("§cPlayer has never joined the Hypixel network.");
-                return null;
-            }
-
             JsonObject player = root.getAsJsonObject("player");
 
             String displayName =
@@ -195,7 +187,6 @@ public class HypixelApiUtils {
                     bedsLost,
                     finalKills);
         } catch (Exception e) {
-            ChatUtils.sendMessage("§cJSON parsing failed: " + e.getMessage());
             return null;
         }
     }
