@@ -5,6 +5,7 @@ import com.roxiun.mellow.api.mojang.MojangApi;
 import com.roxiun.mellow.api.util.HypixelApiUtils;
 import com.roxiun.mellow.config.MellowOneConfig;
 import com.roxiun.mellow.util.player.PlayerUtils;
+
 import java.io.IOException;
 
 /** Implementation of StatsProvider using the Hypixel Public API v2. */
@@ -25,6 +26,11 @@ public class NativeHypixelApi implements StatsProvider {
 
     @Override
     public BedwarsPlayer fetchPlayerStats(String playerName) throws IOException {
+        return fetchPlayerStats(playerName, false);
+    }
+
+    @Override
+    public BedwarsPlayer fetchPlayerStats(String playerName, boolean silent) throws IOException {
         String uuid = PlayerUtils.getUUIDFromPlayerName(playerName);
         if (uuid == null) {
             uuid = mojangApi.fetchUUID(playerName);
@@ -32,11 +38,12 @@ public class NativeHypixelApi implements StatsProvider {
                 return null;
             }
         }
-        String stjson = fetchPlayerData(uuid);
+        String stjson =
+                HypixelApiUtils.fetchNativeHypixelPlayerData(uuid, config.hypixelApiKey, silent);
         if (stjson == null || stjson.isEmpty()) {
             return null;
         }
 
-        return HypixelApiUtils.parseNativeHypixelPlayerData(stjson);
+        return HypixelApiUtils.parseNativeHypixelPlayerData(stjson, silent);
     }
 }

@@ -1,14 +1,8 @@
 package com.roxiun.mellow.config;
 
 import cc.polyfrost.oneconfig.config.Config;
-import cc.polyfrost.oneconfig.config.annotations.Button;
-import cc.polyfrost.oneconfig.config.annotations.Checkbox;
-import cc.polyfrost.oneconfig.config.annotations.Dropdown;
-import cc.polyfrost.oneconfig.config.annotations.HUD;
-import cc.polyfrost.oneconfig.config.annotations.Info;
+import cc.polyfrost.oneconfig.config.annotations.*;
 import cc.polyfrost.oneconfig.config.annotations.Number;
-import cc.polyfrost.oneconfig.config.annotations.Switch;
-import cc.polyfrost.oneconfig.config.annotations.Text;
 import cc.polyfrost.oneconfig.config.data.InfoType;
 import cc.polyfrost.oneconfig.config.data.Mod;
 import cc.polyfrost.oneconfig.config.data.ModType;
@@ -27,23 +21,18 @@ public class MellowOneConfig extends Config {
     @Switch(name = "Show Tab Stats", subcategory = "General")
     public boolean tabStats = true;
 
-    // Danger Scanner Configs
-    @Switch(name = "Enable Danger Scanner", category = "Danger Scanner")
-    public boolean dangerScannerEnabled = false;
+    // Target Rank Configs
+    @Switch(name = "Enable Target Rank", category = "Target Rank")
+    public boolean targetRankEnabled = false;
 
     @Dropdown(
             name = "Chat Reporting Function",
-            category = "Danger Scanner",
+            category = "Target Rank",
             options = {"Client Side Only", "Party Chat", "All Chat"})
-    public int dangerChatReport = 0;
+    public int targetChatReport = 0;
 
-    @Number(
-            name = "Report Delay (ms)",
-            category = "Danger Scanner",
-            min = 100,
-            max = 2000,
-            step = 100)
-    public int dangerReportDelay = 500;
+    @Number(name = "Report Delay (ms)", category = "Target Rank", min = 100, max = 2000, step = 100)
+    public int targetReportDelay = 500;
 
     @Switch(name = "Show Tags", subcategory = "General")
     public boolean tags = false;

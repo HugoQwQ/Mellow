@@ -1,7 +1,7 @@
 package com.roxiun.mellow.task;
 
 import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
-import com.roxiun.mellow.api.danger.DangerScanningService;
+import com.roxiun.mellow.api.target.TargetRankService;
 import com.roxiun.mellow.cache.PlayerCache;
 import com.roxiun.mellow.config.MellowOneConfig;
 import com.roxiun.mellow.data.PlayerProfile;
@@ -13,11 +13,12 @@ import com.roxiun.mellow.util.formatting.FormattingUtils;
 import com.roxiun.mellow.util.nicks.NickUtils;
 import com.roxiun.mellow.util.player.PlayerUtils;
 import com.roxiun.mellow.util.tags.TagUtils;
+import net.minecraft.client.Minecraft;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import net.minecraft.client.Minecraft;
 
 public class StatsChecker {
 
@@ -27,7 +28,7 @@ public class StatsChecker {
     private final Map<String, TabStats> tabStats;
     private final TagUtils tagUtils;
     private final BlacklistManager blacklistManager;
-    private final DangerScanningService dangerScanningService;
+    private final TargetRankService targetRankService;
     private final Minecraft mc = Minecraft.getMinecraft();
 
     public StatsChecker(
@@ -37,14 +38,14 @@ public class StatsChecker {
             Map<String, TabStats> tabStats,
             TagUtils tagUtils,
             BlacklistManager blacklistManager,
-            DangerScanningService dangerScanningService) {
+            TargetRankService targetRankService) {
         this.playerCache = playerCache;
         this.nickUtils = nickUtils;
         this.config = config;
         this.tabStats = tabStats;
         this.tagUtils = tagUtils;
         this.blacklistManager = blacklistManager;
-        this.dangerScanningService = dangerScanningService;
+        this.targetRankService = targetRankService;
     }
 
     public void checkPlayerStats(List<String> onlinePlayers) {
@@ -154,8 +155,8 @@ public class StatsChecker {
                                 if (executor.awaitTermination(
                                         30, java.util.concurrent.TimeUnit.SECONDS)) {
                                     // Run danger scanner after all stats are processed
-                                    if (config.dangerScannerEnabled) {
-                                        dangerScanningService.scanAndReport();
+                                    if (config.targetRankEnabled) {
+                                        targetRankService.scanAndReport();
                                     }
                                 }
                             } catch (InterruptedException e) {

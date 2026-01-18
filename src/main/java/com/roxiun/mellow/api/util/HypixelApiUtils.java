@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
 import com.roxiun.mellow.util.ChatUtils;
 import com.roxiun.mellow.util.formatting.FormattingUtils;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -22,11 +23,11 @@ public class HypixelApiUtils {
      * @param apiKey Hypixel API key
      * @return JSON response string, or null if failed
      */
-    public static String fetchNativeHypixelPlayerData(String uuid, String apiKey) {
+    public static String fetchNativeHypixelPlayerData(String uuid, String apiKey, boolean silent) {
         HttpURLConnection connection = null;
         try {
             if (apiKey == null || apiKey.trim().isEmpty()) {
-                ChatUtils.sendMessage("§cHypixel API Key is not configured.");
+                if (!silent) ChatUtils.sendMessage("§cHypixel API Key is not configured.");
                 return null;
             }
 
@@ -53,12 +54,13 @@ public class HypixelApiUtils {
                     return response.toString();
                 }
             } else {
-                handleNativeHypixelError(responseCode);
+                handleNativeHypixelError(responseCode, silent);
                 return null;
             }
         } catch (Exception e) {
-            ChatUtils.sendMessage(
-                    "§cException occurred while requesting Hypixel API: " + e.getMessage());
+            if (!silent)
+                ChatUtils.sendMessage(
+                        "§cException occurred while requesting Hypixel API: " + e.getMessage());
             return null;
         } finally {
             if (connection != null) {
@@ -67,8 +69,13 @@ public class HypixelApiUtils {
         }
     }
 
+    public static String fetchNativeHypixelPlayerData(String uuid, String apiKey) {
+        return fetchNativeHypixelPlayerData(uuid, apiKey, false);
+    }
+
     /** Handles non-200 HTTP response codes for native Hypixel API. */
-    private static void handleNativeHypixelError(int code) {
+    private static void handleNativeHypixelError(int code, boolean silent) {
+        if (silent) return;
         switch (code) {
             case 403:
                 ChatUtils.sendMessage("§cAuthentication failed: Invalid API Key.");
@@ -134,12 +141,12 @@ public class HypixelApiUtils {
      * @param json The JSON response from Hypixel API
      * @return BedwarsPlayer object, or null if parsing fails
      */
-    public static BedwarsPlayer parseNativeHypixelPlayerData(String json) {
+    public static BedwarsPlayer parseNativeHypixelPlayerData(String json, boolean silent) {
         try {
             JsonObject root = new JsonParser().parse(json).getAsJsonObject();
 
             if (!root.get("success").getAsBoolean()) {
-                ChatUtils.sendMessage("§cAPI response success flag is false.");
+                if (!silent) ChatUtils.sendMessage("§cAPI response success flag is false.");
                 return null;
             }
 
@@ -187,6 +194,10 @@ public class HypixelApiUtils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static BedwarsPlayer parseNativeHypixelPlayerData(String json) {
+        return parseNativeHypixelPlayerData(json, false);
     }
 
     /** Safely retrieves an integer value from a JsonObject with a fallback to 0. */

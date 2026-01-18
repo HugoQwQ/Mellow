@@ -11,11 +11,12 @@ import com.roxiun.mellow.config.MellowOneConfig;
 import com.roxiun.mellow.data.PlayerProfile;
 import com.roxiun.mellow.util.ChatUtils;
 import com.roxiun.mellow.util.player.PlayerUtils;
+import net.minecraft.client.Minecraft;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.client.Minecraft;
 
 public class PlayerCache {
 
@@ -46,6 +47,10 @@ public class PlayerCache {
     }
 
     public PlayerProfile getProfile(String playerName) {
+        return getProfile(playerName, false);
+    }
+
+    public PlayerProfile getProfile(String playerName, boolean silent) {
         String lowerCaseName = playerName.toLowerCase();
         PlayerProfile profile = cache.get(lowerCaseName);
 
@@ -53,12 +58,16 @@ public class PlayerCache {
             return profile;
         }
 
-        return fetchAndCachePlayer(playerName);
+        return fetchAndCachePlayer(playerName, silent);
     }
 
     private PlayerProfile fetchAndCachePlayer(String playerName) {
+        return fetchAndCachePlayer(playerName, false);
+    }
+
+    private PlayerProfile fetchAndCachePlayer(String playerName, boolean silent) {
         try {
-            BedwarsPlayer bedwarsPlayer = statsProvider.fetchPlayerStats(playerName);
+            BedwarsPlayer bedwarsPlayer = statsProvider.fetchPlayerStats(playerName, silent);
             if (bedwarsPlayer == null) {
                 return null;
             }

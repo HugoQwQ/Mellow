@@ -1,22 +1,23 @@
-package com.roxiun.mellow.api.danger;
+package com.roxiun.mellow.api.target;
 
 import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
+import org.jetbrains.annotations.NotNull;
 
-public class DangerMetric implements Comparable<DangerMetric> {
+public class TargetRankMetric implements Comparable<TargetRankMetric> {
 
     private final BedwarsPlayer player;
     private final double fkdrScore;
-    private final double starScore;
+    private final double starsScore;
     private final double streakScore;
     private final double totalScore;
 
-    public DangerMetric(
-            BedwarsPlayer player, double fkdrScore, double starScore, double streakScore) {
+    public TargetRankMetric(
+            BedwarsPlayer player, double fkdrScore, double starsScore, double streakScore) {
         this.player = player;
         this.fkdrScore = fkdrScore;
-        this.starScore = starScore;
+        this.starsScore = starsScore;
         this.streakScore = streakScore;
-        this.totalScore = fkdrScore + starScore + streakScore;
+        this.totalScore = fkdrScore + starsScore + streakScore;
     }
 
     public BedwarsPlayer getPlayer() {
@@ -31,8 +32,8 @@ public class DangerMetric implements Comparable<DangerMetric> {
         return fkdrScore;
     }
 
-    public double getStarScore() {
-        return starScore;
+    public double getStarsScore() {
+        return starsScore;
     }
 
     public double getStreakScore() {
@@ -40,7 +41,7 @@ public class DangerMetric implements Comparable<DangerMetric> {
     }
 
     @Override
-    public int compareTo(DangerMetric other) {
+    public int compareTo(@NotNull TargetRankMetric other) {
         return Double.compare(other.totalScore, this.totalScore); // Descending order
     }
 }

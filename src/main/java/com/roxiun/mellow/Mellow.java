@@ -3,7 +3,6 @@ package com.roxiun.mellow;
 import com.roxiun.mellow.anticheat.AnticheatManager;
 import com.roxiun.mellow.api.aurora.AuroraApi;
 import com.roxiun.mellow.api.bedwars.HypixelApi;
-import com.roxiun.mellow.api.danger.DangerScanningService;
 import com.roxiun.mellow.api.duels.PlanckeApi;
 import com.roxiun.mellow.api.hypixel.HypixelFeatures;
 import com.roxiun.mellow.api.mojang.MojangApi;
@@ -12,6 +11,7 @@ import com.roxiun.mellow.api.provider.NadeshikoApi;
 import com.roxiun.mellow.api.provider.NativeHypixelApi;
 import com.roxiun.mellow.api.provider.StatsProvider;
 import com.roxiun.mellow.api.seraph.SeraphApi;
+import com.roxiun.mellow.api.target.TargetRankService;
 import com.roxiun.mellow.api.urchin.UrchinApi;
 import com.roxiun.mellow.cache.PlayerCache;
 import com.roxiun.mellow.commands.*;
@@ -94,8 +94,7 @@ public class Mellow {
         HypixelApi hypixelApi = new HypixelApi(this, tagUtils);
         NumberDenicker numberDenicker = new NumberDenicker(config, nickUtils, auroraApi);
         PregameStats pregameStats = new PregameStats(playerCache, config, blacklistManager);
-        DangerScanningService dangerScanningService =
-                new DangerScanningService(playerCache, config);
+        TargetRankService targetRankService = new TargetRankService(playerCache, config, nickUtils);
 
         // Tasks
         StatsChecker statsChecker =
@@ -106,7 +105,7 @@ public class Mellow {
                         tabStats,
                         tagUtils,
                         blacklistManager,
-                        dangerScanningService);
+                        targetRankService);
 
         // Event Handlers
         MinecraftForge.EVENT_BUS.register(
