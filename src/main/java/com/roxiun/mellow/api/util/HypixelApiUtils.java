@@ -5,8 +5,6 @@ import com.google.gson.JsonParser;
 import com.roxiun.mellow.api.bedwars.BedwarsPlayer;
 import com.roxiun.mellow.util.ChatUtils;
 import com.roxiun.mellow.util.formatting.FormattingUtils;
-import net.minecraftforge.fml.common.FMLLog;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -55,7 +53,7 @@ public class HypixelApiUtils {
                     return response.toString();
                 }
             } else {
-                handleNativeHypixelError(responseCode, connection);
+                handleNativeHypixelError(responseCode);
                 return null;
             }
         } catch (Exception e) {
@@ -70,7 +68,7 @@ public class HypixelApiUtils {
     }
 
     /** Handles non-200 HTTP response codes for native Hypixel API. */
-    private static void handleNativeHypixelError(int code, HttpURLConnection conn) {
+    private static void handleNativeHypixelError(int code) {
         switch (code) {
             case 403:
                 ChatUtils.sendMessage("§cAuthentication failed: Invalid API Key.");
@@ -244,8 +242,6 @@ public class HypixelApiUtils {
                 bedwarsStats.has("beds_lost_bedwars")
                         ? bedwarsStats.get("beds_lost_bedwars").getAsInt()
                         : 0;
-        int finals = finalKills; // Calculate finals as finalKills + finalDeaths
-
         return new BedwarsPlayer(
                 name,
                 FormattingUtils.formatStars(stars),
@@ -257,6 +253,6 @@ public class HypixelApiUtils {
                 losses,
                 bedsBroken,
                 bedsLost,
-                finals);
+                finalKills);
     }
 }
