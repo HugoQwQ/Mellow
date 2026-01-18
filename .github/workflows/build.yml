@@ -3,10 +3,10 @@
 name: Build with Gradle
 
 on:
-    pull_request:
     workflow_dispatch:
     push:
-        branches: ["**"]
+      tags:
+        - "*"
 
 concurrency:
     group: ${{ github.head_ref || format('{0}-{1}', github.ref, github.run_number) }}
