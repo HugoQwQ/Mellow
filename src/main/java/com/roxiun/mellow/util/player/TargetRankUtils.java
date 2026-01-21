@@ -25,9 +25,8 @@ public class TargetRankUtils {
             stars = Double.parseDouble(player.getStars());
         } catch (NumberFormatException ignored) {
         }
-        double streak = player.getWinstreak();
 
-        return new TargetRankMetric(player, fkdr * 50, stars, streak * 5);
+        return new TargetRankMetric(player, fkdr * 50, stars, 0);
     }
 
     /**
@@ -74,6 +73,33 @@ public class TargetRankUtils {
     }
 
     /**
+     * Retrieves a list of teammates currently in the tab list.
+     *
+     * @param mc The Minecraft instance.
+     * @return List of teammate usernames.
+     */
+    public static List<String> getMyTeamPlayers(Minecraft mc) {
+        if (mc.getNetHandler() == null) return new ArrayList<>();
+
+        Collection<NetworkPlayerInfo> playerInfoMap = mc.getNetHandler().getPlayerInfoMap();
+        List<String> teammates = new ArrayList<>();
+        String myName = mc.thePlayer.getName();
+        String myTeam = getScoreboardTeamName(mc, myName);
+
+        for (NetworkPlayerInfo info : playerInfoMap) {
+            String name = info.getGameProfile().getName();
+            if (name.startsWith("§")) continue;
+
+            String playerTeam = getScoreboardTeamName(mc, name);
+
+            if (!myTeam.isEmpty() && myTeam.equals(playerTeam)) {
+                teammates.add(name);
+            }
+        }
+        return teammates;
+    }
+
+    /**
      * Gets the scoreboard team name/color prefix for a player.
      *
      * @param mc The Minecraft instance.
@@ -97,10 +123,11 @@ public class TargetRankUtils {
      * @return A list of strings formatted for the client.
      */
     public static List<String> formatRankedReport(
-            List<String> rankedTeams, List<Double> teamScores, TargetRankMetric maxPlayer) {
+            List<String> rankedTeams,
+            List<Double> teamScores,
+            TargetRankMetric maxPlayer,
+            double myTeamScore) {
         List<String> messages = new ArrayList<>();
-        messages.add("§8§m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-
         if (rankedTeams.isEmpty()) {
             messages.add("§cNo enemy teams found.");
         } else {
@@ -126,10 +153,12 @@ public class TargetRankUtils {
         }
 
         if (maxPlayer != null) {
-            messages.add(" §bPlayer: §f" + maxPlayer.getPlayer().getName() + " §e§l<- NOTICE");
+            messages.add(
+                    " §bPlayer: §f"
+                            + maxPlayer.getPlayer().getName()
+                            + " §e§l<- NOTICE CHAT: REFER: "
+                            + (int) myTeamScore);
         }
-
-        messages.add("§8§e▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         return messages;
     }
 }

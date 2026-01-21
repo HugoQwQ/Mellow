@@ -44,6 +44,8 @@ public class TargetRankService {
                 () -> {
                     try {
                         List<String> enemyNames = getEnemyPlayers();
+                        List<String> myTeamNames = getMyTeamPlayers();
+
                         if (enemyNames.isEmpty()) {
                             mc.addScheduledTask(
                                     () ->
@@ -58,9 +60,14 @@ public class TargetRankService {
                                     CompletableFuture.supplyAsync(
                                             () -> playerCache.getProfile(name, true)));
                         }
+                        for (String name : myTeamNames) {
+                            futures.add(
+                                    CompletableFuture.supplyAsync(
+                                            () -> playerCache.getProfile(name, true)));
+                        }
                         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-                        processStatsAndReport(enemyNames);
+                        processStatsAndReport(enemyNames, myTeamNames);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -77,8 +84,9 @@ public class TargetRankService {
      * ensuring stats are fetched/cached.
      *
      * @param enemyNames List of enemy player names to analyze.
+     * @param myTeamNames List of teammate names to analyze.
      */
-    private void processStatsAndReport(List<String> enemyNames) {
+    private void processStatsAndReport(List<String> enemyNames, List<String> myTeamNames) {
         Map<String, List<TargetRankMetric>> teamMetricsMap = new HashMap<>();
         List<TargetRankMetric> allMetrics = new ArrayList<>();
 
@@ -100,6 +108,24 @@ public class TargetRankService {
 
                 String teamName = getScoreboardTeamName(name);
                 teamMetricsMap.computeIfAbsent(teamName, k -> new ArrayList<>()).add(metric);
+            }
+        }
+
+        double myTeamScore = 0;
+        for (String name : myTeamNames) {
+            TargetRankMetric metric = null;
+            if (nickUtils.isNicked(name)) {
+                metric = TargetRankUtils.calculateScoreForNick(name);
+            } else {
+                PlayerProfile profile = playerCache.getProfile(name);
+                BedwarsPlayer stats = (profile != null) ? profile.getBedwarsPlayer() : null;
+                if (stats != null) {
+                    metric = calculateScore(stats);
+                }
+            }
+
+            if (metric != null) {
+                myTeamScore += metric.getTotalScore();
             }
         }
 
@@ -131,7 +157,8 @@ public class TargetRankService {
         TargetRankMetric maxPlayer = allMetrics.get(0);
 
         List<String> reportMessages =
-                TargetRankUtils.formatRankedReport(rankedTeamNames, rankedTeamScores, maxPlayer);
+                TargetRankUtils.formatRankedReport(
+                        rankedTeamNames, rankedTeamScores, maxPlayer, myTeamScore);
         reportToChat(reportMessages);
     }
 
@@ -143,6 +170,11 @@ public class TargetRankService {
     /** Retrieves a list of enemy players currently in the tab list. */
     private List<String> getEnemyPlayers() {
         return TargetRankUtils.getEnemyPlayers(mc);
+    }
+
+    /** Retrieves a list of teammates currently in the tab list. */
+    private List<String> getMyTeamPlayers() {
+        return TargetRankUtils.getMyTeamPlayers(mc);
     }
 
     /** Gets the scoreboard team prefix/color for a player. */
