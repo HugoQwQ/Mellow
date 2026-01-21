@@ -124,6 +124,7 @@ public class Mellow {
         // Commands
         ClientCommandHandler.instance.registerCommand(new BedwarsCommand(playerCache, config));
         ClientCommandHandler.instance.registerCommand(new MellowCommand());
+        ClientCommandHandler.instance.registerCommand(new ScoreCommand(playerCache));
         ClientCommandHandler.instance.registerCommand(new ClearCacheCommand(playerCache, tabStats));
         ClientCommandHandler.instance.registerCommand(new DenickCommand(config, auroraApi));
         ClientCommandHandler.instance.registerCommand(new SkinDenickCommand());
