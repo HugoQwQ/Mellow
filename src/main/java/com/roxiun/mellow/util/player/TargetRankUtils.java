@@ -150,14 +150,11 @@ public class TargetRankUtils {
                 }
                 messages.add(" " + otherTeams.toString());
             }
+            messages.add(" §bRefer: §f" + (int) myTeamScore);
         }
 
         if (maxPlayer != null) {
-            messages.add(
-                    " §bPlayer: §f"
-                            + maxPlayer.getPlayer().getName()
-                            + " §e§l<- NOTICE CHAT: REFER: "
-                            + (int) myTeamScore);
+            messages.add(" §bPlayer: §f" + maxPlayer.getPlayer().getName() + " §e§l<- NOTICE");
         }
         return messages;
     }
